@@ -1,0 +1,59 @@
+package com.tgwgroup.zhoupics.ui.settings
+
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.tgwgroup.zhoupics.R
+import com.tgwgroup.zhoupics.base.BaseActivity
+import com.tgwgroup.zhoupics.databinding.ActivitySettingsBinding
+
+class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
+    
+    private val settingsAdapter = SettingsAdapter()
+    
+    companion object {
+        fun start(context: Context) {
+            val intent = Intent(context, SettingsActivity::class.java)
+            context.startActivity(intent)
+        }
+    }
+
+    override fun onBindingCreate(): ActivitySettingsBinding {
+        return ActivitySettingsBinding.inflate(layoutInflater)
+    }
+
+    override fun initView() {
+        super.initView()
+        binding.ivBack.setOnClickListener {
+            finish()
+        }
+        try {
+            val packageInfo = packageManager.getPackageInfo(packageName, 0)
+            val versionName = packageInfo.versionName
+            binding.tvVersion.text = getString(R.string.version_x, versionName)
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+        initRecyclerView()
+    }
+    
+    private fun initRecyclerView() {
+        binding.rvItems.layoutManager = LinearLayoutManager(this)
+        binding.rvItems.adapter = settingsAdapter
+        
+        val items = listOf(
+            SettingsItem(
+                icon = R.drawable.ic_language,
+                title = getString(R.string.language),
+                onClick = {}
+            ),
+            SettingsItem(
+                icon = R.drawable.ic_developer,
+                title = getString(R.string.developer),
+                onClick = {}
+            )
+        )
+        settingsAdapter.setItems(items)
+    }
+}

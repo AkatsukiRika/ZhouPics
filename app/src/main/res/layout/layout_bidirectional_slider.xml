@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.FrameLayout">
+
+    <View
+        android:id="@+id/v_track_bg"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/bg_slider_track" />
+
+    <View
+        android:id="@+id/v_track_progress"
+        android:layout_width="0dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/bg_slider_progress"
+        />
+
+    <View
+        android:id="@+id/v_thumb"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/bg_slider_thumb" />
+
+</merge>

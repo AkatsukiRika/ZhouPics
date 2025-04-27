@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BidirectionalSlider">
+        <attr name="bidirectional" format="boolean" />
+        <attr name="minValue" format="float" />
+        <attr name="maxValue" format="float" />
+        <attr name="defaultProgress" format="float" />
+    </declare-styleable>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="black_20p">#33000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="white_50p">#80FFFFFF</color>
+    <color name="white_20p">#33FFFFFF</color>
+    <color name="white_default">#FFE3E3E3</color>
+    <color name="theme">#FFF97583</color>
+    <color name="theme_50p">#80F97583</color>
+    <color name="theme_20p">#33F97583</color>
+    <color name="theme_opposite">#FF9ECBFF</color>
+    <color name="theme_opposite_20p">#339ECBFF</color>
+    <color name="dark_bg">#FF161618</color>
+    <color name="theme_bg">#FF1B1B1F</color>
+    <color name="divider">#FF2E2E32</color>
+</resources>

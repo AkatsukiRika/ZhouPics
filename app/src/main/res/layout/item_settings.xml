@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="58dp"
+    android:background="@drawable/shape_bg_r10"
+    android:backgroundTint="@color/theme_bg"
+    android:gravity="center_vertical"
+    android:foreground="@drawable/ripple_rounded_r10"
+    android:layout_marginBottom="8dp"
+    android:layout_marginHorizontal="12dp">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_icon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        app:srcCompat="@drawable/ic_language"
+        android:layout_marginStart="16sp"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/FontMedium"
+        android:text="@string/language"
+        android:textColor="@color/white_default"
+        android:textSize="18sp"
+        android:layout_marginStart="8sp" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_next"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        app:srcCompat="@drawable/ic_next"
+        android:layout_marginEnd="16dp" />
+
+</LinearLayout>
