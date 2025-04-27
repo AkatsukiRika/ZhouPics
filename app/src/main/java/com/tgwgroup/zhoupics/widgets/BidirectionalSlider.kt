@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.view.isInvisible
 import androidx.core.view.updateLayoutParams
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.databinding.LayoutBidirectionalSliderBinding
@@ -30,6 +31,7 @@ class BidirectionalSlider @JvmOverloads constructor(
     private var minValue = 0f
     private var maxValue = 1f
     private var listener: OnProgressChangeListener? = null
+    private var bubble: SliderBubble? = null
 
     interface OnProgressChangeListener {
         fun onStartTrackingTouch()
@@ -57,7 +59,7 @@ class BidirectionalSlider @JvmOverloads constructor(
         setProgress(progress, false)
         setupTouchListener()
     }
-    
+
     @SuppressLint("ClickableViewAccessibility")
     private fun setupTouchListener() {
         setOnTouchListener { _, event ->
@@ -69,6 +71,7 @@ class BidirectionalSlider @JvmOverloads constructor(
                 MotionEvent.ACTION_DOWN -> {
                     LogUtil.d(TAG, "ACTION_DOWN")
                     listener?.onStartTrackingTouch()
+                    bubble?.isInvisible = false
                     return@setOnTouchListener true
                 }
 
@@ -95,11 +98,16 @@ class BidirectionalSlider @JvmOverloads constructor(
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     LogUtil.d(TAG, "ACTION_UP / ACTION_CANCEL")
                     listener?.onStopTrackingTouch()
+                    bubble?.isInvisible = true
                     return@setOnTouchListener true
                 }
             }
             false
         }
+    }
+
+    fun bindBubble(bubble: SliderBubble) {
+        this.bubble = bubble
     }
 
     fun setValue(value: Float) {
@@ -164,9 +172,11 @@ class BidirectionalSlider @JvmOverloads constructor(
         if (isBidirectional) {
             val mappedValue = minValue + (maxValue - minValue) * (this.progress + 1f) / 2f
             listener?.onProgressChanged(mappedValue, fromUser)
+            bubble?.updateProgressText(mappedValue)
         } else {
             val mappedValue = minValue + (maxValue - minValue) * this.progress
             listener?.onProgressChanged(mappedValue, fromUser)
+            bubble?.updateProgressText(mappedValue)
         }
     }
 
@@ -181,6 +191,7 @@ class BidirectionalSlider @JvmOverloads constructor(
                 val thumbX = centerX + progress * (realWidth / 2f)
 
                 binding.vThumb.x = thumbX - thumbCenter
+                bubble?.updatePositionX(thumbX)
 
                 if (progress > 0) {
                     binding.vTrackProgress.x = centerX
@@ -197,6 +208,7 @@ class BidirectionalSlider @JvmOverloads constructor(
             } else {
                 val thumbX = realWidth * progress + thumbCenter
                 binding.vThumb.x = thumbX - thumbCenter
+                bubble?.updatePositionX(thumbX)
                 binding.vTrackProgress.x = 0f
                 binding.vTrackProgress.updateLayoutParams<ViewGroup.LayoutParams> {
                     width = thumbX.roundToInt()

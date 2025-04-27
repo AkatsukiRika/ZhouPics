@@ -28,6 +28,9 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
         initRecyclerView()
         initListeners()
         initCollectors()
+
+        val binding = binding ?: return
+        binding.slider.bindBubble(binding.sliderBubble)
     }
 
     private fun initRecyclerView() {

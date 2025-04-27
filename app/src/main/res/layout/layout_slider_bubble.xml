@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:parentTag="android.widget.FrameLayout"
+    tools:layout_width="48dp"
+    tools:layout_height="48dp">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_bubble"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srcCompat="@drawable/ic_slider_bubble"
+        android:rotation="180" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        style="@style/FontRegular"
+        android:textSize="14sp"
+        android:text="+100"
+        android:textColor="@color/black"
+        android:layout_marginBottom="3dp"/>
+
+</merge>
