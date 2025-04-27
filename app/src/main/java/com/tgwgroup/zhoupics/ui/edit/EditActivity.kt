@@ -4,18 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
-import android.opengl.GLSurfaceView
 import android.os.Build
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.pixpark.gpupixel.GPUPixel
-import com.pixpark.gpupixel.GPUPixelSinkRawData
-import com.pixpark.gpupixel.GPUPixelSourceImage
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.base.BaseActivity
 import com.tgwgroup.zhoupics.databinding.ActivityEditBinding
-import com.tgwgroup.zhoupics.render.ZhouPicsRenderer
+import com.tgwgroup.zhoupics.render.RenderHelper
 import com.tgwgroup.zhoupics.ui.edit.adjust.AdjustFragment
 import com.tgwgroup.zhoupics.utils.LogUtil
 import com.tgwgroup.zhoupics.utils.collectIn
@@ -29,13 +25,11 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
 
     private var originalBitmap: Bitmap? = null
 
-    private lateinit var surfaceView: GLSurfaceView
-
-    private lateinit var renderer: ZhouPicsRenderer
-
     private val bottomTabAdapter = BottomTabAdapter()
 
     private val viewModel by viewModels<EditViewModel>()
+
+    private lateinit var renderHelper: RenderHelper
 
     companion object {
         const val TAG = "EditActivity"
@@ -59,12 +53,13 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
 
     override fun initView() {
         super.initView()
-        GPUPixel.Init(this)
-        initSurfaceView()
+        renderHelper = RenderHelper.createAndInit(this, binding.surfaceView)
 
         loadOriginalImage(
             onLoad = {
-                startRender()
+                originalBitmap?.let {
+                    renderHelper.startRender(it)
+                }
             },
             onLoadFailed = {
                 LogUtil.e(TAG, "Failed to load image")
@@ -78,10 +73,7 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
 
     override fun onDestroy() {
         super.onDestroy()
-        sourceImage?.Destroy()
-        sourceImage = null
-        sinkRawData?.Destroy()
-        sinkRawData = null
+        renderHelper.destroy()
     }
 
     private fun initBottomTab() {
@@ -135,31 +127,6 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
             } ?: run {
                 onLoadFailed?.invoke()
             }
-        }
-    }
-
-    private fun initSurfaceView() {
-        surfaceView = binding.surfaceView
-        surfaceView.setEGLContextClientVersion(2)
-        renderer = ZhouPicsRenderer(this)
-        surfaceView.setRenderer(renderer)
-    }
-
-    private var sourceImage: GPUPixelSourceImage? = null
-
-    private var sinkRawData: GPUPixelSinkRawData? = null
-
-    private fun startRender() {
-        sourceImage = GPUPixelSourceImage.CreateFromBitmap(originalBitmap)
-        sinkRawData = GPUPixelSinkRawData.Create()
-        sourceImage?.AddSink(sinkRawData)
-        sourceImage?.Render()
-        val processedRgba = sinkRawData?.GetRgbaBuffer()
-        processedRgba?.let {
-            val rgbaWidth = sinkRawData?.GetWidth() ?: 0
-            val rgbaHeight = sinkRawData?.GetHeight() ?: 0
-            renderer.updateTextureData(it, rgbaWidth, rgbaHeight, 0)
-            surfaceView.requestRender()
         }
     }
 }

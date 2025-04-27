@@ -1,5 +1,6 @@
 package com.tgwgroup.zhoupics.utils
 
+import android.graphics.Bitmap
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import kotlinx.coroutines.Dispatchers
@@ -7,7 +8,7 @@ import kotlinx.coroutines.withContext
 
 private const val MAX_SIZE = 2048
 
-suspend fun getBitmap(model: Any) = withContext(Dispatchers.IO) {
+suspend fun getBitmap(model: Any): Bitmap? = withContext(Dispatchers.IO) {
     Glide
         .with(appContext)
         .asBitmap()
