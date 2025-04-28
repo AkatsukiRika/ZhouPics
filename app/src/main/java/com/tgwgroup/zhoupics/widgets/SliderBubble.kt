@@ -16,6 +16,7 @@ class SliderBubble @JvmOverloads constructor(
     defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr) {
     private val binding = LayoutSliderBubbleBinding.inflate(LayoutInflater.from(context), this)
+    var isBidirectional = false
 
     init {
         layoutParams = LayoutParams(dpToPx(48f), dpToPx(48f))
@@ -33,9 +34,9 @@ class SliderBubble @JvmOverloads constructor(
     fun updateProgressText(progress: Float) {
         val intValue = progress.roundToInt()
         if (intValue > 0) {
-            binding.tvValue.text = "+$intValue"
+            binding.tvValue.text = if (isBidirectional) "+$intValue" else "$intValue"
         } else {
-            binding.tvValue.text = intValue.toString()
+            binding.tvValue.text = "$intValue"
         }
     }
 }

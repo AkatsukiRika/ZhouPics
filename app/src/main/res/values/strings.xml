@@ -16,4 +16,10 @@
     <string name="saturation">Saturation</string>
     <string name="sharpness">Sharpness</string>
     <string name="brightness">Brightness</string>
+    <string name="smooth">Smooth</string>
+    <string name="white">White</string>
+    <string name="lipstick">Lipstick</string>
+    <string name="blusher">Blusher</string>
+    <string name="eye_zoom">Eye Zoom</string>
+    <string name="face_slim">Face Slim</string>
 </resources>

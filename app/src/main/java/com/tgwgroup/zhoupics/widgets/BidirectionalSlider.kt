@@ -111,6 +111,7 @@ class BidirectionalSlider @JvmOverloads constructor(
 
     fun bindBubble(bubble: SliderBubble) {
         this.bubble = bubble
+        bubble.isBidirectional = isBidirectional
     }
 
     fun setValue(value: Float) {
@@ -152,6 +153,7 @@ class BidirectionalSlider @JvmOverloads constructor(
     fun setBidirectional(bidirectional: Boolean) {
         if (bidirectional != isBidirectional) {
             isBidirectional = bidirectional
+            bubble?.isBidirectional = isBidirectional
             val currentValue = getValue()
             if (bidirectional) {
                 setProgress(0f)

@@ -13,6 +13,7 @@ import com.tgwgroup.zhoupics.base.BaseActivity
 import com.tgwgroup.zhoupics.databinding.ActivityEditBinding
 import com.tgwgroup.zhoupics.render.RenderHelper
 import com.tgwgroup.zhoupics.ui.edit.adjust.AdjustFragment
+import com.tgwgroup.zhoupics.ui.edit.beautify.BeautifyFragment
 import com.tgwgroup.zhoupics.utils.LogUtil
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.utils.getBitmap
@@ -102,10 +103,21 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
     }
 
     private fun updateTabFragment(tabId: Int) {
-        val fragment = AdjustFragment()
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fcv_tab_fragment, fragment, AdjustFragment.TAG)
-            .commitNowAllowingStateLoss()
+        when (tabId) {
+            TAB_ADJUST -> {
+                val fragment = AdjustFragment()
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fcv_tab_fragment, fragment, AdjustFragment.TAG)
+                    .commitNowAllowingStateLoss()
+            }
+
+            TAB_BEAUTIFY -> {
+                val fragment = BeautifyFragment()
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fcv_tab_fragment, fragment, BeautifyFragment.TAG)
+                    .commitNowAllowingStateLoss()
+            }
+        }
     }
 
     private fun loadOriginalImage(onLoad: (() -> Unit)? = null, onLoadFailed: (() -> Unit)? = null) {
