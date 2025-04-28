@@ -30,7 +30,7 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
 
     private val viewModel by viewModels<EditViewModel>()
 
-    private lateinit var renderHelper: RenderHelper
+    lateinit var renderHelper: RenderHelper
 
     companion object {
         const val TAG = "EditActivity"

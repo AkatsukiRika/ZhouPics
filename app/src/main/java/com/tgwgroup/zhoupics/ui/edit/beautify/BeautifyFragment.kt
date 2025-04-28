@@ -6,6 +6,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tgwgroup.zhoupics.base.BaseFragment
 import com.tgwgroup.zhoupics.databinding.FragmentBeautifyBinding
+import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.widgets.BidirectionalSlider
 
@@ -47,6 +48,23 @@ class BeautifyFragment : BaseFragment<FragmentBeautifyBinding>() {
             override fun onStopTrackingTouch() {}
 
             override fun onProgressChanged(progress: Float, fromUser: Boolean) {
+                when (viewModel.selectedItemId.value) {
+                    BEAUTIFY_SMOOTH -> {
+                        getEditActivity()?.renderHelper?.updateSmoothProgress(progress)
+                    }
+                    BEAUTIFY_WHITE -> {
+                        getEditActivity()?.renderHelper?.updateWhiteProgress(progress)
+                    }
+                    BEAUTIFY_LIPSTICK -> {
+                        getEditActivity()?.renderHelper?.updateLipstickProgress(progress)
+                    }
+                    BEAUTIFY_EYE_ZOOM -> {
+                        getEditActivity()?.renderHelper?.updateEyeZoomProgress(progress)
+                    }
+                    BEAUTIFY_FACE_SLIM -> {
+                        getEditActivity()?.renderHelper?.updateFaceSlimProgress(progress)
+                    }
+                }
             }
         })
     }
@@ -71,5 +89,9 @@ class BeautifyFragment : BaseFragment<FragmentBeautifyBinding>() {
             }
         }
         binding.slider.setValue(0f)
+    }
+
+    private fun getEditActivity(): EditActivity? {
+        return activity as? EditActivity
     }
 }

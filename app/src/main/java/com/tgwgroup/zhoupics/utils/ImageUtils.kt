@@ -6,7 +6,7 @@ import com.bumptech.glide.Priority
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-private const val MAX_SIZE = 2048
+private const val MAX_SIZE = 1024
 
 suspend fun getBitmap(model: Any): Bitmap? = withContext(Dispatchers.IO) {
     Glide
