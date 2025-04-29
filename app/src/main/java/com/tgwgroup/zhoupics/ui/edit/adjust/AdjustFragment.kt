@@ -6,7 +6,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tgwgroup.zhoupics.base.BaseFragment
 import com.tgwgroup.zhoupics.databinding.FragmentAdjustBinding
-import com.tgwgroup.zhoupics.utils.LogUtil
+import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.widgets.BidirectionalSlider
 
@@ -48,7 +48,20 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
             override fun onStopTrackingTouch() {}
 
             override fun onProgressChanged(progress: Float, fromUser: Boolean) {
-                LogUtil.d(TAG, "progress=$progress, fromUser=$fromUser")
+                if (!fromUser) {
+                    return
+                }
+                when (viewModel.selectedItemId.value) {
+                    ADJUST_CONTRAST -> {
+                        getEditActivity()?.renderHelper?.updateContrastProgress(progress)
+                    }
+                    ADJUST_EXPOSURE -> {
+                        getEditActivity()?.renderHelper?.updateExposureProgress(progress)
+                    }
+                    ADJUST_SATURATION -> {
+                        getEditActivity()?.renderHelper?.updateSaturationProgress(progress)
+                    }
+                }
             }
         })
     }
@@ -80,5 +93,9 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
             }
         }
         binding.slider.setValue(0f)
+    }
+
+    private fun getEditActivity(): EditActivity? {
+        return activity as? EditActivity
     }
 }

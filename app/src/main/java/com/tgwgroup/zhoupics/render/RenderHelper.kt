@@ -22,6 +22,9 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         const val PROPERTY_WHITENESS = "whiteness"
         const val PROPERTY_THIN_FACE = "thin_face"
         const val PROPERTY_BIG_EYE = "big_eye"
+        const val PROPERTY_CONTRAST = "contrast"
+        const val PROPERTY_EXPOSURE = "exposure"
+        const val PROPERTY_SATURATION = "saturation"
 
         fun createAndInit(activity: AppCompatActivity, surfaceView: GLSurfaceView): RenderHelper {
             return RenderHelper(activity, surfaceView)
@@ -43,6 +46,12 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
     private var faceReshapeFilter: GPUPixelFilter? = null
 
     private var blusherFilter: GPUPixelFilter? = null
+
+    private var contrastFilter: GPUPixelFilter? = null
+
+    private var exposureFilter: GPUPixelFilter? = null
+
+    private var saturationFilter: GPUPixelFilter? = null
 
     private var faceDetector: FaceDetector? = null
 
@@ -70,12 +79,18 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         faceReshapeFilter = GPUPixelFilter.Create(GPUPixelFilter.FACE_RESHAPE_FILTER)
         lipstickFilter = GPUPixelFilter.Create(GPUPixelFilter.LIPSTICK_FILTER)
         blusherFilter = GPUPixelFilter.Create(GPUPixelFilter.BLUSHER_FILTER)
+        contrastFilter = GPUPixelFilter.Create(GPUPixelFilter.CONTRAST_FILTER)
+        exposureFilter = GPUPixelFilter.Create(GPUPixelFilter.EXPOSURE_FILTER)
+        saturationFilter = GPUPixelFilter.Create(GPUPixelFilter.SATURATION_FILTER)
 
         sourceRawData?.AddSink(lipstickFilter)
         lipstickFilter?.AddSink(blusherFilter)
         blusherFilter?.AddSink(beautyFilter)
         beautyFilter?.AddSink(faceReshapeFilter)
-        faceReshapeFilter?.AddSink(sinkRawData)
+        faceReshapeFilter?.AddSink(contrastFilter)
+        contrastFilter?.AddSink(exposureFilter)
+        exposureFilter?.AddSink(saturationFilter)
+        saturationFilter?.AddSink(sinkRawData)
 
         activity.lifecycleScope.launch(Dispatchers.IO) {
             val byteBuffer = ByteBuffer
@@ -120,6 +135,21 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         doRender()
     }
 
+    fun updateContrastProgress(progress: Float) {
+        contrastFilter?.SetProperty(PROPERTY_CONTRAST, 1f + progress / 200f)
+        doRender()
+    }
+
+    fun updateExposureProgress(progress: Float) {
+        exposureFilter?.SetProperty(PROPERTY_EXPOSURE, progress / 100f)
+        doRender()
+    }
+
+    fun updateSaturationProgress(progress: Float) {
+        saturationFilter?.SetProperty(PROPERTY_SATURATION, 1f + progress / 100f)
+        doRender()
+    }
+
     private fun doFaceDetect() {
         sourceRgbaData?.let {
             val landmarks = faceDetector?.detect(
@@ -160,5 +190,13 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         beautyFilter = null
         faceReshapeFilter?.Destroy()
         faceReshapeFilter = null
+        blusherFilter?.Destroy()
+        blusherFilter = null
+        contrastFilter?.Destroy()
+        contrastFilter = null
+        exposureFilter?.Destroy()
+        exposureFilter = null
+        saturationFilter?.Destroy()
+        saturationFilter = null
     }
 }
