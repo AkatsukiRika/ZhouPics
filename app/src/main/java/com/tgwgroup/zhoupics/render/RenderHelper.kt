@@ -26,6 +26,9 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         const val PROPERTY_EXPOSURE = "exposure"
         const val PROPERTY_SATURATION = "saturation"
         const val PROPERTY_BRIGHTNESS = "brightness_factor"
+        const val PROPERTY_SHARPNESS = "sharpness"
+        const val PROPERTY_TEXEL_WIDTH = "texel_width"
+        const val PROPERTY_TEXEL_HEIGHT = "texel_height"
 
         fun createAndInit(activity: AppCompatActivity, surfaceView: GLSurfaceView): RenderHelper {
             return RenderHelper(activity, surfaceView)
@@ -53,6 +56,8 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
     private var exposureFilter: GPUPixelFilter? = null
 
     private var saturationFilter: GPUPixelFilter? = null
+
+    private var sharpenFilter: GPUPixelFilter? = null
 
     private var brightnessFilter: GPUPixelFilter? = null
 
@@ -85,6 +90,7 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         contrastFilter = GPUPixelFilter.Create(GPUPixelFilter.CONTRAST_FILTER)
         exposureFilter = GPUPixelFilter.Create(GPUPixelFilter.EXPOSURE_FILTER)
         saturationFilter = GPUPixelFilter.Create(GPUPixelFilter.SATURATION_FILTER)
+        sharpenFilter = GPUPixelFilter.Create(GPUPixelFilter.SHARPEN_FILTER)
         brightnessFilter = GPUPixelFilter.Create(GPUPixelFilter.BRIGHTNESS_FILTER)
 
         sourceRawData?.AddSink(lipstickFilter)
@@ -94,7 +100,8 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         faceReshapeFilter?.AddSink(contrastFilter)
         contrastFilter?.AddSink(exposureFilter)
         exposureFilter?.AddSink(saturationFilter)
-        saturationFilter?.AddSink(brightnessFilter)
+        saturationFilter?.AddSink(sharpenFilter)
+        sharpenFilter?.AddSink(brightnessFilter)
         brightnessFilter?.AddSink(sinkRawData)
 
         activity.lifecycleScope.launch(Dispatchers.IO) {
@@ -152,6 +159,13 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
 
     fun updateSaturationProgress(progress: Float) {
         saturationFilter?.SetProperty(PROPERTY_SATURATION, 1f + progress / 100f)
+        doRender()
+    }
+
+    fun updateSharpnessProgress(progress: Float) {
+        sharpenFilter?.SetProperty(PROPERTY_SHARPNESS, progress / 100f)
+        sharpenFilter?.SetProperty(PROPERTY_TEXEL_WIDTH, outWidth)
+        sharpenFilter?.SetProperty(PROPERTY_TEXEL_HEIGHT, outHeight)
         doRender()
     }
 
