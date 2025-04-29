@@ -24,3 +24,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "ZhouPics"
 include ':app'
+include ':gpupixel'
+project(':gpupixel').projectDir = new File(settingsDir, 'gpupixel/src/android/java/gpupixel')
