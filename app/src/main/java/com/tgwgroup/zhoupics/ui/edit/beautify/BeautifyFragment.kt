@@ -48,20 +48,32 @@ class BeautifyFragment : BaseFragment<FragmentBeautifyBinding>() {
             override fun onStopTrackingTouch() {}
 
             override fun onProgressChanged(progress: Float, fromUser: Boolean) {
+                if (!fromUser) {
+                    return
+                }
                 when (viewModel.selectedItemId.value) {
                     BEAUTIFY_SMOOTH -> {
+                        viewModel.updateProgress(BEAUTIFY_SMOOTH, progress)
                         getEditActivity()?.renderHelper?.updateSmoothProgress(progress)
                     }
                     BEAUTIFY_WHITE -> {
+                        viewModel.updateProgress(BEAUTIFY_WHITE, progress)
                         getEditActivity()?.renderHelper?.updateWhiteProgress(progress)
                     }
                     BEAUTIFY_LIPSTICK -> {
+                        viewModel.updateProgress(BEAUTIFY_LIPSTICK, progress)
                         getEditActivity()?.renderHelper?.updateLipstickProgress(progress)
                     }
+                    BEAUTIFY_BLUSHER -> {
+                        viewModel.updateProgress(BEAUTIFY_BLUSHER, progress)
+                        getEditActivity()?.renderHelper?.updateBlusherProgress(progress)
+                    }
                     BEAUTIFY_EYE_ZOOM -> {
+                        viewModel.updateProgress(BEAUTIFY_EYE_ZOOM, progress)
                         getEditActivity()?.renderHelper?.updateEyeZoomProgress(progress)
                     }
                     BEAUTIFY_FACE_SLIM -> {
+                        viewModel.updateProgress(BEAUTIFY_FACE_SLIM, progress)
                         getEditActivity()?.renderHelper?.updateFaceSlimProgress(progress)
                     }
                 }
@@ -88,7 +100,7 @@ class BeautifyFragment : BaseFragment<FragmentBeautifyBinding>() {
                 binding.slider.isInvisible = false
             }
         }
-        binding.slider.setValue(0f)
+        binding.slider.setValue(item?.progress ?: 0f)
     }
 
     private fun getEditActivity(): EditActivity? {

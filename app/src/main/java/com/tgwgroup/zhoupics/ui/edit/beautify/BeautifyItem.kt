@@ -7,6 +7,7 @@ data class BeautifyItem(
     @DrawableRes val icon: Int,
     val name: String,
     var selected: Boolean = false,
+    var progress: Float = 0f,
     val onClick: () -> Unit
 )
 

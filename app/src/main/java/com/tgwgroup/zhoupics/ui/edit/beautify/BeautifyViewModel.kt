@@ -76,4 +76,14 @@ class BeautifyViewModel : ViewModel() {
             selectedItemIdMutable.value = id
         }
     }
+
+    fun updateProgress(itemId: Int, progress: Float) {
+        itemListMutable.value = itemListMutable.value.map {
+            if (it.id == itemId && it.progress != progress) {
+                it.copy(progress = progress)
+            } else {
+                it
+            }
+        }
+    }
 }

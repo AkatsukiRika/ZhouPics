@@ -42,6 +42,8 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
 
     private var faceReshapeFilter: GPUPixelFilter? = null
 
+    private var blusherFilter: GPUPixelFilter? = null
+
     private var faceDetector: FaceDetector? = null
 
     private var outWidth = 0
@@ -67,9 +69,11 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         beautyFilter = GPUPixelFilter.Create(GPUPixelFilter.BEAUTY_FACE_FILTER)
         faceReshapeFilter = GPUPixelFilter.Create(GPUPixelFilter.FACE_RESHAPE_FILTER)
         lipstickFilter = GPUPixelFilter.Create(GPUPixelFilter.LIPSTICK_FILTER)
+        blusherFilter = GPUPixelFilter.Create(GPUPixelFilter.BLUSHER_FILTER)
 
         sourceRawData?.AddSink(lipstickFilter)
-        lipstickFilter?.AddSink(beautyFilter)
+        lipstickFilter?.AddSink(blusherFilter)
+        blusherFilter?.AddSink(beautyFilter)
         beautyFilter?.AddSink(faceReshapeFilter)
         faceReshapeFilter?.AddSink(sinkRawData)
 
@@ -101,6 +105,11 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         doRender()
     }
 
+    fun updateBlusherProgress(progress: Float) {
+        blusherFilter?.SetProperty(PROPERTY_BLEND_LEVEL, progress / 100f)
+        doRender()
+    }
+
     fun updateEyeZoomProgress(progress: Float) {
         faceReshapeFilter?.SetProperty(PROPERTY_BIG_EYE, progress / 400f)
         doRender()
@@ -120,6 +129,7 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
             if (landmarks != null && landmarks.isNotEmpty()) {
                 faceReshapeFilter?.SetProperty(PROPERTY_FACE_LANDMARK, landmarks)
                 lipstickFilter?.SetProperty(PROPERTY_FACE_LANDMARK, landmarks)
+                blusherFilter?.SetProperty(PROPERTY_FACE_LANDMARK, landmarks)
             }
         }
     }
