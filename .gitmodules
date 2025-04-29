@@ -1,0 +1,3 @@
+[submodule "gpupixel"]
+	path = gpupixel
+	url = https://github.com/AkatsukiRika/gpupixel.git
