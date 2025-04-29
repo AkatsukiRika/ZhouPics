@@ -61,6 +61,9 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
                     ADJUST_SATURATION -> {
                         getEditActivity()?.renderHelper?.updateSaturationProgress(progress)
                     }
+                    ADJUST_BRIGHTNESS -> {
+                        getEditActivity()?.renderHelper?.updateBrightnessProgress(progress)
+                    }
                 }
             }
         })

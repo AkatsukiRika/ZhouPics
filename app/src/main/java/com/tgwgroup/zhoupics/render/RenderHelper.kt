@@ -25,6 +25,7 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         const val PROPERTY_CONTRAST = "contrast"
         const val PROPERTY_EXPOSURE = "exposure"
         const val PROPERTY_SATURATION = "saturation"
+        const val PROPERTY_BRIGHTNESS = "brightness_factor"
 
         fun createAndInit(activity: AppCompatActivity, surfaceView: GLSurfaceView): RenderHelper {
             return RenderHelper(activity, surfaceView)
@@ -52,6 +53,8 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
     private var exposureFilter: GPUPixelFilter? = null
 
     private var saturationFilter: GPUPixelFilter? = null
+
+    private var brightnessFilter: GPUPixelFilter? = null
 
     private var faceDetector: FaceDetector? = null
 
@@ -82,6 +85,7 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         contrastFilter = GPUPixelFilter.Create(GPUPixelFilter.CONTRAST_FILTER)
         exposureFilter = GPUPixelFilter.Create(GPUPixelFilter.EXPOSURE_FILTER)
         saturationFilter = GPUPixelFilter.Create(GPUPixelFilter.SATURATION_FILTER)
+        brightnessFilter = GPUPixelFilter.Create(GPUPixelFilter.BRIGHTNESS_FILTER)
 
         sourceRawData?.AddSink(lipstickFilter)
         lipstickFilter?.AddSink(blusherFilter)
@@ -90,7 +94,8 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         faceReshapeFilter?.AddSink(contrastFilter)
         contrastFilter?.AddSink(exposureFilter)
         exposureFilter?.AddSink(saturationFilter)
-        saturationFilter?.AddSink(sinkRawData)
+        saturationFilter?.AddSink(brightnessFilter)
+        brightnessFilter?.AddSink(sinkRawData)
 
         activity.lifecycleScope.launch(Dispatchers.IO) {
             val byteBuffer = ByteBuffer
@@ -150,6 +155,11 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         doRender()
     }
 
+    fun updateBrightnessProgress(progress: Float) {
+        brightnessFilter?.SetProperty(PROPERTY_BRIGHTNESS, progress / 400f)
+        doRender()
+    }
+
     private fun doFaceDetect() {
         sourceRgbaData?.let {
             val landmarks = faceDetector?.detect(
@@ -198,5 +208,7 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         exposureFilter = null
         saturationFilter?.Destroy()
         saturationFilter = null
+        brightnessFilter?.Destroy()
+        brightnessFilter = null
     }
 }
