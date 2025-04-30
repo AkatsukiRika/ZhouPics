@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.tgwgroup.zhoupics.base.BaseFragment
 import com.tgwgroup.zhoupics.databinding.FragmentAdjustBinding
 import com.tgwgroup.zhoupics.history.AdjustRecord
+import com.tgwgroup.zhoupics.history.HistoryRecord
+import com.tgwgroup.zhoupics.render.RenderHelper
 import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.ui.edit.EditViewModel
 import com.tgwgroup.zhoupics.utils.collectIn
@@ -22,7 +24,7 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
     private val editViewModel by activityViewModels<EditViewModel>()
 
     companion object {
-        const val TAG = "AdjustTabFragment"
+        const val TAG = "AdjustFragment"
     }
 
     override fun onBindingCreate(): FragmentAdjustBinding {
@@ -66,28 +68,71 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
                 }
                 when (viewModel.selectedItemId.value) {
                     ADJUST_CONTRAST -> {
-                        viewModel.updateProgress(ADJUST_CONTRAST, progress)
-                        getEditActivity()?.renderHelper?.updateContrastProgress(progress)
+                        updateProgress(contrast = progress)
                     }
                     ADJUST_EXPOSURE -> {
-                        viewModel.updateProgress(ADJUST_EXPOSURE, progress)
-                        getEditActivity()?.renderHelper?.updateExposureProgress(progress)
+                        updateProgress(exposure = progress)
                     }
                     ADJUST_SATURATION -> {
-                        viewModel.updateProgress(ADJUST_SATURATION, progress)
-                        getEditActivity()?.renderHelper?.updateSaturationProgress(progress)
+                        updateProgress(saturation = progress)
                     }
                     ADJUST_SHARPNESS -> {
-                        viewModel.updateProgress(ADJUST_SHARPNESS, progress)
-                        getEditActivity()?.renderHelper?.updateSharpnessProgress(progress)
+                        updateProgress(sharpness = progress)
                     }
                     ADJUST_BRIGHTNESS -> {
-                        viewModel.updateProgress(ADJUST_BRIGHTNESS, progress)
-                        getEditActivity()?.renderHelper?.updateBrightnessProgress(progress)
+                        updateProgress(brightness = progress)
                     }
                 }
             }
         })
+    }
+
+    private fun updateProgress(
+        contrast: Float? = null,
+        exposure: Float? = null,
+        saturation: Float? = null,
+        sharpness: Float? = null,
+        brightness: Float? = null,
+        renderHelper: RenderHelper? = null
+    ) {
+        val render = renderHelper ?: getEditActivity()?.renderHelper
+
+        contrast?.let { progress ->
+            viewModel.updateProgress(ADJUST_CONTRAST, progress)
+            render?.updateContrastProgress(progress)
+        }
+        exposure?.let { progress ->
+            viewModel.updateProgress(ADJUST_EXPOSURE, progress)
+            render?.updateExposureProgress(progress)
+        }
+        saturation?.let { progress ->
+            viewModel.updateProgress(ADJUST_SATURATION, progress)
+            render?.updateSaturationProgress(progress)
+        }
+        sharpness?.let { progress ->
+            viewModel.updateProgress(ADJUST_SHARPNESS, progress)
+            render?.updateSharpnessProgress(progress)
+        }
+        brightness?.let { progress ->
+            viewModel.updateProgress(ADJUST_BRIGHTNESS, progress)
+            render?.updateBrightnessProgress(progress)
+        }
+    }
+
+    private fun updateProgress(record: HistoryRecord, renderHelper: RenderHelper?) {
+        if (record is AdjustRecord) {
+            updateProgress(
+                contrast = record.contrastProgress,
+                exposure = record.exposureProgress,
+                saturation = record.saturationProgress,
+                sharpness = record.sharpnessProgress,
+                brightness = record.brightnessProgress,
+                renderHelper
+            )
+        } else if (editViewModel.historyHelper.isBeforeEarliestRecord(AdjustRecord::class.java)) {
+            updateProgress(0f, 0f, 0f, 0f, 0f, renderHelper)
+        }
+        onSelectedItemChanged(viewModel.selectedItemId.value)
     }
 
     private fun initCollectors() {
@@ -97,6 +142,22 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
 
         viewModel.selectedItemId.collectIn(lifecycleScope) {
             onSelectedItemChanged(it)
+        }
+
+        activity?.lifecycleScope?.let { activityLifecycleScope ->
+            /**
+             * Using activityLifecycleScope and capturing renderHelper in the closure
+             * to ensure rendering is still available after fragment being detached.
+             */
+            val renderHelper = getEditActivity()?.renderHelper
+
+            editViewModel.historyHelper.undoEvent.collectIn(activityLifecycleScope) {
+                updateProgress(it.receivedRecord, renderHelper)
+            }
+
+            editViewModel.historyHelper.redoEvent.collectIn(activityLifecycleScope) {
+                updateProgress(it.receivedRecord, renderHelper)
+            }
         }
     }
 

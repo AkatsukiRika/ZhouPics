@@ -38,6 +38,10 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
 
     lateinit var renderHelper: RenderHelper
 
+    private val adjustFragment = AdjustFragment()
+
+    private val beautifyFragment = BeautifyFragment()
+
     companion object {
         const val TAG = "EditActivity"
         private const val EXTRA_URI = "uri"
@@ -97,8 +101,10 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
         binding.ivExport.setOnClickListener {
         }
         binding.ivUndo.setOnClickListener {
+            viewModel.historyHelper.undo()
         }
         binding.ivRedo.setOnClickListener {
+            viewModel.historyHelper.redo()
         }
     }
 
@@ -137,16 +143,14 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
     private fun updateTabFragment(tabId: Int) {
         when (tabId) {
             TAB_ADJUST -> {
-                val fragment = AdjustFragment()
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fcv_tab_fragment, fragment, AdjustFragment.TAG)
+                    .replace(R.id.fcv_tab_fragment, adjustFragment, AdjustFragment.TAG)
                     .commitNowAllowingStateLoss()
             }
 
             TAB_BEAUTIFY -> {
-                val fragment = BeautifyFragment()
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fcv_tab_fragment, fragment, BeautifyFragment.TAG)
+                    .replace(R.id.fcv_tab_fragment, beautifyFragment, BeautifyFragment.TAG)
                     .commitNowAllowingStateLoss()
             }
         }
