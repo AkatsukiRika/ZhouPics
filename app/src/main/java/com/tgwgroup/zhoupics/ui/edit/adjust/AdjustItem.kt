@@ -1,6 +1,7 @@
 package com.tgwgroup.zhoupics.ui.edit.adjust
 
 import androidx.annotation.DrawableRes
+import kotlin.math.roundToInt
 
 data class AdjustItem(
     val id: Int,
@@ -10,7 +11,9 @@ data class AdjustItem(
     var selected: Boolean = false,
     var progress: Float = 0f,
     val onClick: () -> Unit
-)
+) {
+    fun isAdjusted() = progress.roundToInt() != 0
+}
 
 const val ADJUST_CONTRAST = 0
 const val ADJUST_EXPOSURE = 1

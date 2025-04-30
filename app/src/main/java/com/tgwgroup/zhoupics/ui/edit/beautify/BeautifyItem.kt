@@ -1,6 +1,7 @@
 package com.tgwgroup.zhoupics.ui.edit.beautify
 
 import androidx.annotation.DrawableRes
+import kotlin.math.roundToInt
 
 data class BeautifyItem(
     val id: Int,
@@ -9,7 +10,9 @@ data class BeautifyItem(
     var selected: Boolean = false,
     var progress: Float = 0f,
     val onClick: () -> Unit
-)
+) {
+    fun isAdjusted() = progress.roundToInt() != 0
+}
 
 const val BEAUTIFY_SMOOTH = 0
 const val BEAUTIFY_WHITE = 1

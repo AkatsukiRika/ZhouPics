@@ -22,4 +22,14 @@
         android:textColor="@color/white"
         android:textSize="12sp" />
 
+    <View
+        android:id="@+id/v_adjusted"
+        android:layout_width="4dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/shape_bg_r1000"
+        android:backgroundTint="@color/white"
+        android:visibility="invisible" />
+
 </LinearLayout>
