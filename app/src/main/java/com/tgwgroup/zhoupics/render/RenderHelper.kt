@@ -117,6 +117,18 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         }
     }
 
+    fun startCompare() {
+        sourceRawData?.RemoveAllSinks()
+        sourceRawData?.AddSink(sinkRawData)
+        doRender()
+    }
+
+    fun endCompare() {
+        sourceRawData?.RemoveAllSinks()
+        sourceRawData?.AddSink(lipstickFilter)
+        doRender()
+    }
+
     fun updateSmoothProgress(progress: Float) {
         beautyFilter?.SetProperty(PROPERTY_SKIN_SMOOTHING, progress / 100f)
     }

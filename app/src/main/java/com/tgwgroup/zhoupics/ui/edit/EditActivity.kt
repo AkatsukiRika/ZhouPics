@@ -1,10 +1,12 @@
 package com.tgwgroup.zhoupics.ui.edit
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
+import android.view.MotionEvent
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.viewModels
 import androidx.core.view.updateLayoutParams
@@ -90,6 +92,7 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
         bottomTabAdapter.setItems(viewModel.bottomTabItemList.value)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initTriggers() {
         binding.ivBack.setOnClickListener {
             finish()
@@ -101,6 +104,17 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
         }
         binding.ivRedo.setOnClickListener {
             viewModel.historyHelper.redo()
+        }
+        binding.ivCompare.setOnTouchListener { view, motionEvent ->
+            when (motionEvent.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    renderHelper.startCompare()
+                }
+                MotionEvent.ACTION_UP -> {
+                    renderHelper.endCompare()
+                }
+            }
+            true
         }
     }
 
