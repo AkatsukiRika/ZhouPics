@@ -2,6 +2,7 @@ package com.tgwgroup.zhoupics.ui.edit
 
 import androidx.lifecycle.ViewModel
 import com.tgwgroup.zhoupics.R
+import com.tgwgroup.zhoupics.history.HistoryHelper
 import com.tgwgroup.zhoupics.utils.appContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,6 +13,8 @@ class EditViewModel : ViewModel() {
 
     private val selectedBottomTabIdMutable = MutableStateFlow(TAB_ADJUST)
     val selectedBottomTabId: StateFlow<Int> = selectedBottomTabIdMutable
+
+    val historyHelper = HistoryHelper()
 
     init {
         bottomTabItemListMutable.value = listOf(

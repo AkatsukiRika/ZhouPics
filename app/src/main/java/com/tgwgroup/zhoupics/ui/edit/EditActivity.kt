@@ -122,6 +122,16 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
                 bottomMargin = it
             }
         }
+
+        viewModel.historyHelper.canUndo.collectIn(lifecycleScope) {
+            binding.ivUndo.isEnabled = it
+            binding.ivUndo.alpha = if (it) 1f else 0.5f
+        }
+
+        viewModel.historyHelper.canRedo.collectIn(lifecycleScope) {
+            binding.ivRedo.isEnabled = it
+            binding.ivRedo.alpha = if (it) 1f else 0.5f
+        }
     }
 
     private fun updateTabFragment(tabId: Int) {

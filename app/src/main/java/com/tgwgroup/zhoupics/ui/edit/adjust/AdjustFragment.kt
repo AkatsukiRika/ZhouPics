@@ -1,19 +1,25 @@
 package com.tgwgroup.zhoupics.ui.edit.adjust
 
 import androidx.core.view.isInvisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tgwgroup.zhoupics.base.BaseFragment
 import com.tgwgroup.zhoupics.databinding.FragmentAdjustBinding
+import com.tgwgroup.zhoupics.history.AdjustRecord
 import com.tgwgroup.zhoupics.ui.edit.EditActivity
+import com.tgwgroup.zhoupics.ui.edit.EditViewModel
 import com.tgwgroup.zhoupics.utils.collectIn
+import com.tgwgroup.zhoupics.utils.dpToPx
 import com.tgwgroup.zhoupics.widgets.BidirectionalSlider
 
 class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
     private val adjustAdapter = AdjustAdapter()
 
     private val viewModel by viewModels<AdjustViewModel>()
+
+    private val editViewModel by activityViewModels<EditViewModel>()
 
     companion object {
         const val TAG = "AdjustTabFragment"
@@ -25,6 +31,8 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
 
     override fun initView() {
         super.initView()
+        val latestRecord = editViewModel.historyHelper.getLatestRecord(AdjustRecord::class.java) as? AdjustRecord
+        viewModel.init(latestRecord)
         initRecyclerView()
         initListeners()
         initCollectors()
@@ -32,7 +40,7 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
         val binding = binding ?: return
         binding.slider.bindBubble(binding.sliderBubble)
         binding.rvAdjust.post {
-            getEditActivity()?.tabFragmentBodyHeight?.value = binding.rvAdjust.height
+            getEditActivity()?.tabFragmentBodyHeight?.value = binding.rvAdjust.height + dpToPx(8f)
         }
     }
 
@@ -48,7 +56,9 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
         binding.slider.setOnProgressChangeListener(object : BidirectionalSlider.OnProgressChangeListener {
             override fun onStartTrackingTouch() {}
 
-            override fun onStopTrackingTouch() {}
+            override fun onStopTrackingTouch() {
+                editViewModel.historyHelper.addRecord(viewModel.getHistoryRecord())
+            }
 
             override fun onProgressChanged(progress: Float, fromUser: Boolean) {
                 if (!fromUser) {

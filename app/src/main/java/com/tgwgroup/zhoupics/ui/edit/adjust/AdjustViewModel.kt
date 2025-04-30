@@ -2,6 +2,7 @@ package com.tgwgroup.zhoupics.ui.edit.adjust
 
 import androidx.lifecycle.ViewModel
 import com.tgwgroup.zhoupics.R
+import com.tgwgroup.zhoupics.history.AdjustRecord
 import com.tgwgroup.zhoupics.utils.appContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,13 +14,14 @@ class AdjustViewModel : ViewModel() {
     private val selectedItemIdMutable = MutableStateFlow<Int?>(null)
     val selectedItemId: StateFlow<Int?> = selectedItemIdMutable
 
-    init {
+    fun init(latestRecord: AdjustRecord?) {
         itemListMutable.value = listOf(
             AdjustItem(
                 id = ADJUST_CONTRAST,
                 icon = R.drawable.ic_contrast,
                 name = appContext.getString(R.string.contrast),
                 twoWaySlider = true,
+                progress = latestRecord?.contrastProgress ?: 0f,
                 onClick = {
                     selectItem(ADJUST_CONTRAST)
                 }
@@ -29,6 +31,7 @@ class AdjustViewModel : ViewModel() {
                 icon = R.drawable.ic_exposure,
                 name = appContext.getString(R.string.exposure),
                 twoWaySlider = true,
+                progress = latestRecord?.exposureProgress ?: 0f,
                 onClick = {
                     selectItem(ADJUST_EXPOSURE)
                 }
@@ -38,6 +41,7 @@ class AdjustViewModel : ViewModel() {
                 icon = R.drawable.ic_saturation,
                 name = appContext.getString(R.string.saturation),
                 twoWaySlider = true,
+                progress = latestRecord?.saturationProgress ?: 0f,
                 onClick = {
                     selectItem(ADJUST_SATURATION)
                 }
@@ -47,6 +51,7 @@ class AdjustViewModel : ViewModel() {
                 icon = R.drawable.ic_sharpness,
                 name = appContext.getString(R.string.sharpness),
                 twoWaySlider = false,
+                progress = latestRecord?.sharpnessProgress ?: 0f,
                 onClick = {
                     selectItem(ADJUST_SHARPNESS)
                 }
@@ -56,6 +61,7 @@ class AdjustViewModel : ViewModel() {
                 icon = R.drawable.ic_brightness,
                 name = appContext.getString(R.string.brightness),
                 twoWaySlider = true,
+                progress = latestRecord?.brightnessProgress ?: 0f,
                 onClick = {
                     selectItem(ADJUST_BRIGHTNESS)
                 }
@@ -82,5 +88,16 @@ class AdjustViewModel : ViewModel() {
                 it
             }
         }
+    }
+
+    fun getHistoryRecord(): AdjustRecord {
+        val itemList = itemList.value
+        return AdjustRecord(
+            contrastProgress = itemList.find { it.id == ADJUST_CONTRAST }?.progress ?: 0f,
+            exposureProgress = itemList.find { it.id == ADJUST_EXPOSURE }?.progress ?: 0f,
+            saturationProgress = itemList.find { it.id == ADJUST_SATURATION }?.progress ?: 0f,
+            sharpnessProgress = itemList.find { it.id == ADJUST_SHARPNESS }?.progress ?: 0f,
+            brightnessProgress = itemList.find { it.id == ADJUST_BRIGHTNESS }?.progress ?: 0f
+        )
     }
 }
