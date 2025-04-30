@@ -12,6 +12,7 @@ import androidx.activity.viewModels
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.davemorrissey.labs.subscaleview.ImageSource
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.base.BaseActivity
 import com.tgwgroup.zhoupics.databinding.ActivityEditBinding
@@ -67,6 +68,7 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
         loadOriginalImage(
             onLoad = {
                 originalBitmap?.let {
+                    binding.imageView.setImage(ImageSource.bitmap(it))
                     renderHelper.startRender(it)
                 }
             },
