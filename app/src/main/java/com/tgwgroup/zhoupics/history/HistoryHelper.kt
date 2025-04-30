@@ -1,5 +1,7 @@
 package com.tgwgroup.zhoupics.history
 
+import com.google.gson.Gson
+import com.tgwgroup.zhoupics.utils.LogUtil
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -8,6 +10,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class HistoryHelper {
+    companion object {
+        const val TAG = "HistoryHelper"
+    }
+
     private val historyRecordList = mutableListOf<HistoryRecord>()
     private var currentIndex = -1
     private val scope = MainScope()
@@ -49,6 +55,7 @@ class HistoryHelper {
         if (record != latestRecord) {
             historyRecordList.add(record)
             currentIndex++
+            printLog()
         }
         refreshCanUndoRedo()
     }
@@ -87,6 +94,11 @@ class HistoryHelper {
     fun isBeforeEarliestRecord(type: Class<out HistoryRecord>): Boolean {
         val earliestIndex = historyRecordList.indexOfFirst { it::class.java == type }
         return earliestIndex != -1 && earliestIndex > currentIndex
+    }
+
+    private fun printLog() {
+        LogUtil.d(TAG, "currentIndex = $currentIndex")
+        LogUtil.d(TAG, Gson().toJson(historyRecordList))
     }
 }
 

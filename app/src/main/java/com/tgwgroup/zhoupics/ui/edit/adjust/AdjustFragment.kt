@@ -122,6 +122,8 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
             viewModel.updateProgress(ADJUST_BRIGHTNESS, progress)
             render?.updateBrightnessProgress(progress)
         }
+
+        render?.doRender()
     }
 
     private fun updateProgress(record: HistoryRecord, renderHelper: RenderHelper?) {

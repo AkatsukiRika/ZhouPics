@@ -119,59 +119,48 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
 
     fun updateSmoothProgress(progress: Float) {
         beautyFilter?.SetProperty(PROPERTY_SKIN_SMOOTHING, progress / 100f)
-        doRender()
     }
 
     fun updateWhiteProgress(progress: Float) {
         beautyFilter?.SetProperty(PROPERTY_WHITENESS, progress / 100f)
-        doRender()
     }
 
     fun updateLipstickProgress(progress: Float) {
         lipstickFilter?.SetProperty(PROPERTY_BLEND_LEVEL, progress / 100f)
-        doRender()
     }
 
     fun updateBlusherProgress(progress: Float) {
         blusherFilter?.SetProperty(PROPERTY_BLEND_LEVEL, progress / 100f)
-        doRender()
     }
 
     fun updateEyeZoomProgress(progress: Float) {
         faceReshapeFilter?.SetProperty(PROPERTY_BIG_EYE, progress / 400f)
-        doRender()
     }
 
     fun updateFaceSlimProgress(progress: Float) {
         faceReshapeFilter?.SetProperty(PROPERTY_THIN_FACE, progress / 1600f)
-        doRender()
     }
 
     fun updateContrastProgress(progress: Float) {
         contrastFilter?.SetProperty(PROPERTY_CONTRAST, 1f + progress / 200f)
-        doRender()
     }
 
     fun updateExposureProgress(progress: Float) {
         exposureFilter?.SetProperty(PROPERTY_EXPOSURE, progress / 100f)
-        doRender()
     }
 
     fun updateSaturationProgress(progress: Float) {
         saturationFilter?.SetProperty(PROPERTY_SATURATION, 1f + progress / 100f)
-        doRender()
     }
 
     fun updateSharpnessProgress(progress: Float) {
         sharpenFilter?.SetProperty(PROPERTY_SHARPNESS, progress / 100f)
         sharpenFilter?.SetProperty(PROPERTY_TEXEL_WIDTH, outWidth)
         sharpenFilter?.SetProperty(PROPERTY_TEXEL_HEIGHT, outHeight)
-        doRender()
     }
 
     fun updateBrightnessProgress(progress: Float) {
         brightnessFilter?.SetProperty(PROPERTY_BRIGHTNESS, progress / 400f)
-        doRender()
     }
 
     private fun doFaceDetect() {
@@ -188,7 +177,7 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         }
     }
 
-    private fun doRender() {
+    fun doRender() {
         sourceRgbaData?.let {
             sourceRawData?.ProcessData(it, outWidth, outHeight, outWidth * 4, GPUPixelSourceRawData.FRAME_TYPE_RGBA)
             val processedRgba = sinkRawData?.GetRgbaBuffer()

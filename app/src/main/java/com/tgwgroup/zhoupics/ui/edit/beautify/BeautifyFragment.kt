@@ -130,6 +130,8 @@ class BeautifyFragment : BaseFragment<FragmentBeautifyBinding>() {
             viewModel.updateProgress(BEAUTIFY_FACE_SLIM, progress)
             render?.updateFaceSlimProgress(progress)
         }
+
+        render?.doRender()
     }
 
     private fun updateProgress(record: HistoryRecord, renderHelper: RenderHelper?) {
