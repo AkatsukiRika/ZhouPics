@@ -38,10 +38,6 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
 
     lateinit var renderHelper: RenderHelper
 
-    private val adjustFragment = AdjustFragment()
-
-    private val beautifyFragment = BeautifyFragment()
-
     companion object {
         const val TAG = "EditActivity"
         private const val EXTRA_URI = "uri"
@@ -143,14 +139,22 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
     private fun updateTabFragment(tabId: Int) {
         when (tabId) {
             TAB_ADJUST -> {
+                val existFragment = supportFragmentManager.findFragmentByTag(AdjustFragment.TAG)
+                if (existFragment != null) {
+                    (existFragment as? AdjustFragment)?.recycle()
+                }
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fcv_tab_fragment, adjustFragment, AdjustFragment.TAG)
+                    .replace(R.id.fcv_tab_fragment, AdjustFragment(), AdjustFragment.TAG)
                     .commitNowAllowingStateLoss()
             }
 
             TAB_BEAUTIFY -> {
+                val existFragment = supportFragmentManager.findFragmentByTag(BeautifyFragment.TAG)
+                if (existFragment != null) {
+                    (existFragment as? BeautifyFragment)?.recycle()
+                }
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fcv_tab_fragment, beautifyFragment, BeautifyFragment.TAG)
+                    .replace(R.id.fcv_tab_fragment, BeautifyFragment(), BeautifyFragment.TAG)
                     .commitNowAllowingStateLoss()
             }
         }

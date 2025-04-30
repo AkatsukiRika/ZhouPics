@@ -15,6 +15,9 @@ import com.tgwgroup.zhoupics.ui.edit.EditViewModel
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.utils.dpToPx
 import com.tgwgroup.zhoupics.widgets.BidirectionalSlider
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
     private val adjustAdapter = AdjustAdapter()
@@ -22,6 +25,8 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
     private val viewModel by viewModels<AdjustViewModel>()
 
     private val editViewModel by activityViewModels<EditViewModel>()
+
+    private val renderScope = MainScope()
 
     companion object {
         const val TAG = "AdjustFragment"
@@ -144,19 +149,20 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
             onSelectedItemChanged(it)
         }
 
-        activity?.lifecycleScope?.let { activityLifecycleScope ->
-            /**
-             * Using activityLifecycleScope and capturing renderHelper in the closure
-             * to ensure rendering is still available after fragment being detached.
-             */
+        renderScope.launch {
+            // Capturing renderHelper in the closure to ensure rendering is still available after fragment being detached.
             val renderHelper = getEditActivity()?.renderHelper
 
-            editViewModel.historyHelper.undoEvent.collectIn(activityLifecycleScope) {
-                updateProgress(it.receivedRecord, renderHelper)
+            launch {
+                editViewModel.historyHelper.undoEvent.collect {
+                    updateProgress(it.receivedRecord, renderHelper)
+                }
             }
 
-            editViewModel.historyHelper.redoEvent.collectIn(activityLifecycleScope) {
-                updateProgress(it.receivedRecord, renderHelper)
+            launch {
+                editViewModel.historyHelper.redoEvent.collect {
+                    updateProgress(it.receivedRecord, renderHelper)
+                }
             }
         }
     }
@@ -185,5 +191,9 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
 
     private fun getEditActivity(): EditActivity? {
         return activity as? EditActivity
+    }
+
+    fun recycle() {
+        renderScope.cancel()
     }
 }
