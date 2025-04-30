@@ -224,5 +224,7 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         saturationFilter = null
         brightnessFilter?.Destroy()
         brightnessFilter = null
+        sharpenFilter?.Destroy()
+        sharpenFilter = null
     }
 }

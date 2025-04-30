@@ -8,6 +8,7 @@ data class AdjustItem(
     val name: String,
     val twoWaySlider: Boolean,
     var selected: Boolean = false,
+    var progress: Float = 0f,
     val onClick: () -> Unit
 )
 

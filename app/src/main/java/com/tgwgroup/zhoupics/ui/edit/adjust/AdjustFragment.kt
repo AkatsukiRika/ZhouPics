@@ -53,18 +53,23 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
                 }
                 when (viewModel.selectedItemId.value) {
                     ADJUST_CONTRAST -> {
+                        viewModel.updateProgress(ADJUST_CONTRAST, progress)
                         getEditActivity()?.renderHelper?.updateContrastProgress(progress)
                     }
                     ADJUST_EXPOSURE -> {
+                        viewModel.updateProgress(ADJUST_EXPOSURE, progress)
                         getEditActivity()?.renderHelper?.updateExposureProgress(progress)
                     }
                     ADJUST_SATURATION -> {
+                        viewModel.updateProgress(ADJUST_SATURATION, progress)
                         getEditActivity()?.renderHelper?.updateSaturationProgress(progress)
                     }
                     ADJUST_SHARPNESS -> {
+                        viewModel.updateProgress(ADJUST_SHARPNESS, progress)
                         getEditActivity()?.renderHelper?.updateSharpnessProgress(progress)
                     }
                     ADJUST_BRIGHTNESS -> {
+                        viewModel.updateProgress(ADJUST_BRIGHTNESS, progress)
                         getEditActivity()?.renderHelper?.updateBrightnessProgress(progress)
                     }
                 }
@@ -98,7 +103,7 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
                 binding.slider.isInvisible = false
             }
         }
-        binding.slider.setValue(0f)
+        binding.slider.setValue(item?.progress ?: 0f)
     }
 
     private fun getEditActivity(): EditActivity? {
