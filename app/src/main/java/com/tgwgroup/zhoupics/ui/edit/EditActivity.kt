@@ -5,7 +5,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
+import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.viewModels
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tgwgroup.zhoupics.R
@@ -18,6 +20,7 @@ import com.tgwgroup.zhoupics.utils.LogUtil
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.utils.getBitmap
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -29,6 +32,9 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
     private val bottomTabAdapter = BottomTabAdapter()
 
     private val viewModel by viewModels<EditViewModel>()
+
+    // height of tab fragment (without slider)
+    val tabFragmentBodyHeight = MutableStateFlow(0)
 
     lateinit var renderHelper: RenderHelper
 
@@ -90,6 +96,10 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
         }
         binding.ivExport.setOnClickListener {
         }
+        binding.ivUndo.setOnClickListener {
+        }
+        binding.ivRedo.setOnClickListener {
+        }
     }
 
     private fun initCollectors() {
@@ -99,6 +109,18 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
 
         viewModel.selectedBottomTabId.collectIn(lifecycleScope) {
             updateTabFragment(it)
+        }
+
+        tabFragmentBodyHeight.collectIn(lifecycleScope) {
+            binding.ivUndo.updateLayoutParams<MarginLayoutParams> {
+                bottomMargin = it
+            }
+            binding.ivRedo.updateLayoutParams<MarginLayoutParams> {
+                bottomMargin = it
+            }
+            binding.ivCompare.updateLayoutParams<MarginLayoutParams> {
+                bottomMargin = it
+            }
         }
     }
 

@@ -31,6 +31,9 @@ class BeautifyFragment : BaseFragment<FragmentBeautifyBinding>() {
 
         val binding = binding ?: return
         binding.slider.bindBubble(binding.sliderBubble)
+        binding.rvBeautify.post {
+            getEditActivity()?.tabFragmentBodyHeight?.value = binding.rvBeautify.height
+        }
     }
 
     private fun initRecyclerView() {
@@ -96,8 +99,11 @@ class BeautifyFragment : BaseFragment<FragmentBeautifyBinding>() {
         val item = viewModel.itemList.value.find { it.id == itemId }
         item?.let {
             binding.slider.post {
-                binding.vSliderGradient.isInvisible = false
-                binding.slider.isInvisible = false
+                if (binding.slider.isInvisible) {
+                    binding.vSliderGradient.isInvisible = false
+                    binding.slider.isInvisible = false
+                    getEditActivity()?.tabFragmentBodyHeight?.value = binding.rvBeautify.height + binding.slider.height
+                }
             }
         }
         binding.slider.setValue(item?.progress ?: 0f)

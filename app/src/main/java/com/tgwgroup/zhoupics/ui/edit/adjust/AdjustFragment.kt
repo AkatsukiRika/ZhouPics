@@ -31,6 +31,9 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
 
         val binding = binding ?: return
         binding.slider.bindBubble(binding.sliderBubble)
+        binding.rvAdjust.post {
+            getEditActivity()?.tabFragmentBodyHeight?.value = binding.rvAdjust.height
+        }
     }
 
     private fun initRecyclerView() {
@@ -99,8 +102,11 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
                 binding.slider.setBidirectional(false)
             }
             binding.slider.post {
-                binding.vSliderGradient.isInvisible = false
-                binding.slider.isInvisible = false
+                if (binding.slider.isInvisible) {
+                    binding.vSliderGradient.isInvisible = false
+                    binding.slider.isInvisible = false
+                    getEditActivity()?.tabFragmentBodyHeight?.value = binding.rvAdjust.height + binding.slider.height
+                }
             }
         }
         binding.slider.setValue(item?.progress ?: 0f)

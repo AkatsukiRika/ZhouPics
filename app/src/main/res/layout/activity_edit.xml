@@ -49,6 +49,37 @@
 
     </LinearLayout>
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_undo"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/rv_bottom_tab"
+        android:padding="8dp"
+        android:layout_marginStart="8dp"
+        app:srcCompat="@drawable/ic_undo"
+        android:foreground="@drawable/ripple_rounded_r1000" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_redo"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        app:layout_constraintStart_toEndOf="@id/iv_undo"
+        app:layout_constraintBottom_toTopOf="@id/rv_bottom_tab"
+        android:padding="8dp"
+        app:srcCompat="@drawable/ic_redo"
+        android:foreground="@drawable/ripple_rounded_r1000" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_compare"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/rv_bottom_tab"
+        android:padding="8dp"
+        android:layout_marginEnd="8dp"
+        app:srcCompat="@drawable/ic_compare" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_bottom_tab"
         android:layout_width="match_parent"
