@@ -1108,6 +1108,9 @@ public class SubsamplingScaleImageView extends View {
                 matrix.mapRect(sRect);
                 canvas.drawRect(sRect, tileBgPaint);
             }
+            if (onStateChangedListener != null) {
+                onStateChangedListener.onMatrixChanged(matrix);
+            }
             canvas.drawBitmap(bitmap, matrix, bitmapPaint);
 
         }
@@ -3223,7 +3226,7 @@ public class SubsamplingScaleImageView extends View {
          * @param origin Where the event originated from - one of {@link #ORIGIN_ANIM}, {@link #ORIGIN_TOUCH}.
          */
         void onCenterChanged(PointF newCenter, int origin);
-
+        void onMatrixChanged(Matrix matrix);
     }
 
     /**
@@ -3233,7 +3236,7 @@ public class SubsamplingScaleImageView extends View {
 
         @Override public void onCenterChanged(PointF newCenter, int origin) { }
         @Override public void onScaleChanged(float newScale, int origin) { }
-
+        @Override public void onMatrixChanged(Matrix matrix) { }
     }
 
 }

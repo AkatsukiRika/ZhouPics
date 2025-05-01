@@ -4,15 +4,18 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
 import android.view.MotionEvent
+import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.viewModels
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.davemorrissey.labs.subscaleview.ImageSource
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.DefaultOnStateChangedListener
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.base.BaseActivity
 import com.tgwgroup.zhoupics.databinding.ActivityEditBinding
@@ -68,8 +71,7 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
         loadOriginalImage(
             onLoad = {
                 originalBitmap?.let {
-                    binding.imageView.setImage(ImageSource.bitmap(it))
-                    renderHelper.startRender(it)
+                    onOriginalBitmapLoaded(it)
                 }
             },
             onLoadFailed = {
@@ -80,6 +82,23 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
         initBottomTab()
         initTriggers()
         initCollectors()
+    }
+
+    private fun onOriginalBitmapLoaded(bitmap: Bitmap) {
+        binding.imageView.setImage(ImageSource.bitmap(bitmap))
+        binding.surfaceView.updateLayoutParams<LayoutParams> {
+            width = bitmap.width
+            height = bitmap.height
+        }
+        binding.imageView.setOnStateChangedListener(object : DefaultOnStateChangedListener() {
+            override fun onMatrixChanged(matrix: Matrix?) {
+                super.onMatrixChanged(matrix)
+                matrix?.let {
+                    binding.transformLayout.setTransformMatrix(it)
+                }
+            }
+        })
+        renderHelper.startRender(bitmap)
     }
 
     override fun onDestroy() {
