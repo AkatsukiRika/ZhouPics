@@ -9,23 +9,26 @@
     <com.tgwgroup.zhoupics.widgets.MatrixTransformLayout
         android:id="@+id/transform_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/ll_top_bar"
+        app:layout_constraintBottom_toTopOf="@id/v_tab_fragment_body_height"
         app:layout_constraintStart_toStartOf="parent">
 
         <android.opengl.GLSurfaceView
             android:id="@+id/surface_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_height="match_parent" />
 
     </com.tgwgroup.zhoupics.widgets.MatrixTransformLayout>
 
     <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
         android:id="@+id/image_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="@id/transform_layout"
+        app:layout_constraintBottom_toBottomOf="@id/transform_layout"
+        app:layout_constraintStart_toStartOf="@id/transform_layout"
+        app:layout_constraintEnd_toEndOf="@id/transform_layout"
         android:alpha="0" />
 
     <LinearLayout
@@ -117,5 +120,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/divider" />
+
+    <View
+        android:id="@+id/v_tab_fragment_body_height"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintBottom_toTopOf="@id/rv_bottom_tab" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

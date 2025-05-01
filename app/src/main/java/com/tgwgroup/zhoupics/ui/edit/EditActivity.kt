@@ -24,9 +24,11 @@ import com.tgwgroup.zhoupics.ui.edit.adjust.AdjustFragment
 import com.tgwgroup.zhoupics.ui.edit.beautify.BeautifyFragment
 import com.tgwgroup.zhoupics.utils.LogUtil
 import com.tgwgroup.zhoupics.utils.collectIn
+import com.tgwgroup.zhoupics.utils.dpToPx
 import com.tgwgroup.zhoupics.utils.getBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -41,6 +43,9 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
 
     // height of tab fragment (without slider)
     val tabFragmentBodyHeight = MutableStateFlow(0)
+
+    // height of tab fragment slider (without bubble)
+    val tabFragmentSliderHeight = MutableStateFlow(0)
 
     lateinit var renderHelper: RenderHelper
 
@@ -148,15 +153,24 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
             updateTabFragment(it)
         }
 
-        tabFragmentBodyHeight.collectIn(lifecycleScope) {
+        combine(tabFragmentBodyHeight, tabFragmentSliderHeight) { p1, p2 ->
+            Pair(p1, p2)
+        }.collectIn(lifecycleScope) { pair ->
+            val bodyHeight = pair.first
+            val sliderHeight = pair.second
+            // Slider height might be a bit too high for margins, so reduce it by 8dp here.
+            val sliderDisplayHeight = (sliderHeight - dpToPx(8f)).coerceAtLeast(0)
             binding.ivUndo.updateLayoutParams<MarginLayoutParams> {
-                bottomMargin = it
+                bottomMargin = bodyHeight + sliderDisplayHeight
             }
             binding.ivRedo.updateLayoutParams<MarginLayoutParams> {
-                bottomMargin = it
+                bottomMargin = bodyHeight + sliderDisplayHeight
             }
             binding.ivCompare.updateLayoutParams<MarginLayoutParams> {
-                bottomMargin = it
+                bottomMargin = bodyHeight + sliderDisplayHeight
+            }
+            binding.vTabFragmentBodyHeight.updateLayoutParams<LayoutParams> {
+                height = bodyHeight
             }
         }
 

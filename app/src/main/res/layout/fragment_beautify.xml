@@ -17,7 +17,7 @@
     <View
         android:id="@+id/v_slider_gradient"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/slider_height"
         app:layout_constraintTop_toBottomOf="@id/slider_bubble"
         android:background="@drawable/bg_slider_gradient"
         android:visibility="invisible"
@@ -26,7 +26,7 @@
     <com.tgwgroup.zhoupics.widgets.BidirectionalSlider
         android:id="@+id/slider"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/slider_height"
         app:layout_constraintTop_toBottomOf="@id/slider_bubble"
         android:layout_marginHorizontal="32dp"
         app:bidirectional="false"

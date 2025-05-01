@@ -48,6 +48,7 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
         binding.slider.bindBubble(binding.sliderBubble)
         binding.rvAdjust.post {
             getEditActivity()?.tabFragmentBodyHeight?.value = binding.rvAdjust.height + dpToPx(8f)
+            getEditActivity()?.tabFragmentSliderHeight?.value = 0
         }
     }
 
@@ -184,7 +185,7 @@ class AdjustFragment : BaseFragment<FragmentAdjustBinding>() {
                 if (binding.slider.isInvisible) {
                     binding.vSliderGradient.isInvisible = false
                     binding.slider.isInvisible = false
-                    getEditActivity()?.tabFragmentBodyHeight?.value = binding.rvAdjust.height + binding.slider.height
+                    getEditActivity()?.tabFragmentSliderHeight?.value = binding.slider.height
                 }
             }
         }

@@ -48,6 +48,7 @@ class BeautifyFragment : BaseFragment<FragmentBeautifyBinding>() {
         binding.slider.bindBubble(binding.sliderBubble)
         binding.rvBeautify.post {
             getEditActivity()?.tabFragmentBodyHeight?.value = binding.rvBeautify.height + dpToPx(8f)
+            getEditActivity()?.tabFragmentSliderHeight?.value = 0
         }
     }
 
@@ -194,7 +195,7 @@ class BeautifyFragment : BaseFragment<FragmentBeautifyBinding>() {
                 if (binding.slider.isInvisible) {
                     binding.vSliderGradient.isInvisible = false
                     binding.slider.isInvisible = false
-                    getEditActivity()?.tabFragmentBodyHeight?.value = binding.rvBeautify.height + binding.slider.height
+                    getEditActivity()?.tabFragmentSliderHeight?.value = binding.slider.height
                 }
             }
         }
