@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="36dp"
+    android:background="@drawable/bg_album_unselected"
+    android:layout_marginStart="8dp">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        style="@style/FontRegular"
+        android:text="Album Name"
+        android:paddingHorizontal="12dp"
+        android:textColor="@color/white_default"/>
+
+</FrameLayout>
