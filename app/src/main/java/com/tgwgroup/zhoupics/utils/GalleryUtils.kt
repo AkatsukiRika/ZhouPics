@@ -3,13 +3,18 @@ package com.tgwgroup.zhoupics.utils
 import android.content.ContentUris
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.provider.MediaStore
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.ui.gallery.AlbumItem
 import com.tgwgroup.zhoupics.ui.gallery.ImageFormat
 import com.tgwgroup.zhoupics.ui.gallery.ImageItem
 
-fun getAlbumList(context: Context, onSelectItem: ((bucketId: String?) -> Unit)? = null): List<AlbumItem> {
+fun getAlbumList(
+    context: Context,
+    onSelectAlbum: ((bucketId: String?) -> Unit)? = null,
+    onClickImage: ((uri: Uri) -> Unit)? = null
+): List<AlbumItem> {
     val tempAlbumList = mutableListOf<AlbumItem>()
 
     val projection = arrayOf(
@@ -32,9 +37,9 @@ fun getAlbumList(context: Context, onSelectItem: ((bucketId: String?) -> Unit)? 
                 tempAlbumList.add(AlbumItem(
                     id = bucketId,
                     name = bucketName,
-                    images = getImagesFromAlbum(context, bucketId),
+                    images = getImagesFromAlbum(context, bucketId, onClickImage),
                     onClick = {
-                        onSelectItem?.invoke(bucketId)
+                        onSelectAlbum?.invoke(bucketId)
                     }
                 ))
             }
@@ -44,9 +49,9 @@ fun getAlbumList(context: Context, onSelectItem: ((bucketId: String?) -> Unit)? 
     tempAlbumList.add(0, AlbumItem(
         id = null,
         name = context.getString(R.string.all_photos),
-        images = getImagesFromAlbum(context, null),
+        images = getImagesFromAlbum(context, null, onClickImage),
         onClick = {
-            onSelectItem?.invoke(null)
+            onSelectAlbum?.invoke(null)
         }
     ))
 
@@ -57,7 +62,7 @@ fun getAlbumList(context: Context, onSelectItem: ((bucketId: String?) -> Unit)? 
     return tempAlbumList
 }
 
-fun getImagesFromAlbum(context: Context, bucketId: String?): List<ImageItem> {
+fun getImagesFromAlbum(context: Context, bucketId: String?, onClickImage: ((uri: Uri) -> Unit)? = null): List<ImageItem> {
     val images = mutableListOf<ImageItem>()
 
     val projection = arrayOf(
@@ -124,7 +129,9 @@ fun getImagesFromAlbum(context: Context, bucketId: String?): List<ImageItem> {
                 it.printStackTrace()
             }
 
-            images.add(ImageItem(name, contentUri, dateAdded, size, width, height, format))
+            images.add(ImageItem(name, contentUri, dateAdded, size, width, height, format, onClick = {
+                onClickImage?.invoke(contentUri)
+            }))
         }
     }
 

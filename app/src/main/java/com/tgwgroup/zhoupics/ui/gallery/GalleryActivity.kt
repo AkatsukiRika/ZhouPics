@@ -5,8 +5,10 @@ import android.content.Intent
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager2.widget.ViewPager2
 import com.tgwgroup.zhoupics.base.BaseActivity
 import com.tgwgroup.zhoupics.databinding.ActivityGalleryBinding
+import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.ui.loading.LoadingDialogFragment
 import com.tgwgroup.zhoupics.utils.collectIn
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +17,11 @@ import kotlinx.coroutines.launch
 class GalleryActivity : BaseActivity<ActivityGalleryBinding>() {
     private val albumAdapter = AlbumAdapter()
 
+    private val imagePagerAdapter = ImagePagerAdapter()
+
     private val viewModel by viewModels<GalleryViewModel>()
+
+    private var imagePagerInited = false
 
     companion object {
         fun start(context: Context) {
@@ -41,14 +47,31 @@ class GalleryActivity : BaseActivity<ActivityGalleryBinding>() {
         binding.rvAlbums.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.rvAlbums.adapter = albumAdapter
 
+        binding.vpGallery.adapter = imagePagerAdapter
+        binding.vpGallery.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                viewModel.selectAlbumByIndex(position)
+                binding.rvAlbums.smoothScrollToPosition(position)
+            }
+        })
+
         lifecycleScope.launch(Dispatchers.Main) {
-            viewModel.queryAlbums(this@GalleryActivity)
+            viewModel.queryAlbums(this@GalleryActivity, onClickImage = {
+                EditActivity.start(this@GalleryActivity, it)
+            })
         }
     }
 
     private fun initCollectors() {
         viewModel.albumList.collectIn(lifecycleScope) {
             albumAdapter.setItems(it)
+            if (!imagePagerInited && it.isNotEmpty()) {
+                imagePagerAdapter.setItems(it)
+                imagePagerInited = true
+            }
+            val selectedAlbumIndex = it.indexOfFirst { albumItem -> albumItem.selected }
+            binding.vpGallery.setCurrentItem(selectedAlbumIndex, true)
         }
         viewModel.loading.collectIn(lifecycleScope) {
             if (it) {

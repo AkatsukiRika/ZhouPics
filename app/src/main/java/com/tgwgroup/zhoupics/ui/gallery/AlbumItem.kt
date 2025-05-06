@@ -19,7 +19,8 @@ data class ImageItem(
     val size: Long,
     val width: Int,
     val height: Int,
-    val format: ImageFormat
+    val format: ImageFormat,
+    val onClick: () -> Unit
 ) {
     fun getHumanizedSize(): String {
         val kb = size / 1024
