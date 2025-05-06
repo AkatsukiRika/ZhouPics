@@ -58,7 +58,7 @@ class GalleryActivity : BaseActivity<ActivityGalleryBinding>() {
         })
 
         lifecycleScope.launch(Dispatchers.Main) {
-            viewModel.queryAlbums(this@GalleryActivity, onClickImage = { event, uri ->
+            viewModel.queryAlbums(onClickImage = { event, uri ->
                 if (event == ImageClickEvent.GO_EDIT) {
                     EditActivity.start(this@GalleryActivity, uri)
                 } else {

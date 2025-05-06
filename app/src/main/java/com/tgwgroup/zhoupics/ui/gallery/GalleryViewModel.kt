@@ -1,10 +1,11 @@
 package com.tgwgroup.zhoupics.ui.gallery
 
-import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
-import com.tgwgroup.zhoupics.utils.getAlbumList
+import com.tgwgroup.zhoupics.utils.galleryLoading
+import com.tgwgroup.zhoupics.utils.preloadedAlbumList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
@@ -20,11 +21,34 @@ class GalleryViewModel : ViewModel() {
     private val loadingMutable = MutableStateFlow(true)
     val loading: StateFlow<Boolean> = loadingMutable
 
-    suspend fun queryAlbums(
-        context: Context,
-        onClickImage: ((ImageClickEvent, Uri) -> Unit)? = null
-    ) = withContext(Dispatchers.IO) {
-        albumListMutable.value = getAlbumList(context, ::selectAlbum, onClickImage)
+    suspend fun queryAlbums(onClickImage: ((ImageClickEvent, Uri) -> Unit)? = null) = withContext(Dispatchers.IO) {
+        if (!galleryLoading.value) {
+            delay(500)
+            buildAlbumList(onClickImage)
+        } else {
+            galleryLoading.collect {
+                if (!it) {
+                    buildAlbumList(onClickImage)
+                }
+            }
+        }
+    }
+
+    private fun buildAlbumList(onClickImage: ((ImageClickEvent, Uri) -> Unit)?) {
+        val albumList = preloadedAlbumList.toMutableList()
+        albumList.forEachIndexed { index, album ->
+            album.onClick = {
+                selectAlbum(album.id)
+            }
+            album.selected = index == 0
+
+            album.images.forEach { image ->
+                image.onClick = { event ->
+                    onClickImage?.invoke(event, image.uri)
+                }
+            }
+        }
+        albumListMutable.value = albumList
         loadingMutable.value = false
     }
 

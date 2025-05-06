@@ -6,6 +6,7 @@ import com.tgwgroup.zhoupics.ui.gallery.GalleryActivity
 import com.tgwgroup.zhoupics.ui.settings.SettingsActivity
 import com.tgwgroup.zhoupics.utils.handlePermissionsResult
 import com.tgwgroup.zhoupics.utils.hasReadStoragePermission
+import com.tgwgroup.zhoupics.utils.preloadAlbumList
 import com.tgwgroup.zhoupics.utils.requestReadStoragePermission
 
 class HomeActivity : BaseActivity<ActivityHomeBinding>() {
@@ -37,6 +38,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
             permissions,
             grantResults,
             onGranted = {
+                preloadAlbumList()
                 launchPhotoPicker()
             },
             onDenied = {}

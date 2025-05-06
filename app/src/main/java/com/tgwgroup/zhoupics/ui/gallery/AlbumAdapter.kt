@@ -34,7 +34,7 @@ class AlbumAdapter : RecyclerView.Adapter<AlbumAdapter.ViewHolder>() {
         fun bind(item: AlbumItem) {
             binding.tvName.text = item.name
             binding.root.setOnClickListener {
-                item.onClick()
+                item.onClick?.invoke()
             }
             if (item.selected) {
                 binding.root.setBackgroundResource(R.drawable.bg_album_selected)

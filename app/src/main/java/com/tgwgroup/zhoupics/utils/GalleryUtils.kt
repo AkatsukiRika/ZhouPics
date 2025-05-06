@@ -3,19 +3,34 @@ package com.tgwgroup.zhoupics.utils
 import android.content.ContentUris
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.provider.MediaStore
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.ui.gallery.AlbumItem
-import com.tgwgroup.zhoupics.ui.gallery.ImageClickEvent
 import com.tgwgroup.zhoupics.ui.gallery.ImageFormat
 import com.tgwgroup.zhoupics.ui.gallery.ImageItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
-fun getAlbumList(
-    context: Context,
-    onSelectAlbum: ((bucketId: String?) -> Unit)? = null,
-    onClickImage: ((event: ImageClickEvent, uri: Uri) -> Unit)? = null
-): List<AlbumItem> {
+private val preloadedAlbumListMutable = mutableListOf<AlbumItem>()
+val preloadedAlbumList: List<AlbumItem> = preloadedAlbumListMutable
+
+private val galleryLoadingMutable = MutableStateFlow(true)
+val galleryLoading: StateFlow<Boolean> = galleryLoadingMutable
+
+private val scope = MainScope()
+
+fun preloadAlbumList() {
+    if (hasReadStoragePermission(appContext)) {
+        scope.launch(Dispatchers.IO) {
+            getAlbumList(appContext)
+        }
+    }
+}
+
+private fun getAlbumList(context: Context) {
     val tempAlbumList = mutableListOf<AlbumItem>()
 
     val projection = arrayOf(
@@ -38,10 +53,7 @@ fun getAlbumList(
                 tempAlbumList.add(AlbumItem(
                     id = bucketId,
                     name = bucketName,
-                    images = getImagesFromAlbum(context, bucketId, onClickImage),
-                    onClick = {
-                        onSelectAlbum?.invoke(bucketId)
-                    }
+                    images = getImagesFromAlbum(context, bucketId)
                 ))
             }
         }
@@ -50,24 +62,19 @@ fun getAlbumList(
     tempAlbumList.add(0, AlbumItem(
         id = null,
         name = context.getString(R.string.all_photos),
-        images = getImagesFromAlbum(context, null, onClickImage),
-        onClick = {
-            onSelectAlbum?.invoke(null)
-        }
+        images = getImagesFromAlbum(context, null)
     ))
 
     if (tempAlbumList.isNotEmpty()) {
         tempAlbumList[0].selected = true
     }
 
-    return tempAlbumList
+    preloadedAlbumListMutable.clear()
+    preloadedAlbumListMutable.addAll(tempAlbumList)
+    galleryLoadingMutable.value = false
 }
 
-fun getImagesFromAlbum(
-    context: Context,
-    bucketId: String?,
-    onClickImage: ((event: ImageClickEvent, uri: Uri) -> Unit)? = null
-): List<ImageItem> {
+private fun getImagesFromAlbum(context: Context, bucketId: String?): List<ImageItem> {
     val images = mutableListOf<ImageItem>()
 
     val projection = arrayOf(
@@ -134,9 +141,7 @@ fun getImagesFromAlbum(
                 it.printStackTrace()
             }
 
-            images.add(ImageItem(name, contentUri, dateAdded, size, width, height, format, onClick = { event ->
-                onClickImage?.invoke(event, contentUri)
-            }))
+            images.add(ImageItem(name, contentUri, dateAdded, size, width, height, format))
         }
     }
 

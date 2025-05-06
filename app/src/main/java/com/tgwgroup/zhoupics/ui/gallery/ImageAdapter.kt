@@ -43,10 +43,10 @@ class ImageAdapter : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
                 }
             }
             binding.ivImage.setOnClickListener {
-                item.onClick(ImageClickEvent.GO_EDIT)
+                item.onClick?.invoke(ImageClickEvent.GO_EDIT)
             }
             binding.ivZoom.setOnClickListener {
-                item.onClick(ImageClickEvent.ZOOM)
+                item.onClick?.invoke(ImageClickEvent.ZOOM)
             }
         }
     }

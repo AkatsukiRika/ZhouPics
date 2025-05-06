@@ -9,7 +9,7 @@ data class AlbumItem(
     val name: String,
     var selected: Boolean = false,
     var images: List<ImageItem> = emptyList(),
-    val onClick: () -> Unit
+    var onClick: (() -> Unit)? = null
 )
 
 data class ImageItem(
@@ -20,7 +20,7 @@ data class ImageItem(
     val width: Int,
     val height: Int,
     val format: ImageFormat,
-    val onClick: (event: ImageClickEvent) -> Unit
+    var onClick: ((event: ImageClickEvent) -> Unit)? = null
 ) {
     fun getHumanizedSize(): String {
         val kb = size / 1024
