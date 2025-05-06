@@ -7,6 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tgwgroup.zhoupics.base.BaseActivity
 import com.tgwgroup.zhoupics.databinding.ActivityGalleryBinding
+import com.tgwgroup.zhoupics.ui.loading.LoadingDialogFragment
 import com.tgwgroup.zhoupics.utils.collectIn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,6 +49,13 @@ class GalleryActivity : BaseActivity<ActivityGalleryBinding>() {
     private fun initCollectors() {
         viewModel.albumList.collectIn(lifecycleScope) {
             albumAdapter.setItems(it)
+        }
+        viewModel.loading.collectIn(lifecycleScope) {
+            if (it) {
+                LoadingDialogFragment.show(supportFragmentManager)
+            } else {
+                LoadingDialogFragment.dismiss(supportFragmentManager)
+            }
         }
     }
 

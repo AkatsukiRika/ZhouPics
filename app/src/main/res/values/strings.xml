@@ -23,4 +23,6 @@
     <string name="eye_zoom">Eye Zoom</string>
     <string name="face_slim">Face Slim</string>
     <string name="all_photos">All Photos</string>
+    <string name="unknown">Unknown</string>
+    <string name="please_wait">Please wait…</string>
 </resources>
