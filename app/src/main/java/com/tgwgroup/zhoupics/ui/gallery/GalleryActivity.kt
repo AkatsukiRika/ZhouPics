@@ -10,6 +10,7 @@ import com.tgwgroup.zhoupics.base.BaseActivity
 import com.tgwgroup.zhoupics.databinding.ActivityGalleryBinding
 import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.ui.loading.LoadingDialogFragment
+import com.tgwgroup.zhoupics.ui.preview.PreviewActivity
 import com.tgwgroup.zhoupics.utils.collectIn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,8 +58,12 @@ class GalleryActivity : BaseActivity<ActivityGalleryBinding>() {
         })
 
         lifecycleScope.launch(Dispatchers.Main) {
-            viewModel.queryAlbums(this@GalleryActivity, onClickImage = {
-                EditActivity.start(this@GalleryActivity, it)
+            viewModel.queryAlbums(this@GalleryActivity, onClickImage = { event, uri ->
+                if (event == ImageClickEvent.GO_EDIT) {
+                    EditActivity.start(this@GalleryActivity, uri)
+                } else {
+                    PreviewActivity.start(this@GalleryActivity, uri)
+                }
             })
         }
     }

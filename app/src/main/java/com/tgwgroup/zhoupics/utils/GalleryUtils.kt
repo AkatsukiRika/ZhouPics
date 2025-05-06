@@ -7,13 +7,14 @@ import android.net.Uri
 import android.provider.MediaStore
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.ui.gallery.AlbumItem
+import com.tgwgroup.zhoupics.ui.gallery.ImageClickEvent
 import com.tgwgroup.zhoupics.ui.gallery.ImageFormat
 import com.tgwgroup.zhoupics.ui.gallery.ImageItem
 
 fun getAlbumList(
     context: Context,
     onSelectAlbum: ((bucketId: String?) -> Unit)? = null,
-    onClickImage: ((uri: Uri) -> Unit)? = null
+    onClickImage: ((event: ImageClickEvent, uri: Uri) -> Unit)? = null
 ): List<AlbumItem> {
     val tempAlbumList = mutableListOf<AlbumItem>()
 
@@ -62,7 +63,11 @@ fun getAlbumList(
     return tempAlbumList
 }
 
-fun getImagesFromAlbum(context: Context, bucketId: String?, onClickImage: ((uri: Uri) -> Unit)? = null): List<ImageItem> {
+fun getImagesFromAlbum(
+    context: Context,
+    bucketId: String?,
+    onClickImage: ((event: ImageClickEvent, uri: Uri) -> Unit)? = null
+): List<ImageItem> {
     val images = mutableListOf<ImageItem>()
 
     val projection = arrayOf(
@@ -129,8 +134,8 @@ fun getImagesFromAlbum(context: Context, bucketId: String?, onClickImage: ((uri:
                 it.printStackTrace()
             }
 
-            images.add(ImageItem(name, contentUri, dateAdded, size, width, height, format, onClick = {
-                onClickImage?.invoke(contentUri)
+            images.add(ImageItem(name, contentUri, dateAdded, size, width, height, format, onClick = { event ->
+                onClickImage?.invoke(event, contentUri)
             }))
         }
     }

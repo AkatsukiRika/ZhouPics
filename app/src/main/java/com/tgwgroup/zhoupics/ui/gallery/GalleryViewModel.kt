@@ -20,7 +20,10 @@ class GalleryViewModel : ViewModel() {
     private val loadingMutable = MutableStateFlow(true)
     val loading: StateFlow<Boolean> = loadingMutable
 
-    suspend fun queryAlbums(context: Context, onClickImage: ((Uri) -> Unit)? = null) = withContext(Dispatchers.IO) {
+    suspend fun queryAlbums(
+        context: Context,
+        onClickImage: ((ImageClickEvent, Uri) -> Unit)? = null
+    ) = withContext(Dispatchers.IO) {
         albumListMutable.value = getAlbumList(context, ::selectAlbum, onClickImage)
         loadingMutable.value = false
     }

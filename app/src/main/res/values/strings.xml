@@ -25,4 +25,6 @@
     <string name="all_photos">All Photos</string>
     <string name="unknown">Unknown</string>
     <string name="please_wait">Please wait…</string>
+    <string name="preview_photo">Preview Photo</string>
+    <string name="edit">Edit</string>
 </resources>

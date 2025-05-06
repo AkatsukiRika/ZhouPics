@@ -20,7 +20,7 @@ data class ImageItem(
     val width: Int,
     val height: Int,
     val format: ImageFormat,
-    val onClick: () -> Unit
+    val onClick: (event: ImageClickEvent) -> Unit
 ) {
     fun getHumanizedSize(): String {
         val kb = size / 1024
@@ -41,4 +41,8 @@ enum class ImageFormat(val displayName: String) {
     HEIC("HEIC"),
     BMP("BMP"),
     UNKNOWN(appContext.getString(R.string.unknown))
+}
+
+enum class ImageClickEvent {
+    GO_EDIT, ZOOM
 }
