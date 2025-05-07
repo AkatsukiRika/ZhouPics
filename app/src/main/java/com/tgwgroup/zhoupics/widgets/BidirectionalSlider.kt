@@ -11,7 +11,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.updateLayoutParams
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.databinding.LayoutBidirectionalSliderBinding
-import com.tgwgroup.zhoupics.utils.LogUtil
+import com.tgwgroup.baselib.utils.LogUtil
 import kotlin.math.abs
 import kotlin.math.roundToInt
 

@@ -11,6 +11,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/baselib" />
+            <option value="$PROJECT_DIR$/facecomparelib" />
             <option value="$PROJECT_DIR$/gpupixel/src/android/java/gpupixel" />
             <option value="$PROJECT_DIR$/subscaleview" />
           </set>

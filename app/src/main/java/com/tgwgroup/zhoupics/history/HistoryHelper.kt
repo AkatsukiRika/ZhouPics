@@ -1,7 +1,7 @@
 package com.tgwgroup.zhoupics.history
 
 import com.google.gson.Gson
-import com.tgwgroup.zhoupics.utils.LogUtil
+import com.tgwgroup.baselib.utils.LogUtil
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

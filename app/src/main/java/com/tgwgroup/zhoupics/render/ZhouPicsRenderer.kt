@@ -5,7 +5,7 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.view.Surface
 import android.view.WindowManager
-import com.tgwgroup.zhoupics.utils.LogUtil
+import com.tgwgroup.baselib.utils.LogUtil
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer

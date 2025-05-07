@@ -23,7 +23,7 @@ import com.tgwgroup.zhoupics.render.RenderHelper
 import com.tgwgroup.zhoupics.ui.edit.adjust.AdjustFragment
 import com.tgwgroup.zhoupics.ui.edit.beautify.BeautifyFragment
 import com.tgwgroup.zhoupics.ui.gallery.GalleryActivity
-import com.tgwgroup.zhoupics.utils.LogUtil
+import com.tgwgroup.baselib.utils.LogUtil
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.utils.dpToPx
 import com.tgwgroup.zhoupics.utils.getBitmap
