@@ -31,6 +31,7 @@ class GalleryActivity : BaseActivity<ActivityGalleryBinding>() {
     private var imagePagerInited = false
 
     companion object {
+        const val TAG = "GalleryActivity"
         private const val EXTRA_FROM_TYPE = "from_type"
         const val FROM_TYPE_HOME = 0
         const val FROM_TYPE_COMPARE_FACES = 1

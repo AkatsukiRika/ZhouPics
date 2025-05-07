@@ -54,7 +54,7 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
     lateinit var renderHelper: RenderHelper
 
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        val uri = intent?.getParcelableExtraCompat(EXTRA_URI, Uri::class.java)
+        val uri = it.data?.getParcelableExtraCompat(EXTRA_URI, Uri::class.java)
         if (originalImageUri != null && uri != null) {
             CompareLoadingActivity.start(this, originalImageUri!!, uri)
         }

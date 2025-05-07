@@ -35,7 +35,14 @@ class GalleryViewModel : ViewModel() {
     }
 
     private fun buildAlbumList(onClickImage: ((ImageClickEvent, Uri) -> Unit)?) {
-        val albumList = preloadedAlbumList.toMutableList()
+        val albumList = mutableListOf<AlbumItem>()
+        preloadedAlbumList.forEach { albumItem ->
+            val imageList = mutableListOf<ImageItem>()
+            albumItem.images.forEach { imageItem ->
+                imageList.add(imageItem.copy())
+            }
+            albumList.add(albumItem.copy(images = imageList))
+        }
         albumList.forEachIndexed { index, album ->
             album.onClick = {
                 selectAlbum(album.id)

@@ -28,4 +28,12 @@
     <string name="preview_photo">Preview Photo</string>
     <string name="edit">Edit</string>
     <string name="select_another_photo">Select Another Photo</string>
+    <string name="compare_loading_state_1">Preparing…</string>
+    <string name="compare_loading_state_2">Request sent, waiting for server response…</string>
+    <string name="compare_loading_state_3">Server responded</string>
+    <string name="retry">Retry</string>
+    <string name="ok">OK</string>
+    <string name="face_similarity">Face Similarity</string>
+    <string name="face_not_detected">Face not detected</string>
+    <string name="photo_not_loaded">Image not loaded properly</string>
 </resources>
