@@ -3,14 +3,15 @@ package com.tgwgroup.zhoupics.ui.preview
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import androidx.lifecycle.lifecycleScope
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.tgwgroup.zhoupics.base.BaseActivity
+import com.tgwgroup.zhoupics.constants.EXTRA_URI
 import com.tgwgroup.zhoupics.databinding.ActivityPreviewBinding
 import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.utils.getBitmap
 import com.tgwgroup.zhoupics.utils.getInfoStringFromUri
+import com.tgwgroup.zhoupics.utils.getParcelableExtraCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -19,8 +20,6 @@ class PreviewActivity : BaseActivity<ActivityPreviewBinding>() {
     private var uri: Uri? = null
 
     companion object {
-        private const val EXTRA_URI = "uri"
-
         fun start(context: Context, uri: Uri) {
             val intent = Intent(context, PreviewActivity::class.java).apply {
                 putExtra(EXTRA_URI, uri)
@@ -35,11 +34,7 @@ class PreviewActivity : BaseActivity<ActivityPreviewBinding>() {
 
     override fun initView() {
         super.initView()
-        uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(EXTRA_URI, Uri::class.java)
-        } else {
-            intent.getParcelableExtra(EXTRA_URI)
-        }
+        uri = intent.getParcelableExtraCompat(EXTRA_URI, Uri::class.java)
         uri?.let { uri ->
             lifecycleScope.launch(Dispatchers.IO) {
                 val bitmap = getBitmap(uri)

@@ -18,6 +18,8 @@ class EditViewModel : ViewModel() {
 
     val historyHelper = HistoryHelper()
 
+    var onCompareFacesClicked: (() -> Unit)? = null
+
     init {
         bottomTabItemListMutable.value = listOf(
             BottomTabItem(
@@ -60,7 +62,7 @@ class EditViewModel : ViewModel() {
                 id = TAB_COMPARE_FACES,
                 name = appContext.getString(R.string.compare_faces),
                 onClick = {
-                    selectBottomTab(TAB_COMPARE_FACES)
+                    onCompareFacesClicked?.invoke()
                 }
             )
         )
@@ -75,9 +77,5 @@ class EditViewModel : ViewModel() {
         }
         lastBottomTabId = selectedBottomTabIdMutable.value
         selectedBottomTabIdMutable.value = id
-    }
-
-    fun selectLastBottomTab() {
-        selectBottomTab(lastBottomTabId)
     }
 }

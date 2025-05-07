@@ -1,5 +1,6 @@
 package com.tgwgroup.zhoupics.ui.gallery
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.TypedValue
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.base.BaseActivity
+import com.tgwgroup.zhoupics.constants.EXTRA_URI
 import com.tgwgroup.zhoupics.databinding.ActivityGalleryBinding
 import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.ui.loading.LoadingDialogFragment
@@ -34,10 +36,14 @@ class GalleryActivity : BaseActivity<ActivityGalleryBinding>() {
         const val FROM_TYPE_COMPARE_FACES = 1
 
         fun start(context: Context, fromType: Int = FROM_TYPE_HOME) {
-            val intent = Intent(context, GalleryActivity::class.java).apply {
+            val intent = getIntent(context, fromType)
+            context.startActivity(intent)
+        }
+
+        fun getIntent(context: Context, fromType: Int = FROM_TYPE_HOME): Intent {
+            return Intent(context, GalleryActivity::class.java).apply {
                 putExtra(EXTRA_FROM_TYPE, fromType)
             }
-            context.startActivity(intent)
         }
     }
 
@@ -76,10 +82,21 @@ class GalleryActivity : BaseActivity<ActivityGalleryBinding>() {
 
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.queryAlbums(onClickImage = { event, uri ->
-                if (event == ImageClickEvent.GO_EDIT) {
-                    EditActivity.start(this@GalleryActivity, uri)
-                } else {
-                    PreviewActivity.start(this@GalleryActivity, uri)
+                when (fromType) {
+                    FROM_TYPE_HOME -> {
+                        if (event == ImageClickEvent.GO_EDIT) {
+                            EditActivity.start(this@GalleryActivity, uri)
+                        } else {
+                            PreviewActivity.start(this@GalleryActivity, uri)
+                        }
+                    }
+
+                    FROM_TYPE_COMPARE_FACES -> {
+                        setResult(Activity.RESULT_OK, Intent().apply {
+                            putExtra(EXTRA_URI, uri)
+                        })
+                        finish()
+                    }
                 }
             })
         }

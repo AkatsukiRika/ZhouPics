@@ -18,4 +18,9 @@
         <item name="android:statusBarColor">@color/theme_opposite_20p</item>
         <item name="android:navigationBarColor">@color/dark_bg</item>
     </style>
+
+    <style name="Theme.ZhouPics.CompareLoadingActivity" parent="Theme.ZhouPics">
+        <item name="android:statusBarColor">@color/theme_50p</item>
+        <item name="android:navigationBarColor">@color/dark_bg</item>
+    </style>
 </resources>

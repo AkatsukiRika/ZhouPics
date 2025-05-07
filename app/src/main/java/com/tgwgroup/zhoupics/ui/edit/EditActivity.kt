@@ -6,10 +6,10 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.net.Uri
-import android.os.Build
 import android.view.MotionEvent
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.MarginLayoutParams
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
@@ -24,9 +24,12 @@ import com.tgwgroup.zhoupics.ui.edit.adjust.AdjustFragment
 import com.tgwgroup.zhoupics.ui.edit.beautify.BeautifyFragment
 import com.tgwgroup.zhoupics.ui.gallery.GalleryActivity
 import com.tgwgroup.baselib.utils.LogUtil
+import com.tgwgroup.zhoupics.constants.EXTRA_URI
+import com.tgwgroup.zhoupics.ui.edit.compare.CompareLoadingActivity
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.utils.dpToPx
 import com.tgwgroup.zhoupics.utils.getBitmap
+import com.tgwgroup.zhoupics.utils.getParcelableExtraCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -50,9 +53,15 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
 
     lateinit var renderHelper: RenderHelper
 
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        val uri = intent?.getParcelableExtraCompat(EXTRA_URI, Uri::class.java)
+        if (originalImageUri != null && uri != null) {
+            CompareLoadingActivity.start(this, originalImageUri!!, uri)
+        }
+    }
+
     companion object {
         const val TAG = "EditActivity"
-        private const val EXTRA_URI = "uri"
 
         fun start(context: Context, uri: Uri) {
             val intent = Intent(context, EditActivity::class.java).apply {
@@ -85,6 +94,7 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
             }
         )
 
+        initViewModel()
         initBottomTab()
         initTriggers()
         initCollectors()
@@ -110,6 +120,12 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
     override fun onDestroy() {
         super.onDestroy()
         renderHelper.destroy()
+    }
+
+    private fun initViewModel() {
+        viewModel.onCompareFacesClicked = {
+            galleryLauncher.launch(GalleryActivity.getIntent(this, GalleryActivity.FROM_TYPE_COMPARE_FACES))
+        }
     }
 
     private fun initBottomTab() {
@@ -207,20 +223,11 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
                     .replace(R.id.fcv_tab_fragment, BeautifyFragment(), BeautifyFragment.TAG)
                     .commitNowAllowingStateLoss()
             }
-
-            TAB_COMPARE_FACES -> {
-                viewModel.selectLastBottomTab()
-                GalleryActivity.start(this, GalleryActivity.FROM_TYPE_COMPARE_FACES)
-            }
         }
     }
 
     private fun loadOriginalImage(onLoad: (() -> Unit)? = null, onLoadFailed: (() -> Unit)? = null) {
-        originalImageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(EXTRA_URI, Uri::class.java)
-        } else {
-            intent.getParcelableExtra(EXTRA_URI)
-        }
+        originalImageUri = intent.getParcelableExtraCompat(EXTRA_URI, Uri::class.java)
         lifecycleScope.launch(Dispatchers.IO) {
             originalImageUri?.let {
                 originalBitmap = getBitmap(it)
