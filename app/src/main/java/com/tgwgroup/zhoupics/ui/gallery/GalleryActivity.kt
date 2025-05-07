@@ -2,10 +2,12 @@ package com.tgwgroup.zhoupics.ui.gallery
 
 import android.content.Context
 import android.content.Intent
+import android.util.TypedValue
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
+import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.base.BaseActivity
 import com.tgwgroup.zhoupics.databinding.ActivityGalleryBinding
 import com.tgwgroup.zhoupics.ui.edit.EditActivity
@@ -16,6 +18,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class GalleryActivity : BaseActivity<ActivityGalleryBinding>() {
+    private var fromType = FROM_TYPE_HOME
+
     private val albumAdapter = AlbumAdapter()
 
     private val imagePagerAdapter = ImagePagerAdapter()
@@ -25,8 +29,14 @@ class GalleryActivity : BaseActivity<ActivityGalleryBinding>() {
     private var imagePagerInited = false
 
     companion object {
-        fun start(context: Context) {
-            val intent = Intent(context, GalleryActivity::class.java)
+        private const val EXTRA_FROM_TYPE = "from_type"
+        const val FROM_TYPE_HOME = 0
+        const val FROM_TYPE_COMPARE_FACES = 1
+
+        fun start(context: Context, fromType: Int = FROM_TYPE_HOME) {
+            val intent = Intent(context, GalleryActivity::class.java).apply {
+                putExtra(EXTRA_FROM_TYPE, fromType)
+            }
             context.startActivity(intent)
         }
     }
@@ -37,6 +47,13 @@ class GalleryActivity : BaseActivity<ActivityGalleryBinding>() {
 
     override fun initView() {
         super.initView()
+        fromType = intent.getIntExtra(EXTRA_FROM_TYPE, FROM_TYPE_HOME)
+        when (fromType) {
+            FROM_TYPE_COMPARE_FACES -> {
+                binding.tvTitle.text = getString(R.string.select_another_photo)
+                binding.tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            }
+        }
         binding.ivBack.setOnClickListener {
             finish()
         }

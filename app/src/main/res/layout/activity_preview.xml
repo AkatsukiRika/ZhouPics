@@ -59,4 +59,17 @@
         android:backgroundTint="@color/theme"
         android:foreground="@drawable/ripple_rounded_r1000" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/tv_edit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/FontRegular"
+        android:text="PNG | 1024 x 768 | 1.44 MB"
+        android:textSize="13sp"
+        android:textColor="@color/white_50p"
+        android:layout_marginBottom="8dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

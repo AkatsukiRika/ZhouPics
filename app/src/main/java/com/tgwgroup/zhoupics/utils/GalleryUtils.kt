@@ -3,6 +3,7 @@ package com.tgwgroup.zhoupics.utils
 import android.content.ContentUris
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.provider.MediaStore
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.ui.gallery.AlbumItem
@@ -146,4 +147,13 @@ private fun getImagesFromAlbum(context: Context, bucketId: String?): List<ImageI
     }
 
     return images
+}
+
+fun getInfoStringFromUri(uri: Uri): String {
+    val allImages = preloadedAlbumList.flatMap { it.images }
+    val imageItem = allImages.find { it.uri == uri }
+    if (imageItem != null) {
+        return "${imageItem.format.displayName} | ${imageItem.width} x ${imageItem.height} | ${imageItem.getHumanizedSize()}"
+    }
+    return appContext.getString(R.string.unknown)
 }

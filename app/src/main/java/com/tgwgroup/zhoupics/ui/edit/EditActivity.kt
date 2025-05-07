@@ -22,6 +22,7 @@ import com.tgwgroup.zhoupics.databinding.ActivityEditBinding
 import com.tgwgroup.zhoupics.render.RenderHelper
 import com.tgwgroup.zhoupics.ui.edit.adjust.AdjustFragment
 import com.tgwgroup.zhoupics.ui.edit.beautify.BeautifyFragment
+import com.tgwgroup.zhoupics.ui.gallery.GalleryActivity
 import com.tgwgroup.zhoupics.utils.LogUtil
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.utils.dpToPx
@@ -205,6 +206,11 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fcv_tab_fragment, BeautifyFragment(), BeautifyFragment.TAG)
                     .commitNowAllowingStateLoss()
+            }
+
+            TAB_COMPARE_FACES -> {
+                viewModel.selectLastBottomTab()
+                GalleryActivity.start(this, GalleryActivity.FROM_TYPE_COMPARE_FACES)
             }
         }
     }

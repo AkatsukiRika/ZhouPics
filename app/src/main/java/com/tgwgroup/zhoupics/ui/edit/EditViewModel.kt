@@ -14,6 +14,8 @@ class EditViewModel : ViewModel() {
     private val selectedBottomTabIdMutable = MutableStateFlow(TAB_ADJUST)
     val selectedBottomTabId: StateFlow<Int> = selectedBottomTabIdMutable
 
+    private var lastBottomTabId: Int = TAB_ADJUST
+
     val historyHelper = HistoryHelper()
 
     init {
@@ -71,6 +73,11 @@ class EditViewModel : ViewModel() {
         bottomTabItemListMutable.value = bottomTabItemListMutable.value.map { item ->
             item.copy(selected = item.id == id)
         }
+        lastBottomTabId = selectedBottomTabIdMutable.value
         selectedBottomTabIdMutable.value = id
+    }
+
+    fun selectLastBottomTab() {
+        selectBottomTab(lastBottomTabId)
     }
 }
