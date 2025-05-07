@@ -6,12 +6,16 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import com.tgwgroup.facecomparelib.AwsUtils
 import com.tgwgroup.facecomparelib.CompareFacesCallback
 import com.tgwgroup.facecomparelib.FacePPUtils
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.base.BaseActivity
+import com.tgwgroup.zhoupics.constants.EXTRA_MODE
 import com.tgwgroup.zhoupics.constants.EXTRA_URI
 import com.tgwgroup.zhoupics.constants.EXTRA_URI_2
+import com.tgwgroup.zhoupics.constants.MODE_FAST
+import com.tgwgroup.zhoupics.constants.MODE_PRECISE
 import com.tgwgroup.zhoupics.databinding.ActivityCompareLoadingBinding
 import com.tgwgroup.zhoupics.utils.getBitmap
 import com.tgwgroup.zhoupics.utils.getParcelableExtraCompat
@@ -24,6 +28,8 @@ import kotlinx.coroutines.withContext
 import java.util.Locale
 
 class CompareLoadingActivity : BaseActivity<ActivityCompareLoadingBinding>() {
+    private var mode: Int = MODE_FAST
+
     private var uri1: Uri? = null
 
     private var bitmap1: Bitmap? = null
@@ -34,13 +40,60 @@ class CompareLoadingActivity : BaseActivity<ActivityCompareLoadingBinding>() {
 
     private var timeJob: Job? = null
 
+    private val compareFacesCallback = object : CompareFacesCallback {
+        override fun onPrepare() {
+            runOnUiThread {
+                binding.tvDesc.text = getString(R.string.compare_loading_state_1)
+                binding.progressIndicator.setProgress(25, true)
+            }
+        }
+
+        override fun onRequest() {
+            runOnUiThread {
+                binding.tvDesc.text = getString(R.string.compare_loading_state_2)
+                binding.progressIndicator.setProgress(50, true)
+            }
+        }
+
+        override fun onResponse() {
+            runOnUiThread {
+                binding.tvDesc.text = getString(R.string.compare_loading_state_3)
+                binding.progressIndicator.setProgress(75, true)
+            }
+        }
+
+        override fun onSuccess(similarity: Float?) {
+            runOnUiThread {
+                timeJob?.cancel()
+                binding.progressIndicator.setProgress(100, true)
+                if (similarity != null) {
+                    binding.tvTime.text = String.format(Locale.ROOT, "%.2f%%", similarity)
+                    binding.tvDesc.text = getString(R.string.face_similarity) + " ⬆️"
+                } else {
+                    binding.tvTime.text = "0.00%"
+                    binding.tvDesc.text = getString(R.string.face_not_detected)
+                }
+                binding.tvBottomAction.isVisible = true
+                binding.tvBottomAction.text = getString(R.string.ok)
+                binding.tvBottomAction.setOnClickListener {
+                    finish()
+                }
+            }
+        }
+
+        override fun onError(exception: Exception) {
+            handleError()
+        }
+    }
+
     companion object {
         const val TAG = "CompareLoadingActivity"
 
-        fun start(context: Context, uri: Uri, uri2: Uri) {
+        fun start(context: Context, uri: Uri, uri2: Uri, mode: Int = MODE_FAST) {
             val intent = Intent(context, CompareLoadingActivity::class.java).apply {
                 putExtra(EXTRA_URI, uri)
                 putExtra(EXTRA_URI_2, uri2)
+                putExtra(EXTRA_MODE, mode)
             }
             context.startActivity(intent)
         }
@@ -52,6 +105,7 @@ class CompareLoadingActivity : BaseActivity<ActivityCompareLoadingBinding>() {
 
     override fun initView() {
         super.initView()
+        mode = intent.getIntExtra(EXTRA_MODE, MODE_FAST)
         uri1 = intent.getParcelableExtraCompat(EXTRA_URI, Uri::class.java)
         uri2 = intent.getParcelableExtraCompat(EXTRA_URI_2, Uri::class.java)
         lifecycleScope.launch {
@@ -78,68 +132,35 @@ class CompareLoadingActivity : BaseActivity<ActivityCompareLoadingBinding>() {
     private fun doCompare() {
         if (bitmap1 != null && bitmap2 != null) {
             startTimeCounting()
-            FacePPUtils.compareFaces(
-                bitmap1!!,
-                bitmap2!!,
-                object : CompareFacesCallback {
-                    override fun onPrepare() {
-                        runOnUiThread {
-                            binding.tvDesc.text = getString(R.string.compare_loading_state_1)
-                            binding.progressIndicator.setProgress(25, true)
-                        }
-                    }
-
-                    override fun onRequest() {
-                        runOnUiThread {
-                            binding.tvDesc.text = getString(R.string.compare_loading_state_2)
-                            binding.progressIndicator.setProgress(50, true)
-                        }
-                    }
-
-                    override fun onResponse() {
-                        runOnUiThread {
-                            binding.tvDesc.text = getString(R.string.compare_loading_state_3)
-                            binding.progressIndicator.setProgress(75, true)
-                        }
-                    }
-
-                    override fun onSuccess(similarity: Float?) {
-                        runOnUiThread {
-                            timeJob?.cancel()
-                            binding.progressIndicator.setProgress(100, true)
-                            if (similarity != null) {
-                                binding.tvTime.text = String.format(Locale.ROOT, "%.2f%%", similarity)
-                                binding.tvDesc.text = getString(R.string.face_similarity) + " ⬆"
-                            } else {
-                                binding.tvTime.text = "0.00%"
-                                binding.tvDesc.text = getString(R.string.face_not_detected)
-                            }
-                            binding.tvBottomAction.isVisible = true
-                            binding.tvBottomAction.text = getString(R.string.ok)
-                            binding.tvBottomAction.setOnClickListener {
-                                finish()
-                            }
-                        }
-                    }
-
-                    override fun onError(exception: Exception) {
-                        runOnUiThread {
-                            timeJob?.cancel()
-                            binding.tvTime.text = "❌"
-                            binding.tvDesc.text = exception.localizedMessage
-                            binding.progressIndicator.setProgress(100, true)
-                            binding.tvBottomAction.isVisible = true
-                            binding.tvBottomAction.text = getString(R.string.retry)
-                            binding.tvBottomAction.setOnClickListener {
-                                doCompare()
-                            }
-                        }
-                    }
-                }
-            )
+            if (mode == MODE_PRECISE) {
+                AwsUtils.compareFaces(
+                    bitmap1!!,
+                    bitmap2!!,
+                    0f,
+                    compareFacesCallback
+                )
+            } else {
+                FacePPUtils.compareFaces(
+                    bitmap1!!,
+                    bitmap2!!,
+                    compareFacesCallback
+                )
+            }
         } else {
-            runOnUiThread {
+            handleError()
+        }
+    }
 
+    private fun handleError() {
+        runOnUiThread {
+            timeJob?.cancel()
+            binding.tvTime.text = "❌"
+            binding.tvDesc.text = getString(R.string.photo_not_loaded)
+            binding.progressIndicator.setProgress(100, true)
+            binding.tvBottomAction.isVisible = true
+            binding.tvBottomAction.text = getString(R.string.retry)
+            binding.tvBottomAction.setOnClickListener {
+                doCompare()
             }
         }
     }

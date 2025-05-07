@@ -2,6 +2,7 @@ package com.tgwgroup.zhoupics.ui.gallery
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.tgwgroup.zhoupics.databinding.ItemImageBinding
 import com.tgwgroup.zhoupics.utils.getBitmap
@@ -13,6 +14,7 @@ import kotlinx.coroutines.withContext
 class ImageAdapter : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
     private val items: MutableList<ImageItem> = mutableListOf()
     private val scope = MainScope()
+    var canZoom = true
 
     fun setItems(newItems: List<ImageItem>) {
         items.clear()
@@ -42,6 +44,7 @@ class ImageAdapter : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
                     binding.ivImage.setImageBitmap(bitmap)
                 }
             }
+            binding.ivZoom.isVisible = canZoom
             binding.ivImage.setOnClickListener {
                 item.onClick?.invoke(ImageClickEvent.GO_EDIT)
             }

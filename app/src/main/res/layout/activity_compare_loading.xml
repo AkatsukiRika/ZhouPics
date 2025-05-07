@@ -85,6 +85,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_close"
+        android:foreground="@drawable/ripple_rounded_r1000"
         android:layout_marginTop="12dp"
         android:layout_marginStart="12dp"
         android:padding="4dp" />

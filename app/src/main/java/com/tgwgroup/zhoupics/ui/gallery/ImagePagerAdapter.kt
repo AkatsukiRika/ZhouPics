@@ -8,6 +8,7 @@ import com.tgwgroup.zhoupics.databinding.ItemImagePageBinding
 
 class ImagePagerAdapter : RecyclerView.Adapter<ImagePagerAdapter.ViewHolder>() {
     private val items: MutableList<AlbumItem> = mutableListOf()
+    var canZoom = true
 
     fun setItems(newItems: List<AlbumItem>) {
         items.clear()
@@ -34,6 +35,7 @@ class ImagePagerAdapter : RecyclerView.Adapter<ImagePagerAdapter.ViewHolder>() {
 
         fun bind(item: AlbumItem) {
             binding.rvImages.apply {
+                imageAdapter.canZoom = canZoom
                 adapter = imageAdapter
                 layoutManager = GridLayoutManager(context, 3)
                 imageAdapter.setItems(item.images)

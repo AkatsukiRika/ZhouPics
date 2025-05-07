@@ -35,5 +35,7 @@
     <string name="ok">OK</string>
     <string name="face_similarity">Face Similarity</string>
     <string name="face_not_detected">Face not detected</string>
-    <string name="photo_not_loaded">Image not loaded properly</string>
+    <string name="photo_not_loaded">Photo not loaded properly</string>
+    <string name="fast_mode">Fast Mode</string>
+    <string name="precise_mode">Precise Mode</string>
 </resources>

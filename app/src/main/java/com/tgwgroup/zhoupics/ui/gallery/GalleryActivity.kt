@@ -24,7 +24,7 @@ class GalleryActivity : BaseActivity<ActivityGalleryBinding>() {
 
     private val albumAdapter = AlbumAdapter()
 
-    private val imagePagerAdapter = ImagePagerAdapter()
+    private lateinit var imagePagerAdapter: ImagePagerAdapter
 
     private val viewModel by viewModels<GalleryViewModel>()
 
@@ -72,6 +72,9 @@ class GalleryActivity : BaseActivity<ActivityGalleryBinding>() {
         binding.rvAlbums.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.rvAlbums.adapter = albumAdapter
 
+        imagePagerAdapter = ImagePagerAdapter().apply {
+            canZoom = fromType == FROM_TYPE_HOME
+        }
         binding.vpGallery.adapter = imagePagerAdapter
         binding.vpGallery.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {

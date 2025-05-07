@@ -10,6 +10,7 @@ if (facePPPropertiesFile.exists()) {
 } else  {
     facePPProperties.setProperty("FACE_API_KEY", "")
     facePPProperties.setProperty("FACE_API_SECRET", "")
+    facePPProperties.setProperty("IDENTITY_POOL_ID", "")
 }
 
 android {
@@ -24,6 +25,7 @@ android {
 
         buildConfigField "String", "FACE_API_KEY", "\"${facePPProperties.getProperty("FACE_API_KEY")}\""
         buildConfigField "String", "FACE_API_SECRET", "\"${facePPProperties.getProperty("FACE_API_SECRET")}\""
+        buildConfigField "String", "IDENTITY_POOL_ID", "\"${facePPProperties.getProperty("IDENTITY_POOL_ID")}\""
     }
 
     buildFeatures {
@@ -51,5 +53,8 @@ dependencies {
     implementation libs.material
     implementation libs.okhttp
     implementation libs.okhttp.logging.interceptor
+    implementation libs.aws.android.sdk.core
+    implementation libs.aws.android.sdk.rekognition
+    implementation libs.aws.android.sdk.cognitoidentityprovider
     implementation project(':baselib')
 }

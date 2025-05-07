@@ -25,7 +25,10 @@ import com.tgwgroup.zhoupics.ui.edit.beautify.BeautifyFragment
 import com.tgwgroup.zhoupics.ui.gallery.GalleryActivity
 import com.tgwgroup.baselib.utils.LogUtil
 import com.tgwgroup.zhoupics.constants.EXTRA_URI
+import com.tgwgroup.zhoupics.constants.MODE_FAST
+import com.tgwgroup.zhoupics.constants.MODE_PRECISE
 import com.tgwgroup.zhoupics.ui.edit.compare.CompareLoadingActivity
+import com.tgwgroup.zhoupics.ui.edit.compare.CompareModeSelectBottomSheet
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.utils.dpToPx
 import com.tgwgroup.zhoupics.utils.getBitmap
@@ -53,10 +56,12 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
 
     lateinit var renderHelper: RenderHelper
 
+    private var compareFacesMode = MODE_FAST
+
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         val uri = it.data?.getParcelableExtraCompat(EXTRA_URI, Uri::class.java)
         if (originalImageUri != null && uri != null) {
-            CompareLoadingActivity.start(this, originalImageUri!!, uri)
+            CompareLoadingActivity.start(this, originalImageUri!!, uri, compareFacesMode)
         }
     }
 
@@ -124,7 +129,17 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
 
     private fun initViewModel() {
         viewModel.onCompareFacesClicked = {
-            galleryLauncher.launch(GalleryActivity.getIntent(this, GalleryActivity.FROM_TYPE_COMPARE_FACES))
+            CompareModeSelectBottomSheet.show(supportFragmentManager) {
+                it.onFastModeClick = {
+                    compareFacesMode = MODE_FAST
+                    galleryLauncher.launch(GalleryActivity.getIntent(this, GalleryActivity.FROM_TYPE_COMPARE_FACES))
+                }
+
+                it.onPreciseModeClick = {
+                    compareFacesMode = MODE_PRECISE
+                    galleryLauncher.launch(GalleryActivity.getIntent(this, GalleryActivity.FROM_TYPE_COMPARE_FACES))
+                }
+            }
         }
     }
 
