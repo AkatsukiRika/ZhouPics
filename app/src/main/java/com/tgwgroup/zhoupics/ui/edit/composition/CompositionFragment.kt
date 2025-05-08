@@ -1,12 +1,13 @@
 package com.tgwgroup.zhoupics.ui.edit.composition
 
-import androidx.core.view.isVisible
+import androidx.core.view.isInvisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
 import com.tgwgroup.zhoupics.base.BaseFragment
 import com.tgwgroup.zhoupics.databinding.FragmentCompositionBinding
+import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.ui.edit.EditViewModel
 import com.tgwgroup.zhoupics.utils.collectIn
 
@@ -31,6 +32,11 @@ class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
         initRecyclerView()
         initTriggers()
         initCollectors()
+
+        val binding = binding ?: return
+        getEditActivity()?.originalBitmap?.let {
+            binding.ivComposition.setImageBitmap(it)
+        }
     }
 
     private fun initRecyclerView() {
@@ -52,13 +58,13 @@ class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab?.position) {
                     0 -> {
-                        binding.rvCrop.isVisible = true
-                        binding.llRotate.isVisible = false
+                        binding.rvCrop.isInvisible = false
+                        binding.llRotate.isInvisible = true
                     }
 
                     1 -> {
-                        binding.rvCrop.isVisible = false
-                        binding.llRotate.isVisible = true
+                        binding.rvCrop.isInvisible = true
+                        binding.llRotate.isInvisible = false
                     }
                 }
             }
@@ -80,5 +86,9 @@ class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
         activity?.supportFragmentManager?.beginTransaction()
             ?.remove(this)
             ?.commitNowAllowingStateLoss()
+    }
+
+    private fun getEditActivity(): EditActivity? {
+        return activity as? EditActivity
     }
 }

@@ -44,7 +44,7 @@ import kotlinx.coroutines.withContext
 class EditActivity : BaseActivity<ActivityEditBinding>() {
     private var originalImageUri: Uri? = null
 
-    private var originalBitmap: Bitmap? = null
+    var originalBitmap: Bitmap? = null
 
     private val bottomTabAdapter = BottomTabAdapter()
 

@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"
-    tools:background="@color/white">
+    android:background="@color/theme_bg">
 
     <LinearLayout
         android:id="@+id/ll_bottom_bar"
@@ -103,7 +102,7 @@
         app:layout_constraintBottom_toTopOf="@id/tab_layout"
         android:background="@color/theme_bg"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="invisible">
 
         <com.google.android.material.button.MaterialButton
             android:layout_width="wrap_content"
@@ -154,5 +153,13 @@
             app:iconSize="24sp" />
 
     </LinearLayout>
+
+    <com.tgwgroup.zhoupics.ui.edit.composition.CompositionView
+        android:id="@+id/iv_composition"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/rv_crop"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginHorizontal="24dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
