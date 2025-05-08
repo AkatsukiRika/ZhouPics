@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    tools:background="@color/white">
+
+    <LinearLayout
+        android:id="@+id/ll_bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:gravity="center_vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/theme_bg"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_cancel"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/ic_close"
+            android:padding="4dp"
+            android:foreground="@drawable/ripple_rounded_r1000"
+            android:layout_marginStart="8dp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/FontMedium"
+            android:text="@string/composition"
+            android:textColor="@color/white_default"
+            android:textSize="16sp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_confirm"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/ic_tick"
+            android:padding="2dp"
+            android:foreground="@drawable/ripple_rounded_r1000"
+            android:layout_marginEnd="8dp" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider"
+        app:layout_constraintBottom_toTopOf="@id/ll_bottom_bar" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/divider"
+        android:background="@color/theme_bg"
+        app:tabTextAppearance="@style/TabTextAppearance">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/crop" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rotate" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_crop"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        app:layout_constraintBottom_toTopOf="@id/tab_layout"
+        android:background="@color/theme_bg"
+        tools:listitem="@layout/item_crop"
+        tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:orientation="horizontal" />
+
+    <LinearLayout
+        android:id="@+id/ll_rotate"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@id/tab_layout"
+        android:background="@color/theme_bg"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/left"
+            app:icon="@drawable/ic_rotate_left"
+            app:iconGravity="top"
+            android:background="@android:color/transparent"
+            android:textColor="@color/white"
+            style="@style/FontMedium"
+            app:iconTint="@color/white"
+            app:iconSize="24sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/right"
+            app:icon="@drawable/ic_rotate_right"
+            app:iconGravity="top"
+            android:background="@android:color/transparent"
+            android:textColor="@color/white"
+            style="@style/FontMedium"
+            app:iconTint="@color/white"
+            app:iconSize="24sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mirror"
+            app:icon="@drawable/ic_mirror"
+            app:iconGravity="top"
+            android:background="@android:color/transparent"
+            android:textColor="@color/white"
+            style="@style/FontMedium"
+            app:iconTint="@color/white"
+            app:iconSize="24sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/flip"
+            app:icon="@drawable/ic_flip"
+            app:iconGravity="top"
+            android:background="@android:color/transparent"
+            android:textColor="@color/white"
+            style="@style/FontMedium"
+            app:iconTint="@color/white"
+            app:iconSize="24sp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

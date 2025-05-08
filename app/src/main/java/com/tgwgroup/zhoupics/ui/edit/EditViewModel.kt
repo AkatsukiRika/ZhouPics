@@ -14,11 +14,15 @@ class EditViewModel : ViewModel() {
     private val selectedBottomTabIdMutable = MutableStateFlow(TAB_ADJUST)
     val selectedBottomTabId: StateFlow<Int> = selectedBottomTabIdMutable
 
+    val inRoom = MutableStateFlow(false)
+
     private var lastBottomTabId: Int = TAB_ADJUST
 
     val historyHelper = HistoryHelper()
 
     var onCompareFacesClicked: (() -> Unit)? = null
+
+    var onCompositionClicked: (() -> Unit)? = null
 
     init {
         bottomTabItemListMutable.value = listOf(
@@ -26,7 +30,7 @@ class EditViewModel : ViewModel() {
                 id = TAB_COMPOSITION,
                 name = appContext.getString(R.string.composition),
                 onClick = {
-                    selectBottomTab(TAB_COMPOSITION)
+                    onCompositionClicked?.invoke()
                 }
             ),
             BottomTabItem(

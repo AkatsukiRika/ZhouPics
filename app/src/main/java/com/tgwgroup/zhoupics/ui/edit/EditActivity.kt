@@ -11,6 +11,7 @@ import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,6 +30,7 @@ import com.tgwgroup.zhoupics.constants.MODE_FAST
 import com.tgwgroup.zhoupics.constants.MODE_PRECISE
 import com.tgwgroup.zhoupics.ui.edit.compare.CompareLoadingActivity
 import com.tgwgroup.zhoupics.ui.edit.compare.CompareModeSelectBottomSheet
+import com.tgwgroup.zhoupics.ui.edit.composition.CompositionFragment
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.utils.dpToPx
 import com.tgwgroup.zhoupics.utils.getBitmap
@@ -141,6 +143,11 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
                 }
             }
         }
+        viewModel.onCompositionClicked = {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fcv_room_fragment, CompositionFragment(), CompositionFragment.TAG)
+                .commitNowAllowingStateLoss()
+        }
     }
 
     private fun initBottomTab() {
@@ -214,6 +221,12 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
         viewModel.historyHelper.canRedo.collectIn(lifecycleScope) {
             binding.ivRedo.isEnabled = it
             binding.ivRedo.alpha = if (it) 1f else 0.5f
+        }
+
+        viewModel.inRoom.collectIn(lifecycleScope) {
+            binding.ivUndo.isVisible = !it
+            binding.ivRedo.isVisible = !it
+            binding.ivCompare.isVisible = !it
         }
     }
 
