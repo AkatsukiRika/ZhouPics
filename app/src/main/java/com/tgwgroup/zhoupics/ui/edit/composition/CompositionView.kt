@@ -29,6 +29,11 @@ class CompositionView @JvmOverloads constructor(
     private var imageHeight = 0
     private var imageRect = Rect()
 
+    private var originalSecondaryBitmap: Bitmap? = null
+    private var originalSecondaryCanvas: Canvas? = null
+    private var rotatedSecondaryBitmap: Bitmap? = null
+    private var rotatedSecondaryCanvas: Canvas? = null
+
     private var rotationDegrees = 0
     private val imageTransformMatrix = Matrix()
 
@@ -61,10 +66,43 @@ class CompositionView @JvmOverloads constructor(
         LogUtil.d(TAG, "onSizeChanged: viewWidth=$viewWidth, viewHeight=$viewHeight")
     }
 
+    private fun createSecondaryCanvas() {
+        if (originalSecondaryBitmap == null || originalSecondaryBitmap?.width != imageWidth || originalSecondaryBitmap?.height != imageHeight) {
+            originalSecondaryBitmap = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888)
+            originalSecondaryCanvas = Canvas(originalSecondaryBitmap!!)
+        }
+        if (rotatedSecondaryBitmap == null || rotatedSecondaryBitmap?.width != imageHeight || rotatedSecondaryBitmap?.height != imageWidth) {
+            rotatedSecondaryBitmap = Bitmap.createBitmap(imageHeight, imageWidth, Bitmap.Config.ARGB_8888)
+            rotatedSecondaryCanvas = Canvas(rotatedSecondaryBitmap!!)
+        }
+    }
+
+    private fun rotateImageOnSecondaryCanvas() {
+        val imageBitmap = imageBitmap ?: return
+
+        originalSecondaryCanvas?.drawColor(0, android.graphics.PorterDuff.Mode.CLEAR)
+        rotatedSecondaryCanvas?.drawColor(0, android.graphics.PorterDuff.Mode.CLEAR)
+
+        val centerX = imageBitmap.width / 2f
+        val centerY = imageBitmap.height / 2f
+
+        if (rotationDegrees % 180 == 0) {
+            val tempMatrix = Matrix()
+            tempMatrix.postRotate(rotationDegrees.toFloat(), centerX, centerY)
+            originalSecondaryCanvas?.drawBitmap(imageBitmap, tempMatrix, null)
+        } else {
+            val tempMatrix = Matrix()
+            tempMatrix.postRotate(rotationDegrees.toFloat(), centerX, centerY)
+            tempMatrix.postTranslate((imageBitmap.height - imageBitmap.width) / 2f, (imageBitmap.width - imageBitmap.height) / 2f)
+            rotatedSecondaryCanvas?.drawBitmap(imageBitmap, tempMatrix, null)
+        }
+    }
+
     fun setImageBitmap(bitmap: Bitmap) {
         imageBitmap = bitmap
         imageWidth = bitmap.width
         imageHeight = bitmap.height
+        createSecondaryCanvas()
         LogUtil.d(TAG, "setImageBitmap: imageWidth=$imageWidth, imageHeight=$imageHeight")
         invalidate()
     }
@@ -96,6 +134,8 @@ class CompositionView @JvmOverloads constructor(
     }
 
     private fun drawImage(canvas: Canvas) {
+        rotateImageOnSecondaryCanvas()
+
         val rotatedImageWidth = if (rotationDegrees % 180 == 0) imageWidth else imageHeight
         val rotatedImageHeight = if (rotationDegrees % 180 == 0) imageHeight else imageWidth
         val scale1 = viewWidth.toFloat() / rotatedImageWidth.toFloat()
@@ -107,10 +147,12 @@ class CompositionView @JvmOverloads constructor(
         val left = (viewWidth - scaledWidth) / 2
         val top = (viewHeight - scaledHeight) / 2
         imageRect.set(left, top, left + scaledWidth, top + scaledHeight)
-        imageBitmap?.let {
+
+        val bitmapToDraw = if (rotationDegrees % 180 == 0) originalSecondaryBitmap else rotatedSecondaryBitmap
+        bitmapToDraw?.let {
             canvas.drawBitmap(
                 it,
-                Rect(0, 0, imageWidth, imageHeight),
+                Rect(0, 0, it.width, it.height),
                 imageRect,
                 null
             )
