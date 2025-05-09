@@ -15,5 +15,6 @@
     <color name="theme_opposite_20p">#339ECBFF</color>
     <color name="dark_bg">#FF161618</color>
     <color name="theme_bg">#FF1B1B1F</color>
+    <color name="edit_bg">#FF141117</color>
     <color name="divider">#FF2E2E32</color>
 </resources>
