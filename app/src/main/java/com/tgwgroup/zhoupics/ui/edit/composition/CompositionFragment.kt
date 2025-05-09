@@ -73,6 +73,12 @@ class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
 
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
+        binding.btnRotateLeft.setOnClickListener {
+            binding.ivComposition.rotateLeft()
+        }
+        binding.btnRotateRight.setOnClickListener {
+            binding.ivComposition.rotateRight()
+        }
     }
 
     private fun initCollectors() {
