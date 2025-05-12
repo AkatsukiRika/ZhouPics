@@ -85,6 +85,10 @@ class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
         viewModel.itemList.collectIn(lifecycleScope) {
             cropAdapter.setItems(it)
         }
+        viewModel.selectedCropItemId.collectIn(lifecycleScope) {
+            val binding = binding ?: return@collectIn
+            binding.ivComposition.cropMode = it
+        }
     }
 
     private fun finishFragment() {

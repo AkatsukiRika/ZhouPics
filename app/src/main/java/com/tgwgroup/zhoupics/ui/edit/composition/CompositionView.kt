@@ -1,5 +1,6 @@
 package com.tgwgroup.zhoupics.ui.edit.composition
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -7,6 +8,7 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import com.tgwgroup.baselib.utils.LogUtil
 import com.tgwgroup.zhoupics.R
@@ -17,6 +19,12 @@ class CompositionView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : View(context, attrs, defStyleAttr) {
+    enum class DragMode {
+        TOP_START, TOP_CENTER, TOP_END,
+        CENTER_START, CENTER_END,
+        BOTTOM_START, BOTTOM_CENTER, BOTTOM_END
+    }
+
     companion object {
         const val TAG = "CompositionView"
     }
@@ -53,17 +61,82 @@ class CompositionView @JvmOverloads constructor(
         color = resources.getColor(R.color.white, null)
     }
 
-    var drawMidHandles = true
+    var cropMode = CROP_FREEFORM
         set(value) {
             field = value
             invalidate()
         }
+
+    private var dragMode: DragMode? = null
+
+    private val handleSize = dpToPx(48f)
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         viewWidth = w
         viewHeight = h
         LogUtil.d(TAG, "onSizeChanged: viewWidth=$viewWidth, viewHeight=$viewHeight")
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        event?.let {
+            when (it.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    onActionDown(event)
+                }
+            }
+        }
+        return true
+    }
+
+    private fun onActionDown(event: MotionEvent) {
+        val x = event.x
+        val y = event.y
+        val left = imageRect.left.toFloat()
+        val top = imageRect.top.toFloat()
+        val right = imageRect.right.toFloat()
+        val bottom = imageRect.bottom.toFloat()
+        val centerX = imageRect.exactCenterX()
+        val centerY = imageRect.exactCenterY()
+        when {
+            x >= left && x <= left + handleSize && y >= top && y <= top + handleSize -> {
+                dragMode = DragMode.TOP_START
+            }
+
+            x >= centerX - handleSize / 2 && x <= centerX + handleSize / 2 && y >= top && y <= top + handleSize -> {
+                dragMode = if (cropMode == CROP_FREEFORM) DragMode.TOP_CENTER else null
+            }
+
+            x >= right - handleSize && x <= right && y >= top && y <= top + handleSize -> {
+                dragMode = DragMode.TOP_END
+            }
+
+            x >= left && x <= left + handleSize && y >= centerY - handleSize / 2 && y <= centerY + handleSize / 2 -> {
+                dragMode = if (cropMode == CROP_FREEFORM) DragMode.CENTER_START else null
+            }
+
+            x >= right - handleSize && x <= right && y >= centerY - handleSize / 2 && y <= centerY + handleSize / 2 -> {
+                dragMode = if (cropMode == CROP_FREEFORM) DragMode.CENTER_END else null
+            }
+
+            x >= left && x <= left + handleSize && y >= bottom - handleSize && y <= bottom -> {
+                dragMode = DragMode.BOTTOM_START
+            }
+
+            x >= centerX - handleSize / 2 && x <= centerX + handleSize / 2 && y >= bottom - handleSize && y <= bottom -> {
+                dragMode = if (cropMode == CROP_FREEFORM) DragMode.BOTTOM_CENTER else null
+            }
+
+            x >= right - handleSize && x <= right && y >= bottom - handleSize && y <= bottom -> {
+                dragMode = DragMode.BOTTOM_END
+            }
+
+            else -> {
+                dragMode = null
+            }
+        }
+        LogUtil.d(TAG, "dragMode = $dragMode")
     }
 
     private fun createSecondaryCanvas() {
@@ -128,7 +201,7 @@ class CompositionView @JvmOverloads constructor(
         drawImage(canvas)
         drawBorder(canvas)
         drawCornerHandles(canvas)
-        if (drawMidHandles) {
+        if (cropMode == CROP_FREEFORM) {
             drawMidHandles(canvas)
         }
     }
@@ -170,7 +243,6 @@ class CompositionView @JvmOverloads constructor(
     }
 
     private fun drawCornerHandles(canvas: Canvas) {
-        val handleSize = dpToPx(48f)
         val strokeWidth = handlePaint.strokeWidth
 
         val left = imageRect.left.toFloat() + strokeWidth / 2
@@ -190,7 +262,6 @@ class CompositionView @JvmOverloads constructor(
     }
 
     private fun drawMidHandles(canvas: Canvas) {
-        val handleSize = dpToPx(48f)
         val strokeWidth = handlePaint.strokeWidth
 
         val centerX = (imageRect.left.toFloat() + imageRect.right.toFloat()) / 2

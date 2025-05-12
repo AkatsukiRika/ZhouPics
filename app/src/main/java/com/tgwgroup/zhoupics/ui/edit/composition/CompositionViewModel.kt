@@ -10,62 +10,95 @@ class CompositionViewModel : ViewModel() {
     private val itemListMutable = MutableStateFlow<List<CropItem>>(emptyList())
     val itemList: StateFlow<List<CropItem>> = itemListMutable
 
+    private val selectedCropItemIdMutable = MutableStateFlow(CROP_FREEFORM)
+    val selectedCropItemId: StateFlow<Int> = selectedCropItemIdMutable
+
     init {
         itemListMutable.value = listOf(
             CropItem(
                 id = CROP_FREEFORM,
                 icon = R.drawable.ic_freeform,
                 name = appContext.getString(R.string.freeform),
-                onClick = {}
+                selected = true,
+                onClick = {
+                    selectCropItem(CROP_FREEFORM)
+                }
             ),
             CropItem(
                 id = CROP_ORIGINAL,
                 icon = R.drawable.ic_original,
                 name = appContext.getString(R.string.original),
-                onClick = {}
+                onClick = {
+                    selectCropItem(CROP_ORIGINAL)
+                }
             ),
             CropItem(
                 id = CROP_1_1,
                 icon = R.drawable.ic_ratio_1_1,
                 name = "1:1",
-                onClick = {}
+                onClick = {
+                    selectCropItem(CROP_1_1)
+                }
             ),
             CropItem(
                 id = CROP_2_3,
                 icon = R.drawable.ic_ratio_2_3,
                 name = "2:3",
-                onClick = {}
+                onClick = {
+                    selectCropItem(CROP_2_3)
+                }
             ),
             CropItem(
                 id = CROP_3_2,
                 icon = R.drawable.ic_ratio_3_2,
                 name = "3:2",
-                onClick = {}
+                onClick = {
+                    selectCropItem(CROP_3_2)
+                }
             ),
             CropItem(
                 id = CROP_3_4,
                 icon = R.drawable.ic_ratio_3_4,
                 name = "3:4",
-                onClick = {}
+                onClick = {
+                    selectCropItem(CROP_3_4)
+                }
             ),
             CropItem(
                 id = CROP_4_3,
                 icon = R.drawable.ic_ratio_4_3,
                 name = "4:3",
-                onClick = {}
+                onClick = {
+                    selectCropItem(CROP_4_3)
+                }
             ),
             CropItem(
                 id = CROP_9_16,
                 icon = R.drawable.ic_ratio_9_16,
                 name = "9:16",
-                onClick = {}
+                onClick = {
+                    selectCropItem(CROP_9_16)
+                }
             ),
             CropItem(
                 id = CROP_16_9,
                 icon = R.drawable.ic_ratio_16_9,
                 name = "16:9",
-                onClick = {}
+                onClick = {
+                    selectCropItem(CROP_16_9)
+                }
             )
         )
+    }
+
+    private fun selectCropItem(id: Int) {
+        itemListMutable.value = itemListMutable.value.map { item ->
+            if (item.id == id) {
+                item.copy(selected = true)
+            } else {
+                item.copy(selected = false)
+            }
+        }
+        selectedCropItemIdMutable.value = id
     }
 }

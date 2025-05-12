@@ -1,9 +1,12 @@
 package com.tgwgroup.zhoupics.ui.edit.composition
 
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.databinding.ItemCropBinding
+import com.tgwgroup.zhoupics.utils.appContext
 
 class CropAdapter : RecyclerView.Adapter<CropAdapter.ViewHolder>() {
     private val items: MutableList<CropItem> = mutableListOf()
@@ -31,7 +34,15 @@ class CropAdapter : RecyclerView.Adapter<CropAdapter.ViewHolder>() {
             binding.button.setIconResource(item.icon)
             binding.button.text = item.name
 
-            binding.root.setOnClickListener {
+            if (item.selected) {
+                binding.button.iconTint = ColorStateList.valueOf(appContext.getColor(R.color.theme))
+                binding.button.setTextColor(appContext.getColor(R.color.theme))
+            } else {
+                binding.button.iconTint = ColorStateList.valueOf(appContext.getColor(R.color.white))
+                binding.button.setTextColor(appContext.getColor(R.color.white))
+            }
+
+            binding.button.setOnClickListener {
                 item.onClick()
             }
         }
