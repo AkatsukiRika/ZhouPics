@@ -22,7 +22,8 @@ class CompositionView @JvmOverloads constructor(
     enum class DragMode {
         TOP_START, TOP_CENTER, TOP_END,
         CENTER_START, CENTER_END,
-        BOTTOM_START, BOTTOM_CENTER, BOTTOM_END
+        BOTTOM_START, BOTTOM_CENTER, BOTTOM_END,
+        FRAME_MOVE
     }
 
     companion object {
@@ -36,6 +37,10 @@ class CompositionView @JvmOverloads constructor(
     private var imageWidth = 0
     private var imageHeight = 0
     private var imageRect = Rect()
+    private var cropRect = Rect()
+
+    private var lastX = 0f
+    private var lastY = 0f
 
     private var originalSecondaryBitmap: Bitmap? = null
     private var originalSecondaryCanvas: Canvas? = null
@@ -43,7 +48,6 @@ class CompositionView @JvmOverloads constructor(
     private var rotatedSecondaryCanvas: Canvas? = null
 
     private var rotationDegrees = 0
-    private val imageTransformMatrix = Matrix()
 
     private val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -71,6 +75,10 @@ class CompositionView @JvmOverloads constructor(
 
     private val handleSize = dpToPx(48f)
 
+    private val minCropRectSize = dpToPx(56f)
+
+    private var needResetCropRect = true
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         viewWidth = w
@@ -85,6 +93,10 @@ class CompositionView @JvmOverloads constructor(
                 MotionEvent.ACTION_DOWN -> {
                     onActionDown(event)
                 }
+
+                MotionEvent.ACTION_MOVE -> {
+                    onActionMove(event)
+                }
             }
         }
         return true
@@ -93,18 +105,18 @@ class CompositionView @JvmOverloads constructor(
     private fun onActionDown(event: MotionEvent) {
         val x = event.x
         val y = event.y
-        val left = imageRect.left.toFloat()
-        val top = imageRect.top.toFloat()
-        val right = imageRect.right.toFloat()
-        val bottom = imageRect.bottom.toFloat()
-        val centerX = imageRect.exactCenterX()
-        val centerY = imageRect.exactCenterY()
+        val left = cropRect.left.toFloat()
+        val top = cropRect.top.toFloat()
+        val right = cropRect.right.toFloat()
+        val bottom = cropRect.bottom.toFloat()
+        val centerX = cropRect.exactCenterX()
+        val centerY = cropRect.exactCenterY()
         when {
             x >= left && x <= left + handleSize && y >= top && y <= top + handleSize -> {
                 dragMode = DragMode.TOP_START
             }
 
-            x >= centerX - handleSize / 2 && x <= centerX + handleSize / 2 && y >= top && y <= top + handleSize -> {
+            x >= centerX - handleSize / 2 && x <= centerX + handleSize / 2 && y >= top - handleSize && y <= top + handleSize -> {
                 dragMode = if (cropMode == CROP_FREEFORM) DragMode.TOP_CENTER else null
             }
 
@@ -112,11 +124,11 @@ class CompositionView @JvmOverloads constructor(
                 dragMode = DragMode.TOP_END
             }
 
-            x >= left && x <= left + handleSize && y >= centerY - handleSize / 2 && y <= centerY + handleSize / 2 -> {
+            x >= left - handleSize && x <= left + handleSize && y >= centerY - handleSize / 2 && y <= centerY + handleSize / 2 -> {
                 dragMode = if (cropMode == CROP_FREEFORM) DragMode.CENTER_START else null
             }
 
-            x >= right - handleSize && x <= right && y >= centerY - handleSize / 2 && y <= centerY + handleSize / 2 -> {
+            x >= right - handleSize && x <= right + handleSize && y >= centerY - handleSize / 2 && y <= centerY + handleSize / 2 -> {
                 dragMode = if (cropMode == CROP_FREEFORM) DragMode.CENTER_END else null
             }
 
@@ -124,7 +136,7 @@ class CompositionView @JvmOverloads constructor(
                 dragMode = DragMode.BOTTOM_START
             }
 
-            x >= centerX - handleSize / 2 && x <= centerX + handleSize / 2 && y >= bottom - handleSize && y <= bottom -> {
+            x >= centerX - handleSize / 2 && x <= centerX + handleSize / 2 && y >= bottom - handleSize && y <= bottom + handleSize -> {
                 dragMode = if (cropMode == CROP_FREEFORM) DragMode.BOTTOM_CENTER else null
             }
 
@@ -133,10 +145,68 @@ class CompositionView @JvmOverloads constructor(
             }
 
             else -> {
-                dragMode = null
+                dragMode = DragMode.FRAME_MOVE
             }
         }
-        LogUtil.d(TAG, "dragMode = $dragMode")
+        lastX = event.x
+        lastY = event.y
+        LogUtil.d(TAG, "dragMode=$dragMode, lastY=$lastY")
+    }
+
+    private fun onActionMove(event: MotionEvent) {
+        if (cropMode == CROP_FREEFORM) {
+            when (dragMode) {
+                DragMode.TOP_CENTER -> {
+                    val deltaY = event.y - lastY
+                    cropRect.top = (cropRect.top + deltaY).coerceIn(imageRect.top.toFloat(), cropRect.bottom.toFloat() - minCropRectSize).toInt()
+                    lastY = event.y
+                    LogUtil.d(TAG, "cropRect=$cropRect, eventY=${event.y}, lastY=$lastY, deltaY=$deltaY")
+                    invalidate()
+                }
+
+                DragMode.BOTTOM_CENTER -> {
+                    val deltaY = event.y - lastY
+                    cropRect.bottom = (cropRect.bottom + deltaY).coerceIn(cropRect.top.toFloat() + minCropRectSize, imageRect.bottom.toFloat()).toInt()
+                    lastY = event.y
+                    invalidate()
+                }
+
+                DragMode.CENTER_START -> {
+                    val deltaX = event.x - lastX
+                    cropRect.left = (cropRect.left + deltaX).coerceIn(imageRect.left.toFloat(), cropRect.right.toFloat() - minCropRectSize).toInt()
+                    lastX = event.x
+                    invalidate()
+                }
+
+                DragMode.CENTER_END -> {
+                    val deltaX = event.x - lastX
+                    cropRect.right = (cropRect.right + deltaX).coerceIn(cropRect.left.toFloat() + minCropRectSize, imageRect.right.toFloat()).toInt()
+                    lastX = event.x
+                    invalidate()
+                }
+
+                else -> {}
+            }
+        }
+        when (dragMode) {
+            DragMode.FRAME_MOVE -> {
+                val deltaX = event.x - lastX
+                val deltaY = event.y - lastY
+                if (cropRect.left + deltaX >= imageRect.left && cropRect.right + deltaX <= imageRect.right) {
+                    cropRect.left = (cropRect.left + deltaX).toInt()
+                    cropRect.right = (cropRect.right + deltaX).toInt()
+                }
+                if (cropRect.top + deltaY >= imageRect.top && cropRect.bottom + deltaY <= imageRect.bottom) {
+                    cropRect.top = (cropRect.top + deltaY).toInt()
+                    cropRect.bottom = (cropRect.bottom + deltaY).toInt()
+                }
+                lastX = event.x
+                lastY = event.y
+                invalidate()
+            }
+
+            else -> {}
+        }
     }
 
     private fun createSecondaryCanvas() {
@@ -182,18 +252,10 @@ class CompositionView @JvmOverloads constructor(
 
     fun rotateLeft() {
         rotationDegrees -= 90
-        updateFrameTransformMatrix()
     }
 
     fun rotateRight() {
         rotationDegrees += 90
-        updateFrameTransformMatrix()
-    }
-
-    private fun updateFrameTransformMatrix() {
-        imageTransformMatrix.reset()
-        imageTransformMatrix.postRotate(rotationDegrees.toFloat(), imageRect.centerX().toFloat(), imageRect.centerY().toFloat())
-        invalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -220,6 +282,10 @@ class CompositionView @JvmOverloads constructor(
         val left = (viewWidth - scaledWidth) / 2
         val top = (viewHeight - scaledHeight) / 2
         imageRect.set(left, top, left + scaledWidth, top + scaledHeight)
+        if (needResetCropRect) {
+            cropRect.set(left, top, left + scaledWidth, top + scaledHeight)
+            needResetCropRect = false
+        }
 
         val bitmapToDraw = if (rotationDegrees % 180 == 0) originalSecondaryBitmap else rotatedSecondaryBitmap
         bitmapToDraw?.let {
@@ -234,10 +300,10 @@ class CompositionView @JvmOverloads constructor(
 
     private fun drawBorder(canvas: Canvas) {
         canvas.drawRect(
-            imageRect.left.toFloat() + borderPaint.strokeWidth / 2,
-            imageRect.top.toFloat() + borderPaint.strokeWidth / 2,
-            imageRect.right.toFloat() - borderPaint.strokeWidth / 2,
-            imageRect.bottom.toFloat() - borderPaint.strokeWidth / 2,
+            cropRect.left.toFloat() + borderPaint.strokeWidth / 2,
+            cropRect.top.toFloat() + borderPaint.strokeWidth / 2,
+            cropRect.right.toFloat() - borderPaint.strokeWidth / 2,
+            cropRect.bottom.toFloat() - borderPaint.strokeWidth / 2,
             borderPaint
         )
     }
@@ -245,10 +311,10 @@ class CompositionView @JvmOverloads constructor(
     private fun drawCornerHandles(canvas: Canvas) {
         val strokeWidth = handlePaint.strokeWidth
 
-        val left = imageRect.left.toFloat() + strokeWidth / 2
-        val top = imageRect.top.toFloat() + strokeWidth / 2
-        val right = imageRect.right.toFloat() - strokeWidth / 2
-        val bottom = imageRect.bottom.toFloat() - strokeWidth / 2
+        val left = cropRect.left.toFloat() + strokeWidth / 2
+        val top = cropRect.top.toFloat() + strokeWidth / 2
+        val right = cropRect.right.toFloat() - strokeWidth / 2
+        val bottom = cropRect.bottom.toFloat() - strokeWidth / 2
 
         canvas.drawLine(left, top, left + handleSize, top, handlePaint)
         canvas.drawLine(left, top, left, top + handleSize, handlePaint)
@@ -264,12 +330,12 @@ class CompositionView @JvmOverloads constructor(
     private fun drawMidHandles(canvas: Canvas) {
         val strokeWidth = handlePaint.strokeWidth
 
-        val centerX = (imageRect.left.toFloat() + imageRect.right.toFloat()) / 2
-        val centerY = (imageRect.top.toFloat() + imageRect.bottom.toFloat()) / 2
-        val top = imageRect.top.toFloat() + strokeWidth / 2
-        val left = imageRect.left.toFloat() + strokeWidth / 2
-        val right = imageRect.right.toFloat() - strokeWidth / 2
-        val bottom = imageRect.bottom.toFloat() - strokeWidth / 2
+        val centerX = (cropRect.left.toFloat() + cropRect.right.toFloat()) / 2
+        val centerY = (cropRect.top.toFloat() + cropRect.bottom.toFloat()) / 2
+        val top = cropRect.top.toFloat() + strokeWidth / 2
+        val left = cropRect.left.toFloat() + strokeWidth / 2
+        val right = cropRect.right.toFloat() - strokeWidth / 2
+        val bottom = cropRect.bottom.toFloat() - strokeWidth / 2
 
         canvas.drawLine(centerX, top, centerX - handleSize / 2, top, handlePaint)
         canvas.drawLine(centerX, top, centerX + handleSize / 2, top, handlePaint)
