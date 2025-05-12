@@ -185,6 +185,46 @@ class CompositionView @JvmOverloads constructor(
                     invalidate()
                 }
 
+                DragMode.TOP_START -> {
+                    val deltaX = event.x - lastX
+                    val deltaY = event.y - lastY
+                    cropRect.left = (cropRect.left + deltaX).coerceIn(imageRect.left.toFloat(), cropRect.right.toFloat() - minCropRectSize).toInt()
+                    cropRect.top = (cropRect.top + deltaY).coerceIn(imageRect.top.toFloat(), cropRect.bottom.toFloat() - minCropRectSize).toInt()
+                    lastX = event.x
+                    lastY = event.y
+                    invalidate()
+                }
+
+                DragMode.TOP_END -> {
+                    val deltaX = event.x - lastX
+                    val deltaY = event.y - lastY
+                    cropRect.right = (cropRect.right + deltaX).coerceIn(cropRect.left.toFloat() + minCropRectSize, imageRect.right.toFloat()).toInt()
+                    cropRect.top = (cropRect.top + deltaY).coerceIn(imageRect.top.toFloat(), cropRect.bottom.toFloat() - minCropRectSize).toInt()
+                    lastX = event.x
+                    lastY = event.y
+                    invalidate()
+                }
+
+                DragMode.BOTTOM_START -> {
+                    val deltaX = event.x - lastX
+                    val deltaY = event.y - lastY
+                    cropRect.left = (cropRect.left + deltaX).coerceIn(imageRect.left.toFloat(), cropRect.right.toFloat() - minCropRectSize).toInt()
+                    cropRect.bottom = (cropRect.bottom + deltaY).coerceIn(cropRect.top.toFloat() + minCropRectSize, imageRect.bottom.toFloat()).toInt()
+                    lastX = event.x
+                    lastY = event.y
+                    invalidate()
+                }
+
+                DragMode.BOTTOM_END -> {
+                    val deltaX = event.x - lastX
+                    val deltaY = event.y - lastY
+                    cropRect.right = (cropRect.right + deltaX).coerceIn(cropRect.left.toFloat() + minCropRectSize, imageRect.right.toFloat()).toInt()
+                    cropRect.bottom = (cropRect.bottom + deltaY).coerceIn(cropRect.top.toFloat() + minCropRectSize, imageRect.bottom.toFloat()).toInt()
+                    lastX = event.x
+                    lastY = event.y
+                    invalidate()
+                }
+
                 else -> {}
             }
         }
@@ -252,10 +292,14 @@ class CompositionView @JvmOverloads constructor(
 
     fun rotateLeft() {
         rotationDegrees -= 90
+        needResetCropRect = true
+        invalidate()
     }
 
     fun rotateRight() {
         rotationDegrees += 90
+        needResetCropRect = true
+        invalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -296,6 +340,13 @@ class CompositionView @JvmOverloads constructor(
                 null
             )
         }
+
+        // Draw mask
+        val saveCount = canvas.save()
+        canvas.clipRect(imageRect)
+        canvas.clipOutRect(cropRect)
+        canvas.drawColor(resources.getColor(R.color.black_50p, null))
+        canvas.restoreToCount(saveCount)
     }
 
     private fun drawBorder(canvas: Canvas) {
