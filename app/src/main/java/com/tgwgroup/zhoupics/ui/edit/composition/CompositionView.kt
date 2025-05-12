@@ -68,7 +68,41 @@ class CompositionView @JvmOverloads constructor(
     var cropMode = CROP_FREEFORM
         set(value) {
             field = value
+            when (value) {
+                CROP_ORIGINAL -> {
+                    if (imageHeight != 0) {
+                        cropRatio = imageWidth.toFloat() / imageHeight.toFloat()
+                    }
+                }
+                CROP_1_1 -> {
+                    cropRatio = 1f
+                }
+                CROP_2_3 -> {
+                    cropRatio = 2 / 3f
+                }
+                CROP_3_2 -> {
+                    cropRatio = 3 / 2f
+                }
+                CROP_3_4 -> {
+                    cropRatio = 3 / 4f
+                }
+                CROP_4_3 -> {
+                    cropRatio = 4 / 3f
+                }
+                CROP_9_16 -> {
+                    cropRatio = 9 / 16f
+                }
+                CROP_16_9 -> {
+                    cropRatio = 16 / 9f
+                }
+            }
             invalidate()
+        }
+
+    private var cropRatio: Float? = null
+        set(value) {
+            field = value
+            onCropRatioChanged(value)
         }
 
     private var dragMode: DragMode? = null
@@ -228,24 +262,39 @@ class CompositionView @JvmOverloads constructor(
                 else -> {}
             }
         }
-        when (dragMode) {
-            DragMode.FRAME_MOVE -> {
-                val deltaX = event.x - lastX
-                val deltaY = event.y - lastY
-                if (cropRect.left + deltaX >= imageRect.left && cropRect.right + deltaX <= imageRect.right) {
-                    cropRect.left = (cropRect.left + deltaX).toInt()
-                    cropRect.right = (cropRect.right + deltaX).toInt()
-                }
-                if (cropRect.top + deltaY >= imageRect.top && cropRect.bottom + deltaY <= imageRect.bottom) {
-                    cropRect.top = (cropRect.top + deltaY).toInt()
-                    cropRect.bottom = (cropRect.bottom + deltaY).toInt()
-                }
-                lastX = event.x
-                lastY = event.y
-                invalidate()
+        if (dragMode == DragMode.FRAME_MOVE) {
+            val deltaX = event.x - lastX
+            val deltaY = event.y - lastY
+            if (cropRect.left + deltaX >= imageRect.left && cropRect.right + deltaX <= imageRect.right) {
+                cropRect.left = (cropRect.left + deltaX).toInt()
+                cropRect.right = (cropRect.right + deltaX).toInt()
             }
+            if (cropRect.top + deltaY >= imageRect.top && cropRect.bottom + deltaY <= imageRect.bottom) {
+                cropRect.top = (cropRect.top + deltaY).toInt()
+                cropRect.bottom = (cropRect.bottom + deltaY).toInt()
+            }
+            lastX = event.x
+            lastY = event.y
+            invalidate()
+        }
+    }
 
-            else -> {}
+    private fun onCropRatioChanged(ratio: Float?) {
+        val imageRatio = imageWidth.toFloat() / imageHeight.toFloat()
+        if (ratio != null) {
+            if (ratio >= imageRatio) {
+                cropRect.left = imageRect.left
+                cropRect.right = imageRect.right
+                val height = (imageRect.width() / ratio).toInt()
+                cropRect.top = (imageRect.centerY() - height / 2)
+                cropRect.bottom = (imageRect.centerY() + height / 2)
+            } else {
+                cropRect.top = imageRect.top
+                cropRect.bottom = imageRect.bottom
+                val width = (imageRect.height() * ratio).toInt()
+                cropRect.left = (imageRect.centerX() - width / 2)
+                cropRect.right = (imageRect.centerX() + width / 2)
+            }
         }
     }
 
@@ -286,6 +335,9 @@ class CompositionView @JvmOverloads constructor(
         imageWidth = bitmap.width
         imageHeight = bitmap.height
         createSecondaryCanvas()
+        if (cropMode == CROP_ORIGINAL) {
+            cropRatio = imageWidth.toFloat() / imageHeight.toFloat()
+        }
         LogUtil.d(TAG, "setImageBitmap: imageWidth=$imageWidth, imageHeight=$imageHeight")
         invalidate()
     }
