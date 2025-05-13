@@ -68,6 +68,12 @@ class CompositionView @JvmOverloads constructor(
         color = resources.getColor(R.color.white, null)
     }
 
+    private val gridLinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = gridLineWidth.toFloat()
+        color = resources.getColor(R.color.white, null)
+    }
+
     var cropMode = CROP_FREEFORM
         set(value) {
             field = value
@@ -113,6 +119,8 @@ class CompositionView @JvmOverloads constructor(
     private val handleSize = dpToPx(48f)
 
     private val minCropRectSize = dpToPx(56f)
+
+    private val gridLineWidth = dpToPx(1f)
 
     private var needResetCropRect = true
 
@@ -450,6 +458,9 @@ class CompositionView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         drawImage(canvas)
+        if (dragMode != null) {
+            drawGrids(canvas)
+        }
         drawBorder(canvas)
         drawCornerHandles(canvas)
         if (cropMode == CROP_FREEFORM) {
@@ -492,6 +503,37 @@ class CompositionView @JvmOverloads constructor(
         canvas.clipOutRect(cropRect)
         canvas.drawColor(resources.getColor(R.color.black_50p, null))
         canvas.restoreToCount(saveCount)
+    }
+
+    private fun drawGrids(canvas: Canvas) {
+        canvas.drawLine(
+            cropRect.left + (1 / 3f) * cropRect.width() - gridLineWidth / 2f,
+            cropRect.top.toFloat(),
+            cropRect.left + (1 / 3f) * cropRect.width() - gridLineWidth / 2f,
+            cropRect.bottom.toFloat(),
+            gridLinePaint
+        )
+        canvas.drawLine(
+            cropRect.left + (2 / 3f) * cropRect.width() - gridLineWidth / 2f,
+            cropRect.top.toFloat(),
+            cropRect.left + (2 / 3f) * cropRect.width() - gridLineWidth / 2f,
+            cropRect.bottom.toFloat(),
+            gridLinePaint
+        )
+        canvas.drawLine(
+            cropRect.left.toFloat(),
+            cropRect.top + (1 / 3f) * cropRect.height() - gridLineWidth / 2f,
+            cropRect.right.toFloat(),
+            cropRect.top + (1 / 3f) * cropRect.height() - gridLineWidth / 2f,
+            gridLinePaint
+        )
+        canvas.drawLine(
+            cropRect.left.toFloat(),
+            cropRect.top + (2 / 3f) * cropRect.height() - gridLineWidth / 2f,
+            cropRect.right.toFloat(),
+            cropRect.top + (2 / 3f) * cropRect.height() - gridLineWidth / 2f,
+            gridLinePaint
+        )
     }
 
     private fun drawBorder(canvas: Canvas) {

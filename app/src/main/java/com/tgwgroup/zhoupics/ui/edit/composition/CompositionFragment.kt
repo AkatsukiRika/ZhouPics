@@ -2,6 +2,7 @@ package com.tgwgroup.zhoupics.ui.edit.composition
 
 import androidx.core.view.isInvisible
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
@@ -12,7 +13,7 @@ import com.tgwgroup.zhoupics.ui.edit.EditViewModel
 import com.tgwgroup.zhoupics.utils.collectIn
 
 class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
-    private val viewModel by activityViewModels<CompositionViewModel>()
+    private val viewModel by viewModels<CompositionViewModel>()
 
     private val editViewModel by activityViewModels<EditViewModel>()
 

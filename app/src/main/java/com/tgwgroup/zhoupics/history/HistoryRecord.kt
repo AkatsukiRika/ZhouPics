@@ -1,5 +1,7 @@
 package com.tgwgroup.zhoupics.history
 
+import android.net.Uri
+
 open class HistoryRecord
 
 class InitRecord : HistoryRecord()
@@ -19,4 +21,8 @@ data class AdjustRecord(
     val saturationProgress: Float = 0f,
     val sharpnessProgress: Float = 0f,
     val brightnessProgress: Float = 0f
+) : HistoryRecord()
+
+data class UpdateImageRecord(
+    val imageUri: Uri
 ) : HistoryRecord()
