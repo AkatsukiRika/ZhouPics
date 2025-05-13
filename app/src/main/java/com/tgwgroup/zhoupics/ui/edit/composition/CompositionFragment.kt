@@ -81,6 +81,14 @@ class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
             binding.ivComposition.rotateRight()
             viewModel.selectCropItem(CROP_FREEFORM)
         }
+        binding.btnMirror.setOnClickListener {
+            binding.ivComposition.mirror()
+            viewModel.selectCropItem(CROP_FREEFORM)
+        }
+        binding.btnFlip.setOnClickListener {
+            binding.ivComposition.flip()
+            viewModel.selectCropItem(CROP_FREEFORM)
+        }
     }
 
     private fun initCollectors() {

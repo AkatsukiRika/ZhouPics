@@ -49,6 +49,8 @@ class CompositionView @JvmOverloads constructor(
     private var rotatedSecondaryCanvas: Canvas? = null
 
     private var rotationDegrees = 0
+    private var scaleX = 1f
+    private var scaleY = 1f
 
     private val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -131,6 +133,10 @@ class CompositionView @JvmOverloads constructor(
 
                 MotionEvent.ACTION_MOVE -> {
                     onActionMove(event)
+                }
+
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    dragMode = null
                 }
             }
         }
@@ -382,7 +388,7 @@ class CompositionView @JvmOverloads constructor(
         }
     }
 
-    private fun rotateImageOnSecondaryCanvas() {
+    private fun transformImageOnSecondaryCanvas() {
         val imageBitmap = imageBitmap ?: return
 
         originalSecondaryCanvas?.drawColor(0, android.graphics.PorterDuff.Mode.CLEAR)
@@ -394,10 +400,12 @@ class CompositionView @JvmOverloads constructor(
         if (rotationDegrees % 180 == 0) {
             val tempMatrix = Matrix()
             tempMatrix.postRotate(rotationDegrees.toFloat(), centerX, centerY)
+            tempMatrix.postScale(scaleX, scaleY, centerX, centerY)
             originalSecondaryCanvas?.drawBitmap(imageBitmap, tempMatrix, null)
         } else {
             val tempMatrix = Matrix()
             tempMatrix.postRotate(rotationDegrees.toFloat(), centerX, centerY)
+            tempMatrix.postScale(scaleY, scaleX, centerX, centerY)
             tempMatrix.postTranslate((imageBitmap.height - imageBitmap.width) / 2f, (imageBitmap.width - imageBitmap.height) / 2f)
             rotatedSecondaryCanvas?.drawBitmap(imageBitmap, tempMatrix, null)
         }
@@ -427,6 +435,18 @@ class CompositionView @JvmOverloads constructor(
         invalidate()
     }
 
+    fun mirror() {
+        scaleX = -scaleX
+        needResetCropRect = true
+        invalidate()
+    }
+
+    fun flip() {
+        scaleY = -scaleY
+        needResetCropRect = true
+        invalidate()
+    }
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         drawImage(canvas)
@@ -438,7 +458,7 @@ class CompositionView @JvmOverloads constructor(
     }
 
     private fun drawImage(canvas: Canvas) {
-        rotateImageOnSecondaryCanvas()
+        transformImageOnSecondaryCanvas()
 
         val rotatedImageWidth = if (rotationDegrees % 180 == 0) imageWidth else imageHeight
         val rotatedImageHeight = if (rotationDegrees % 180 == 0) imageHeight else imageWidth
