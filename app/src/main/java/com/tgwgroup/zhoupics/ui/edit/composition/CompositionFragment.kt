@@ -75,9 +75,11 @@ class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
         })
         binding.btnRotateLeft.setOnClickListener {
             binding.ivComposition.rotateLeft()
+            viewModel.selectCropItem(CROP_FREEFORM)
         }
         binding.btnRotateRight.setOnClickListener {
             binding.ivComposition.rotateRight()
+            viewModel.selectCropItem(CROP_FREEFORM)
         }
     }
 

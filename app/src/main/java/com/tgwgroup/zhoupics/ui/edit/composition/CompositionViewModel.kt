@@ -91,7 +91,7 @@ class CompositionViewModel : ViewModel() {
         )
     }
 
-    private fun selectCropItem(id: Int) {
+    fun selectCropItem(id: Int) {
         itemListMutable.value = itemListMutable.value.map { item ->
             if (item.id == id) {
                 item.copy(selected = true)

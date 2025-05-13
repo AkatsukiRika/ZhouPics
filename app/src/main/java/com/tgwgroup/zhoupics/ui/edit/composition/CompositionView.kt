@@ -13,6 +13,7 @@ import android.view.View
 import com.tgwgroup.baselib.utils.LogUtil
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.utils.dpToPx
+import kotlin.math.roundToInt
 
 class CompositionView @JvmOverloads constructor(
     context: Context,
@@ -261,6 +262,74 @@ class CompositionView @JvmOverloads constructor(
 
                 else -> {}
             }
+        } else if (cropRatio != null) {
+            when (dragMode) {
+                DragMode.TOP_START -> {
+                    val deltaX = event.x - lastX
+                    val deltaY = deltaX / cropRatio!!
+                    val newLeft = (cropRect.left + deltaX).roundToInt()
+                    val leftCoerce = newLeft.coerceIn(imageRect.left, cropRect.right - minCropRectSize)
+                    val newTop = (cropRect.top + deltaY).roundToInt()
+                    val topCoerce = newTop.coerceIn(imageRect.top, cropRect.bottom - minCropRectSize)
+                    if (newLeft == leftCoerce && newTop == topCoerce) {
+                        cropRect.left = leftCoerce
+                        cropRect.top = topCoerce
+                        lastX = event.x
+                        lastY = event.y
+                        invalidate()
+                    }
+                }
+
+                DragMode.TOP_END -> {
+                    val deltaX = event.x - lastX
+                    val deltaY = -deltaX / cropRatio!!
+                    val newRight = (cropRect.right + deltaX).roundToInt()
+                    val rightCoerce = newRight.coerceIn(cropRect.left + minCropRectSize, imageRect.right)
+                    val newTop = (cropRect.top + deltaY).roundToInt()
+                    val topCoerce = newTop.coerceIn(imageRect.top, cropRect.bottom - minCropRectSize)
+                    if (newRight == rightCoerce && newTop == topCoerce) {
+                        cropRect.right = rightCoerce
+                        cropRect.top = topCoerce
+                        lastX = event.x
+                        lastY = event.y
+                        invalidate()
+                    }
+                }
+
+                DragMode.BOTTOM_START -> {
+                    val deltaX = event.x - lastX
+                    val deltaY = -deltaX / cropRatio!!
+                    val newLeft = (cropRect.left + deltaX).roundToInt()
+                    val leftCoerce = newLeft.coerceIn(imageRect.left, cropRect.right - minCropRectSize)
+                    val newBottom = (cropRect.bottom + deltaY).roundToInt()
+                    val bottomCoerce = newBottom.coerceIn(cropRect.top + minCropRectSize, imageRect.bottom)
+                    if (newLeft == leftCoerce && newBottom == bottomCoerce) {
+                        cropRect.left = leftCoerce
+                        cropRect.bottom = bottomCoerce
+                        lastX = event.x
+                        lastY = event.y
+                        invalidate()
+                    }
+                }
+
+                DragMode.BOTTOM_END -> {
+                    val deltaX = event.x - lastX
+                    val deltaY = deltaX / cropRatio!!
+                    val newRight = (cropRect.right + deltaX).roundToInt()
+                    val rightCoerce = newRight.coerceIn(cropRect.left + minCropRectSize, imageRect.right)
+                    val newBottom = (cropRect.bottom + deltaY).roundToInt()
+                    val bottomCoerce = newBottom.coerceIn(cropRect.top + minCropRectSize, imageRect.bottom)
+                    if (newRight == rightCoerce && newBottom == bottomCoerce) {
+                        cropRect.right = rightCoerce
+                        cropRect.bottom = bottomCoerce
+                        lastX = event.x
+                        lastY = event.y
+                        invalidate()
+                    }
+                }
+
+                else -> {}
+            }
         }
         if (dragMode == DragMode.FRAME_MOVE) {
             val deltaX = event.x - lastX
@@ -280,7 +349,11 @@ class CompositionView @JvmOverloads constructor(
     }
 
     private fun onCropRatioChanged(ratio: Float?) {
-        val imageRatio = imageWidth.toFloat() / imageHeight.toFloat()
+        val imageRatio = if (rotationDegrees % 180 == 0) {
+            imageWidth.toFloat() / imageHeight.toFloat()
+        } else {
+            imageHeight.toFloat() / imageWidth.toFloat()
+        }
         if (ratio != null) {
             if (ratio >= imageRatio) {
                 cropRect.left = imageRect.left
