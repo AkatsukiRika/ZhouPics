@@ -45,6 +45,7 @@ class PreviewActivity : BaseActivity<ActivityPreviewBinding>() {
                 }
             }
             binding.tvEdit.setOnClickListener {
+                finish()
                 EditActivity.start(this, uri)
             }
             binding.tvInfo.text = getInfoStringFromUri(uri)

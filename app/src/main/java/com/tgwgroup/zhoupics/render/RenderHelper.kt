@@ -206,6 +206,21 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         }
     }
 
+    fun getResultBitmap(): Bitmap? {
+        sourceRgbaData?.let {
+            sourceRawData?.ProcessData(it, outWidth, outHeight, outWidth * 4, GPUPixelSourceRawData.FRAME_TYPE_RGBA)
+            val processedRgba = sinkRawData?.GetRgbaBuffer()
+            processedRgba?.let {
+                val rgbaWidth = sinkRawData?.GetWidth() ?: 0
+                val rgbaHeight = sinkRawData?.GetHeight() ?: 0
+                val bitmap = Bitmap.createBitmap(rgbaWidth, rgbaHeight, Bitmap.Config.ARGB_8888)
+                bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(processedRgba))
+                return bitmap
+            }
+        }
+        return null
+    }
+
     fun destroy() {
         sourceRawData?.Destroy()
         sourceRawData = null

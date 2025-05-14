@@ -33,12 +33,14 @@ import com.tgwgroup.zhoupics.history.UpdateImageRecord
 import com.tgwgroup.zhoupics.ui.edit.compare.CompareLoadingActivity
 import com.tgwgroup.zhoupics.ui.edit.compare.CompareModeSelectBottomSheet
 import com.tgwgroup.zhoupics.ui.edit.composition.CompositionFragment
+import com.tgwgroup.zhoupics.ui.export.ExportActivity
 import com.tgwgroup.zhoupics.ui.loading.LoadingDialogFragment
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.utils.dpToPx
 import com.tgwgroup.zhoupics.utils.getBitmap
 import com.tgwgroup.zhoupics.utils.getParcelableExtraCompat
 import com.tgwgroup.zhoupics.utils.clearCache
+import com.tgwgroup.zhoupics.utils.saveBitmapToGallery
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -185,6 +187,7 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
             finish()
         }
         binding.ivExport.setOnClickListener {
+            export()
         }
         binding.ivUndo.setOnClickListener {
             viewModel.historyHelper.undo()
@@ -337,4 +340,22 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
             }
         }
     }
+
+    private fun export() {
+        lifecycleScope.launch(Dispatchers.Main) {
+            LoadingDialogFragment.show(supportFragmentManager)
+
+            withContext(Dispatchers.IO) {
+                renderHelper.getResultBitmap()?.let {
+                    saveBitmapToGallery(this@EditActivity, it, filename = getExportedFilename())
+                }
+            }
+
+            delay(500)
+            LoadingDialogFragment.dismiss(supportFragmentManager)
+            ExportActivity.start(this@EditActivity)
+        }
+    }
+
+    private fun getExportedFilename() = "zpics_${System.currentTimeMillis()}.jpg"
 }
