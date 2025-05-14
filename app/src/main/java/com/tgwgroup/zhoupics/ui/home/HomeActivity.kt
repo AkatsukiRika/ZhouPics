@@ -1,5 +1,7 @@
 package com.tgwgroup.zhoupics.ui.home
 
+import android.content.Context
+import android.content.Intent
 import com.tgwgroup.zhoupics.base.BaseActivity
 import com.tgwgroup.zhoupics.databinding.ActivityHomeBinding
 import com.tgwgroup.zhoupics.ui.gallery.GalleryActivity
@@ -12,7 +14,15 @@ import com.tgwgroup.zhoupics.utils.requestReadStoragePermission
 class HomeActivity : BaseActivity<ActivityHomeBinding>() {
     companion object {
         const val TAG = "HomeActivity"
+
+        fun start(context: Context) {
+            val intent = Intent(context, HomeActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+            context.startActivity(intent)
+        }
     }
+
     override fun onBindingCreate(): ActivityHomeBinding {
         return ActivityHomeBinding.inflate(layoutInflater)
     }

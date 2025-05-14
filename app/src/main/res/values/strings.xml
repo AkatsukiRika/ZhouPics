@@ -47,4 +47,7 @@
     <string name="freeform">Freeform</string>
     <string name="original">Original</string>
     <string name="saved_to_gallery">Saved to Gallery</string>
+    <string name="saved_successfully">Saved successfully!</string>
+    <string name="save_failed">Failed to save photo</string>
+    <string name="back_to_home">Back to Home</string>
 </resources>

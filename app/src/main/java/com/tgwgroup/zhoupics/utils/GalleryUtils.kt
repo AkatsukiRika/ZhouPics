@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
+import com.tgwgroup.baselib.utils.LogUtil
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.ui.gallery.AlbumItem
 import com.tgwgroup.zhoupics.ui.gallery.ImageFormat
@@ -15,6 +16,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+private const val TAG = "GalleryUtils"
+
 private val preloadedAlbumListMutable = mutableListOf<AlbumItem>()
 val preloadedAlbumList: List<AlbumItem> = preloadedAlbumListMutable
 
@@ -24,6 +27,7 @@ val galleryLoading: StateFlow<Boolean> = galleryLoadingMutable
 private val scope = MainScope()
 
 fun preloadAlbumList() {
+    LogUtil.d(TAG, "preloadAlbumList hasReadStoragePermission=${hasReadStoragePermission(appContext)}")
     if (hasReadStoragePermission(appContext)) {
         scope.launch(Dispatchers.IO) {
             getAlbumList(appContext)
@@ -60,11 +64,13 @@ private fun getAlbumList(context: Context) {
         }
     }
 
-    tempAlbumList.add(0, AlbumItem(
+    val allPhotosAlbum = AlbumItem(
         id = null,
         name = context.getString(R.string.all_photos),
         images = getImagesFromAlbum(context, null)
-    ))
+    )
+    LogUtil.d(TAG, "all photos size = ${allPhotosAlbum.images.size}")
+    tempAlbumList.add(0, allPhotosAlbum)
 
     if (tempAlbumList.isNotEmpty()) {
         tempAlbumList[0].selected = true

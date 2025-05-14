@@ -30,4 +30,51 @@
         android:textColor="@color/white"
         android:textSize="20sp" />
 
+    <FrameLayout
+        android:id="@+id/fl_preview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintTop_toBottomOf="@id/iv_back"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:background="@color/dark_bg">
+
+        <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+            android:id="@+id/iv_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_select_photo"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        app:layout_constraintTop_toBottomOf="@id/fl_preview"
+        android:background="@drawable/shape_bg_r20"
+        android:backgroundTint="@color/theme_opposite"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="24dp"
+        android:foreground="@drawable/dark_ripple_rounded_r20">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            app:srcCompat="@drawable/ic_undo"
+            android:tint="@color/black" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/FontBold"
+            android:text="@string/back_to_home"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:layout_marginStart="8dp" />
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
