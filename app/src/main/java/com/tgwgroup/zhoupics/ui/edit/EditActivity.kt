@@ -28,15 +28,19 @@ import com.tgwgroup.baselib.utils.LogUtil
 import com.tgwgroup.zhoupics.constants.EXTRA_URI
 import com.tgwgroup.zhoupics.constants.MODE_FAST
 import com.tgwgroup.zhoupics.constants.MODE_PRECISE
+import com.tgwgroup.zhoupics.history.HistoryRecord
+import com.tgwgroup.zhoupics.history.UpdateImageRecord
 import com.tgwgroup.zhoupics.ui.edit.compare.CompareLoadingActivity
 import com.tgwgroup.zhoupics.ui.edit.compare.CompareModeSelectBottomSheet
 import com.tgwgroup.zhoupics.ui.edit.composition.CompositionFragment
+import com.tgwgroup.zhoupics.ui.loading.LoadingDialogFragment
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.utils.dpToPx
 import com.tgwgroup.zhoupics.utils.getBitmap
 import com.tgwgroup.zhoupics.utils.getParcelableExtraCompat
 import com.tgwgroup.zhoupics.utils.clearCache
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -45,7 +49,9 @@ import kotlinx.coroutines.withContext
 class EditActivity : BaseActivity<ActivityEditBinding>() {
     private var originalImageUri: Uri? = null
 
-    var originalBitmap: Bitmap? = null
+    private var currentImageUri: Uri? = null
+
+    var currentBitmap: Bitmap? = null
 
     private val bottomTabAdapter = BottomTabAdapter()
 
@@ -93,7 +99,7 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
 
         loadOriginalImage(
             onLoad = {
-                originalBitmap?.let {
+                currentBitmap?.let {
                     onOriginalBitmapLoaded(it)
                 }
             },
@@ -129,8 +135,10 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
         renderHelper.startRender(bitmap)
     }
 
-    fun updateImage(bitmap: Bitmap) {
-        binding.imageView.setImage(ImageSource.bitmap(bitmap))
+    fun updateImage(uri: Uri, bitmap: Bitmap) {
+        currentImageUri = uri
+        currentBitmap = bitmap
+        binding.imageView.setImage(ImageSource.bitmap(bitmap.copy(Bitmap.Config.ARGB_8888, true)))
         binding.surfaceView.updateLayoutParams<LayoutParams> {
             width = bitmap.width
             height = bitmap.height
@@ -242,6 +250,49 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
             binding.ivRedo.isVisible = !it
             binding.ivCompare.isVisible = !it
         }
+
+        viewModel.historyHelper.undoEvent.collectIn(lifecycleScope) {
+            handleUndoRedoEvent(it.receivedRecord)
+        }
+
+        viewModel.historyHelper.redoEvent.collectIn(lifecycleScope) {
+            handleUndoRedoEvent(it.receivedRecord)
+        }
+    }
+
+    private fun handleUndoRedoEvent(receivedRecord: HistoryRecord) {
+        if (receivedRecord is UpdateImageRecord) {
+            kotlin.runCatching {
+                updateImageWithLoading(Uri.parse(receivedRecord.imageUri))
+            }.onFailure {
+                it.printStackTrace()
+            }
+        } else if (viewModel.historyHelper.isBeforeEarliestRecord(UpdateImageRecord::class.java)) {
+            originalImageUri?.let {
+                runCatching {
+                    updateImageWithLoading(it)
+                }.onFailure {
+                    it.printStackTrace()
+                }
+            }
+        }
+    }
+
+    private fun updateImageWithLoading(uri: Uri) {
+        if (uri == currentImageUri) {
+            return
+        }
+        LoadingDialogFragment.show(supportFragmentManager)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val bitmap = getBitmap(uri)
+            withContext(Dispatchers.Main) {
+                bitmap?.let {
+                    updateImage(uri, it)
+                }
+                delay(500)
+                LoadingDialogFragment.dismiss(supportFragmentManager)
+            }
+        }
     }
 
     private fun updateTabFragment(tabId: Int) {
@@ -270,10 +321,11 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
 
     private fun loadOriginalImage(onLoad: (() -> Unit)? = null, onLoadFailed: (() -> Unit)? = null) {
         originalImageUri = intent.getParcelableExtraCompat(EXTRA_URI, Uri::class.java)
+        currentImageUri = originalImageUri
         lifecycleScope.launch(Dispatchers.IO) {
             originalImageUri?.let {
-                originalBitmap = getBitmap(it)
-                if (originalBitmap != null) {
+                currentBitmap = getBitmap(it)
+                if (currentBitmap != null) {
                     withContext(Dispatchers.Main) {
                         onLoad?.invoke()
                     }

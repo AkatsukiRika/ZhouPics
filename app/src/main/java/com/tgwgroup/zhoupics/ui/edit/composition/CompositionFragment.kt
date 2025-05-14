@@ -45,7 +45,7 @@ class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
         initCollectors()
 
         val binding = binding ?: return
-        getEditActivity()?.originalBitmap?.let {
+        getEditActivity()?.currentBitmap?.let {
             binding.ivComposition.setImageBitmap(it)
         }
     }
@@ -115,11 +115,10 @@ class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
 
                 saveBitmap(scaledBitmap, PREFIX_CROP_RESULT)?.let { uri ->
                     editViewModel.historyHelper.addRecord(UpdateImageRecord(uri.toString()))
-                }
 
-                withContext(Dispatchers.Main) {
-                    getEditActivity()?.originalBitmap = scaledBitmap
-                    getEditActivity()?.updateImage(scaledBitmap)
+                    withContext(Dispatchers.Main) {
+                        getEditActivity()?.updateImage(uri, scaledBitmap)
+                    }
                 }
             }
 
