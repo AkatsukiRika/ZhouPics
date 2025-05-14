@@ -8,9 +8,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
 import com.tgwgroup.zhoupics.base.BaseFragment
 import com.tgwgroup.zhoupics.databinding.FragmentCompositionBinding
+import com.tgwgroup.zhoupics.history.UpdateImageRecord
 import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.ui.edit.EditViewModel
+import com.tgwgroup.zhoupics.ui.loading.LoadingDialogFragment
+import com.tgwgroup.zhoupics.utils.MAX_SIZE
+import com.tgwgroup.zhoupics.utils.PREFIX_CROP_RESULT
 import com.tgwgroup.zhoupics.utils.collectIn
+import com.tgwgroup.zhoupics.utils.saveBitmap
+import com.tgwgroup.zhoupics.utils.scaleByLongEdge
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
     private val viewModel by viewModels<CompositionViewModel>()
@@ -53,7 +63,7 @@ class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
             finishFragment()
         }
         binding.ivConfirm.setOnClickListener {
-            finishFragment()
+            saveResult()
         }
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -89,6 +99,35 @@ class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
         binding.btnFlip.setOnClickListener {
             binding.ivComposition.flip()
             viewModel.selectCropItem(CROP_FREEFORM)
+        }
+    }
+
+    private fun saveResult() {
+        val binding = binding ?: return
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
+                LoadingDialogFragment.show(childFragmentManager)
+            }
+
+            binding.ivComposition.getResultBitmap()?.let { resultBitmap ->
+                val scaledBitmap = scaleByLongEdge(resultBitmap, MAX_SIZE)
+
+                saveBitmap(scaledBitmap, PREFIX_CROP_RESULT)?.let { uri ->
+                    editViewModel.historyHelper.addRecord(UpdateImageRecord(uri.toString()))
+                }
+
+                withContext(Dispatchers.Main) {
+                    getEditActivity()?.originalBitmap = scaledBitmap
+                    getEditActivity()?.updateImage(scaledBitmap)
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                delay(500)
+                LoadingDialogFragment.dismiss(childFragmentManager)
+                finishFragment()
+            }
         }
     }
 

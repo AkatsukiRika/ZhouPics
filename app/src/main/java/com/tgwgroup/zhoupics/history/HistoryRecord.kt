@@ -1,7 +1,5 @@
 package com.tgwgroup.zhoupics.history
 
-import android.net.Uri
-
 open class HistoryRecord
 
 class InitRecord : HistoryRecord()
@@ -24,5 +22,5 @@ data class AdjustRecord(
 ) : HistoryRecord()
 
 data class UpdateImageRecord(
-    val imageUri: Uri
+    val imageUri: String
 ) : HistoryRecord()

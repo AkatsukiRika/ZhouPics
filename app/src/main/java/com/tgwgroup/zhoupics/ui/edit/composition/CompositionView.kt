@@ -487,8 +487,7 @@ class CompositionView @JvmOverloads constructor(
             needResetCropRect = false
         }
 
-        val bitmapToDraw = if (rotationDegrees % 180 == 0) originalSecondaryBitmap else rotatedSecondaryBitmap
-        bitmapToDraw?.let {
+        getBitmapToDraw()?.let {
             canvas.drawBitmap(
                 it,
                 Rect(0, 0, it.width, it.height),
@@ -503,6 +502,41 @@ class CompositionView @JvmOverloads constructor(
         canvas.clipOutRect(cropRect)
         canvas.drawColor(resources.getColor(R.color.black_50p, null))
         canvas.restoreToCount(saveCount)
+    }
+
+    private fun getBitmapToDraw() = if (rotationDegrees % 180 == 0) originalSecondaryBitmap else rotatedSecondaryBitmap
+
+    fun getResultBitmap(): Bitmap? {
+        return getBitmapToDraw()?.let { sourceBitmap ->
+            val sourceRect = Rect()
+            val bitmapWidth = sourceBitmap.width
+            val bitmapHeight = sourceBitmap.height
+            
+            val scaleX = bitmapWidth.toFloat() / imageRect.width()
+            val scaleY = bitmapHeight.toFloat() / imageRect.height()
+            
+            sourceRect.left = ((cropRect.left - imageRect.left) * scaleX).toInt()
+            sourceRect.top = ((cropRect.top - imageRect.top) * scaleY).toInt()
+            sourceRect.right = sourceRect.left + (cropRect.width() * scaleX).toInt()
+            sourceRect.bottom = sourceRect.top + (cropRect.height() * scaleY).toInt()
+            
+            sourceRect.left = sourceRect.left.coerceIn(0, bitmapWidth)
+            sourceRect.top = sourceRect.top.coerceIn(0, bitmapHeight)
+            sourceRect.right = sourceRect.right.coerceIn(0, bitmapWidth)
+            sourceRect.bottom = sourceRect.bottom.coerceIn(0, bitmapHeight)
+            
+            try {
+                Bitmap.createBitmap(
+                    sourceBitmap,
+                    sourceRect.left,
+                    sourceRect.top,
+                    sourceRect.width(),
+                    sourceRect.height()
+                )
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 
     private fun drawGrids(canvas: Canvas) {

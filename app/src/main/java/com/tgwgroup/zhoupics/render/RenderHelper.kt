@@ -104,6 +104,10 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
         sharpenFilter?.AddSink(brightnessFilter)
         brightnessFilter?.AddSink(sinkRawData)
 
+        updateImage(bitmap)
+    }
+
+    fun updateImage(bitmap: Bitmap) {
         activity.lifecycleScope.launch(Dispatchers.IO) {
             val byteBuffer = ByteBuffer
                 .allocateDirect(bitmap.byteCount)

@@ -35,6 +35,7 @@ import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.utils.dpToPx
 import com.tgwgroup.zhoupics.utils.getBitmap
 import com.tgwgroup.zhoupics.utils.getParcelableExtraCompat
+import com.tgwgroup.zhoupics.utils.clearCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -105,6 +106,10 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
         initBottomTab()
         initTriggers()
         initCollectors()
+
+        lifecycleScope.launch {
+            clearCache()
+        }
     }
 
     private fun onOriginalBitmapLoaded(bitmap: Bitmap) {
@@ -122,6 +127,15 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
             }
         })
         renderHelper.startRender(bitmap)
+    }
+
+    fun updateImage(bitmap: Bitmap) {
+        binding.imageView.setImage(ImageSource.bitmap(bitmap))
+        binding.surfaceView.updateLayoutParams<LayoutParams> {
+            width = bitmap.width
+            height = bitmap.height
+        }
+        renderHelper.updateImage(bitmap)
     }
 
     override fun onDestroy() {
