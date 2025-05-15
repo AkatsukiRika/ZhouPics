@@ -18,11 +18,8 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "GalleryUtils"
 
-private val preloadedAlbumListMutable = mutableListOf<AlbumItem>()
-val preloadedAlbumList: List<AlbumItem> = preloadedAlbumListMutable
-
-private val galleryLoadingMutable = MutableStateFlow(true)
-val galleryLoading: StateFlow<Boolean> = galleryLoadingMutable
+private val preloadedAlbumListMutable = MutableStateFlow<List<AlbumItem>?>(null)
+val preloadedAlbumList: StateFlow<List<AlbumItem>?> = preloadedAlbumListMutable
 
 private val scope = MainScope()
 
@@ -76,9 +73,7 @@ private fun getAlbumList(context: Context) {
         tempAlbumList[0].selected = true
     }
 
-    preloadedAlbumListMutable.clear()
-    preloadedAlbumListMutable.addAll(tempAlbumList)
-    galleryLoadingMutable.value = false
+    preloadedAlbumListMutable.value = tempAlbumList
 }
 
 private fun getImagesFromAlbum(context: Context, bucketId: String?): List<ImageItem> {
@@ -156,8 +151,8 @@ private fun getImagesFromAlbum(context: Context, bucketId: String?): List<ImageI
 }
 
 fun getInfoStringFromUri(uri: Uri): String {
-    val allImages = preloadedAlbumList.flatMap { it.images }
-    val imageItem = allImages.find { it.uri == uri }
+    val allImages = preloadedAlbumList.value?.flatMap { it.images }
+    val imageItem = allImages?.find { it.uri == uri }
     if (imageItem != null) {
         return "${imageItem.format.displayName} | ${imageItem.width} x ${imageItem.height} | ${imageItem.getHumanizedSize()}"
     }

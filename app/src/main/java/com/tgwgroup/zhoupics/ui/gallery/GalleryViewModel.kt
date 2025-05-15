@@ -2,7 +2,6 @@ package com.tgwgroup.zhoupics.ui.gallery
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
-import com.tgwgroup.zhoupics.utils.galleryLoading
 import com.tgwgroup.zhoupics.utils.preloadedAlbumList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -22,12 +21,12 @@ class GalleryViewModel : ViewModel() {
     val loading: StateFlow<Boolean> = loadingMutable
 
     suspend fun queryAlbums(onClickImage: ((ImageClickEvent, Uri) -> Unit)? = null) = withContext(Dispatchers.IO) {
-        if (!galleryLoading.value) {
+        if (preloadedAlbumList.value != null) {
             delay(500)
             buildAlbumList(onClickImage)
         } else {
-            galleryLoading.collect {
-                if (!it) {
+            preloadedAlbumList.collect {
+                if (it != null) {
                     buildAlbumList(onClickImage)
                 }
             }
@@ -36,7 +35,7 @@ class GalleryViewModel : ViewModel() {
 
     private fun buildAlbumList(onClickImage: ((ImageClickEvent, Uri) -> Unit)?) {
         val albumList = mutableListOf<AlbumItem>()
-        preloadedAlbumList.forEach { albumItem ->
+        preloadedAlbumList.value?.forEach { albumItem ->
             val imageList = mutableListOf<ImageItem>()
             albumItem.images.forEach { imageItem ->
                 imageList.add(imageItem.copy())

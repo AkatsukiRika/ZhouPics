@@ -16,6 +16,7 @@ import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.ui.loading.LoadingDialogFragment
 import com.tgwgroup.zhoupics.ui.preview.PreviewActivity
 import com.tgwgroup.zhoupics.utils.collectIn
+import com.tgwgroup.zhoupics.utils.preloadAlbumList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -66,6 +67,11 @@ class GalleryActivity : BaseActivity<ActivityGalleryBinding>() {
         }
         initRecyclerView()
         initCollectors()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        preloadAlbumList()
     }
 
     private fun initRecyclerView() {
