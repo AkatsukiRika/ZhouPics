@@ -108,6 +108,13 @@ class CompareLoadingActivity : BaseActivity<ActivityCompareLoadingBinding>() {
         mode = intent.getIntExtra(EXTRA_MODE, MODE_FAST)
         uri1 = intent.getParcelableExtraCompat(EXTRA_URI, Uri::class.java)
         uri2 = intent.getParcelableExtraCompat(EXTRA_URI_2, Uri::class.java)
+
+        if (mode == MODE_PRECISE) {
+            binding.tvTitle.text = getString(R.string.precise_compare)
+        } else {
+            binding.tvTitle.text = getString(R.string.fast_compare)
+        }
+
         lifecycleScope.launch {
             bitmap1 = uri1?.let { getBitmap(it) }
             bitmap2 = uri2?.let { getBitmap(it) }

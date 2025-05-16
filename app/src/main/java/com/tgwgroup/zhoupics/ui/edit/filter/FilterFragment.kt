@@ -92,8 +92,8 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
                     binding.vSliderGradient.isInvisible = true
                     getEditActivity()?.tabFragmentSliderHeight?.value = 0
                 }
+                binding.slider.setValue(it.progress)
             }
-            binding.slider.setValue(it.progress)
             getEditActivity()?.renderHelper?.apply {
                 updateCustomFilter(type = it.id, progress = it.progress)
                 doRender()

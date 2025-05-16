@@ -91,6 +91,19 @@
         android:padding="4dp" />
 
     <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/iv_close"
+        app:layout_constraintBottom_toBottomOf="@id/iv_close"
+        style="@style/FontBold"
+        android:text="@string/settings"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_bottom_action"
         android:layout_width="match_parent"
         android:layout_height="48dp"
