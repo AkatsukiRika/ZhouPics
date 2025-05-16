@@ -43,7 +43,7 @@
         app:layout_constraintBottom_toTopOf="@id/tv_name"
         app:layout_constraintStart_toStartOf="@id/iv_filter"
         app:layout_constraintEnd_toEndOf="@id/iv_filter"
-        android:background="@color/filter_color_brown_light_75p"
+        android:background="@color/filter_color_grey_light_75p"
         android:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatImageView

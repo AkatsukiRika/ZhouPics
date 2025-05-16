@@ -6,6 +6,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.tgwgroup.zhoupics.databinding.ItemFilterBinding
 import com.tgwgroup.zhoupics.databinding.ItemFilterOriginalBinding
+import com.tgwgroup.zhoupics.utils.withAlpha
 
 class FilterAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
@@ -57,6 +58,8 @@ class FilterAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         fun bind(item: FilterItem) {
             binding.ivFilter.setImageResource(item.icon)
             binding.tvName.text = item.name
+            binding.tvName.setBackgroundColor(item.labelBgColor)
+            binding.flSelected.setBackgroundColor(item.labelBgColor.withAlpha(75))
             binding.ivFilter.setOnClickListener {
                 item.onClick()
             }

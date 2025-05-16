@@ -1,5 +1,6 @@
 package com.tgwgroup.zhoupics.ui.edit.filter
 
+import androidx.core.view.isInvisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,6 +30,7 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         initCollectors()
 
         val binding = binding ?: return
+        binding.slider.bindBubble(binding.sliderBubble)
         binding.rvFilter.post {
             getEditActivity()?.tabFragmentBodyHeight?.value = binding.rvFilter.height + dpToPx(8f)
             getEditActivity()?.tabFragmentSliderHeight?.value = 0
@@ -45,6 +47,24 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
     private fun initCollectors() {
         viewModel.itemList.collectIn(lifecycleScope) {
             filterAdapter.setItems(it)
+        }
+
+        viewModel.selectedItemId.collectIn(lifecycleScope) {
+            onSelectedItemChanged(it)
+        }
+    }
+
+    private fun onSelectedItemChanged(itemId: Int?) {
+        val binding = binding ?: return
+        val item = viewModel.itemList.value.find { it.id == itemId }
+        item?.let {
+            binding.slider.post {
+                if (binding.slider.isInvisible) {
+                    binding.vSliderGradient.isInvisible = false
+                    binding.slider.isInvisible = false
+                    getEditActivity()?.tabFragmentSliderHeight?.value = binding.slider.height
+                }
+            }
         }
     }
 
