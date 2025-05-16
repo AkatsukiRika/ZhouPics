@@ -9,6 +9,7 @@ data class FilterItem(
     @ColorInt val labelBgColor: Int,
     val name: String,
     var selected: Boolean = false,
+    var progress: Float = 100f,
     val onClick: () -> Unit
 )
 

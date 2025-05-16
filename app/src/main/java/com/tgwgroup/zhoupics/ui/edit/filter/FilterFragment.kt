@@ -9,6 +9,7 @@ import com.tgwgroup.zhoupics.databinding.FragmentFilterBinding
 import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.utils.dpToPx
+import com.tgwgroup.zhoupics.widgets.BidirectionalSlider
 
 class FilterFragment : BaseFragment<FragmentFilterBinding>() {
     private val filterAdapter = FilterAdapter()
@@ -27,6 +28,7 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         super.initView()
         viewModel.init()
         initRecyclerView()
+        initListeners()
         initCollectors()
 
         val binding = binding ?: return
@@ -42,6 +44,28 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         val context = context ?: return
         binding.rvFilter.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvFilter.adapter = filterAdapter
+    }
+
+    private fun initListeners() {
+        val binding = binding ?: return
+        binding.slider.setOnProgressChangeListener(object : BidirectionalSlider.OnProgressChangeListener {
+            override fun onStartTrackingTouch() {}
+
+            override fun onStopTrackingTouch() {}
+
+            override fun onProgressChanged(progress: Float, fromUser: Boolean) {
+                if (!fromUser) {
+                    return
+                }
+                val selectedItemId = viewModel.selectedItemId.value
+                if (selectedItemId != null) {
+                    getEditActivity()?.renderHelper?.apply {
+                        updateCustomFilter(selectedItemId, progress)
+                        doRender()
+                    }
+                }
+            }
+        })
     }
 
     private fun initCollectors() {
@@ -64,6 +88,11 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
                     binding.slider.isInvisible = false
                     getEditActivity()?.tabFragmentSliderHeight?.value = binding.slider.height
                 }
+            }
+            binding.slider.setValue(it.progress)
+            getEditActivity()?.renderHelper?.apply {
+                updateCustomFilter(type = it.id, progress = it.progress)
+                doRender()
             }
         }
     }
