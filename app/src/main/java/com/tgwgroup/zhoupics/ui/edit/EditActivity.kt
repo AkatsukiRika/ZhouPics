@@ -33,6 +33,7 @@ import com.tgwgroup.zhoupics.history.UpdateImageRecord
 import com.tgwgroup.zhoupics.ui.edit.compare.CompareLoadingActivity
 import com.tgwgroup.zhoupics.ui.edit.compare.CompareModeSelectBottomSheet
 import com.tgwgroup.zhoupics.ui.edit.composition.CompositionFragment
+import com.tgwgroup.zhoupics.ui.edit.filter.FilterFragment
 import com.tgwgroup.zhoupics.ui.export.ExportActivity
 import com.tgwgroup.zhoupics.ui.loading.LoadingDialogFragment
 import com.tgwgroup.zhoupics.utils.appContext
@@ -320,6 +321,12 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
                 }
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fcv_tab_fragment, BeautifyFragment(), BeautifyFragment.TAG)
+                    .commitNowAllowingStateLoss()
+            }
+
+            TAB_FILTER -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fcv_tab_fragment, FilterFragment(), FilterFragment.TAG)
                     .commitNowAllowingStateLoss()
             }
         }
