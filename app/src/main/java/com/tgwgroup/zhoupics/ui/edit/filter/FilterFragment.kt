@@ -83,10 +83,14 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         val item = viewModel.itemList.value.find { it.id == itemId }
         item?.let {
             binding.slider.post {
-                if (binding.slider.isInvisible) {
+                if (it.id != FILTER_ORIGINAL && binding.slider.isInvisible) {
                     binding.vSliderGradient.isInvisible = false
                     binding.slider.isInvisible = false
                     getEditActivity()?.tabFragmentSliderHeight?.value = binding.slider.height
+                } else if (it.id == FILTER_ORIGINAL) {
+                    binding.slider.isInvisible = true
+                    binding.vSliderGradient.isInvisible = true
+                    getEditActivity()?.tabFragmentSliderHeight?.value = 0
                 }
             }
             binding.slider.setValue(it.progress)
