@@ -12,11 +12,11 @@ import com.tgwgroup.zhoupics.history.UpdateImageRecord
 import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.ui.edit.EditViewModel
 import com.tgwgroup.zhoupics.ui.loading.LoadingDialogFragment
-import com.tgwgroup.zhoupics.utils.MAX_SIZE
 import com.tgwgroup.zhoupics.utils.PREFIX_CROP_RESULT
 import com.tgwgroup.zhoupics.utils.collectIn
+import com.tgwgroup.zhoupics.utils.maxTotalPixels
 import com.tgwgroup.zhoupics.utils.saveBitmap
-import com.tgwgroup.zhoupics.utils.scaleByLongEdge
+import com.tgwgroup.zhoupics.utils.scaleByTotalPixels
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -111,7 +111,7 @@ class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
             }
 
             binding.ivComposition.getResultBitmap()?.let { resultBitmap ->
-                val scaledBitmap = scaleByLongEdge(resultBitmap, MAX_SIZE)
+                val scaledBitmap = scaleByTotalPixels(resultBitmap, maxTotalPixels)
 
                 saveBitmap(scaledBitmap, PREFIX_CROP_RESULT)?.let { uri ->
                     editViewModel.historyHelper.addRecord(UpdateImageRecord(uri.toString()))

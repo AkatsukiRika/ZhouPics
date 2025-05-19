@@ -39,7 +39,7 @@ class ImageAdapter : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
     inner class ViewHolder(private val binding: ItemImageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ImageItem) {
             scope.launch(Dispatchers.IO) {
-                val bitmap = getBitmap(item.uri, overrideSize = 256)
+                val bitmap = getBitmap(item.uri, maxPixels = 256 * 256)
                 withContext(Dispatchers.Main) {
                     binding.ivImage.setImageBitmap(bitmap)
                 }

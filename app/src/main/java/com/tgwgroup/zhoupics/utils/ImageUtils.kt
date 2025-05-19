@@ -14,20 +14,48 @@ import com.tgwgroup.baselib.utils.LogUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import kotlin.math.sqrt
 
 private const val TAG = "ImageUtils"
 
-const val MAX_SIZE = 1024
+val maxTotalPixels = 1024 * 1024
 
-suspend fun getBitmap(model: Any, overrideSize: Int = MAX_SIZE): Bitmap? = withContext(Dispatchers.IO) {
-    Glide
+suspend fun getBitmap(model: Any, maxPixels: Int = maxTotalPixels): Bitmap? = withContext(Dispatchers.IO) {
+    val originalBitmap = Glide
         .with(appContext)
         .asBitmap()
         .load(model)
         .priority(Priority.IMMEDIATE)
-        .override(overrideSize)
         .submit()
         .get()
+    val originalWidth = originalBitmap.width
+    val originalHeight = originalBitmap.height
+    val totalPixels = originalWidth * originalHeight
+    if (totalPixels <= maxPixels) {
+        return@withContext originalBitmap
+    }
+    return@withContext scaleByTotalPixels(originalBitmap, maxPixels)
+}
+
+fun scaleByTotalPixels(bitmap: Bitmap, maxPixels: Int): Bitmap {
+    val srcW = bitmap.width
+    val srcH = bitmap.height
+
+    val currentPixels = srcW * srcH
+
+    if (currentPixels <= maxPixels) {
+        return bitmap
+    }
+
+    val scale = sqrt(maxPixels / currentPixels.toFloat())
+
+    val matrix = Matrix().apply {
+        postScale(scale, scale)
+    }
+
+    return Bitmap.createBitmap(bitmap, 0, 0, srcW, srcH, matrix, true).also {
+        LogUtil.d(TAG, "scaleByTotalPixels srcW=$srcW, srcH=$srcH, scaledW=${it.width}, scaledH=${it.height}")
+    }
 }
 
 fun scaleByLongEdge(bitmap: Bitmap, targetSize: Int): Bitmap {

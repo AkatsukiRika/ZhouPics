@@ -13,6 +13,7 @@ import android.view.View
 import com.tgwgroup.baselib.utils.LogUtil
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.utils.dpToPx
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 class CompositionView @JvmOverloads constructor(
@@ -118,7 +119,7 @@ class CompositionView @JvmOverloads constructor(
 
     private val handleSize = dpToPx(48f)
 
-    private val minCropRectSize = dpToPx(56f)
+    private var minCropRectSize = dpToPx(56f)
 
     private val gridLineWidth = dpToPx(1f)
 
@@ -479,6 +480,10 @@ class CompositionView @JvmOverloads constructor(
         val scale = minOf(scale1, scale2)
         val scaledWidth = (rotatedImageWidth * scale).toInt()
         val scaledHeight = (rotatedImageHeight * scale).toInt()
+        val scaledMin = min(scaledWidth, scaledHeight)
+        if (scaledMin < minCropRectSize) {
+            minCropRectSize = scaledMin / 3
+        }
         val left = (viewWidth - scaledWidth) / 2
         val top = (viewHeight - scaledHeight) / 2
         imageRect.set(left, top, left + scaledWidth, top + scaledHeight)
@@ -588,15 +593,21 @@ class CompositionView @JvmOverloads constructor(
         val right = cropRect.right.toFloat() - strokeWidth / 2
         val bottom = cropRect.bottom.toFloat() - strokeWidth / 2
 
-        canvas.drawLine(left, top, left + handleSize, top, handlePaint)
-        canvas.drawLine(left, top, left, top + handleSize, handlePaint)
-        canvas.drawLine(right, top, right - handleSize, top, handlePaint)
-        canvas.drawLine(right, top, right, top + handleSize, handlePaint)
+        var drawHandleSize = handleSize
+        val imageRectMin = min(cropRect.width(), cropRect.height())
+        if (imageRectMin < 3 * handleSize) {
+            drawHandleSize = imageRectMin / 3
+        }
 
-        canvas.drawLine(left, bottom, left + handleSize, bottom, handlePaint)
-        canvas.drawLine(left, bottom, left, bottom - handleSize, handlePaint)
-        canvas.drawLine(right, bottom, right - handleSize, bottom, handlePaint)
-        canvas.drawLine(right, bottom, right, bottom - handleSize, handlePaint)
+        canvas.drawLine(left, top, left + drawHandleSize, top, handlePaint)
+        canvas.drawLine(left, top, left, top + drawHandleSize, handlePaint)
+        canvas.drawLine(right, top, right - drawHandleSize, top, handlePaint)
+        canvas.drawLine(right, top, right, top + drawHandleSize, handlePaint)
+
+        canvas.drawLine(left, bottom, left + drawHandleSize, bottom, handlePaint)
+        canvas.drawLine(left, bottom, left, bottom - drawHandleSize, handlePaint)
+        canvas.drawLine(right, bottom, right - drawHandleSize, bottom, handlePaint)
+        canvas.drawLine(right, bottom, right, bottom - drawHandleSize, handlePaint)
     }
 
     private fun drawMidHandles(canvas: Canvas) {
@@ -609,16 +620,22 @@ class CompositionView @JvmOverloads constructor(
         val right = cropRect.right.toFloat() - strokeWidth / 2
         val bottom = cropRect.bottom.toFloat() - strokeWidth / 2
 
-        canvas.drawLine(centerX, top, centerX - handleSize / 2, top, handlePaint)
-        canvas.drawLine(centerX, top, centerX + handleSize / 2, top, handlePaint)
+        var drawHandleSize = handleSize
+        val imageRectMin = min(cropRect.width(), cropRect.height())
+        if (imageRectMin < 3 * handleSize) {
+            drawHandleSize = imageRectMin / 3
+        }
 
-        canvas.drawLine(left, centerY, left, centerY - handleSize / 2, handlePaint)
-        canvas.drawLine(left, centerY, left, centerY + handleSize / 2, handlePaint)
+        canvas.drawLine(centerX, top, centerX - drawHandleSize / 2, top, handlePaint)
+        canvas.drawLine(centerX, top, centerX + drawHandleSize / 2, top, handlePaint)
 
-        canvas.drawLine(right, centerY, right, centerY - handleSize / 2, handlePaint)
-        canvas.drawLine(right, centerY, right, centerY + handleSize / 2, handlePaint)
+        canvas.drawLine(left, centerY, left, centerY - drawHandleSize / 2, handlePaint)
+        canvas.drawLine(left, centerY, left, centerY + drawHandleSize / 2, handlePaint)
 
-        canvas.drawLine(centerX, bottom, centerX - handleSize / 2, bottom, handlePaint)
-        canvas.drawLine(centerX, bottom, centerX + handleSize / 2, bottom, handlePaint)
+        canvas.drawLine(right, centerY, right, centerY - drawHandleSize / 2, handlePaint)
+        canvas.drawLine(right, centerY, right, centerY + drawHandleSize / 2, handlePaint)
+
+        canvas.drawLine(centerX, bottom, centerX - drawHandleSize / 2, bottom, handlePaint)
+        canvas.drawLine(centerX, bottom, centerX + drawHandleSize / 2, bottom, handlePaint)
     }
 }
