@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.tgwgroup.facecomparelib.AwsUtils
 import com.tgwgroup.zhoupics.utils.appContext
+import com.tgwgroup.zhoupics.utils.initMaxSizeByDeviceLevel
 import com.tgwgroup.zhoupics.utils.preloadAlbumList
 
 class App : Application() {
@@ -12,6 +13,7 @@ class App : Application() {
         appContext = this.applicationContext
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         preloadAlbumList()
+        initMaxSizeByDeviceLevel()
         AwsUtils.initAwsSdk(appContext)
     }
 } 

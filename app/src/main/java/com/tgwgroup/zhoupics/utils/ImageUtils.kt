@@ -18,9 +18,21 @@ import kotlin.math.sqrt
 
 private const val TAG = "ImageUtils"
 
-val maxTotalPixels = 1024 * 1024
+var maxSize = 1024
 
-suspend fun getBitmap(model: Any, maxPixels: Int = maxTotalPixels): Bitmap? = withContext(Dispatchers.IO) {
+fun getMaxTotalPixels() = maxSize * maxSize
+
+fun initMaxSizeByDeviceLevel() {
+    val deviceLevel = getDeviceLevel(appContext)
+    maxSize = when (deviceLevel) {
+        DEVICE_LEVEL_LOW, DEVICE_LEVEL_MID -> 1024
+        DEVICE_LEVEL_HIGH -> 1440
+        DEVICE_LEVEL_ULTRA -> 2048
+        else -> 1024
+    }
+}
+
+suspend fun getBitmap(model: Any, maxPixels: Int = getMaxTotalPixels()): Bitmap? = withContext(Dispatchers.IO) {
     val originalBitmap = Glide
         .with(appContext)
         .asBitmap()

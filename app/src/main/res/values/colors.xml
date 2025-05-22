@@ -8,6 +8,8 @@
     <color name="white_50p">#80FFFFFF</color>
     <color name="white_20p">#33FFFFFF</color>
     <color name="white_default">#FFE3E3E3</color>
+    <color name="green">#FF00FF00</color>
+    <color name="red">#FFFF0000</color>
     <color name="theme">#FFF97583</color>
     <color name="theme_50p">#80F97583</color>
     <color name="theme_20p">#33F97583</color>

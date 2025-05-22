@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.base.BaseActivity
 import com.tgwgroup.zhoupics.databinding.ActivitySettingsBinding
+import com.tgwgroup.zhoupics.ui.dev.DeveloperActivity
 
 class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
     
@@ -51,7 +52,9 @@ class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
             SettingsItem(
                 icon = R.drawable.ic_developer,
                 title = getString(R.string.developer),
-                onClick = {}
+                onClick = {
+                    DeveloperActivity.start(this)
+                }
             )
         )
         settingsAdapter.setItems(items)

@@ -33,6 +33,9 @@
         <activity android:name=".ui.export.ExportActivity"
             android:screenOrientation="portrait" />
 
+        <activity android:name=".ui.dev.DeveloperActivity"
+            android:screenOrientation="portrait" />
+
         <activity android:name=".ui.edit.EditActivity"
             android:theme="@style/Theme.ZhouPics.EditActivity"
             android:screenOrientation="portrait" />

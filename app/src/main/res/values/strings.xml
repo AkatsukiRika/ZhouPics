@@ -61,4 +61,5 @@
     <string name="filter_beauty">Beauty</string>
     <string name="filter_whitening">Whitening</string>
     <string name="filter_healthy">Healthy</string>
+    <string name="debug_no_value">\???</string>
 </resources>
