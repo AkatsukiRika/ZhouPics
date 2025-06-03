@@ -1,5 +1,7 @@
 package com.tgwgroup.zhoupics.history
 
+import com.tgwgroup.zhoupics.ui.edit.filter.FILTER_ORIGINAL
+
 open class HistoryRecord
 
 class InitRecord : HistoryRecord()
@@ -19,6 +21,11 @@ data class AdjustRecord(
     val saturationProgress: Float = 0f,
     val sharpnessProgress: Float = 0f,
     val brightnessProgress: Float = 0f
+) : HistoryRecord()
+
+data class FilterRecord(
+    val filterType: Int = FILTER_ORIGINAL,
+    val filterProgress: Float = 100f
 ) : HistoryRecord()
 
 data class UpdateImageRecord(

@@ -99,7 +99,7 @@ class FilterViewModel : ViewModel() {
         )
     }
 
-    private fun selectItem(id: Int) {
+    fun selectItem(id: Int?) {
         if (id == selectedItemIdMutable.value) {
             return
         } else {

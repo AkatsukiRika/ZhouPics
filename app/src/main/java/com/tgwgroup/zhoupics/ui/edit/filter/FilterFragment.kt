@@ -1,20 +1,34 @@
 package com.tgwgroup.zhoupics.ui.edit.filter
 
 import androidx.core.view.isInvisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tgwgroup.zhoupics.base.BaseFragment
 import com.tgwgroup.zhoupics.databinding.FragmentFilterBinding
+import com.tgwgroup.zhoupics.history.FilterRecord
+import com.tgwgroup.zhoupics.history.HistoryRecord
+import com.tgwgroup.zhoupics.render.RenderHelper
 import com.tgwgroup.zhoupics.ui.edit.EditActivity
+import com.tgwgroup.zhoupics.ui.edit.EditViewModel
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.utils.dpToPx
 import com.tgwgroup.zhoupics.widgets.BidirectionalSlider
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 class FilterFragment : BaseFragment<FragmentFilterBinding>() {
     private val filterAdapter = FilterAdapter()
 
     private val viewModel by viewModels<FilterViewModel>()
+
+    private val editViewModel by activityViewModels<EditViewModel>()
+
+    private val renderScope = MainScope()
+
+    private var addRecord = true
 
     companion object {
         const val TAG = "FilterFragment"
@@ -49,9 +63,19 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
     private fun initListeners() {
         val binding = binding ?: return
         binding.slider.setOnProgressChangeListener(object : BidirectionalSlider.OnProgressChangeListener {
+            private var lastProgress = 100f
+
             override fun onStartTrackingTouch() {}
 
-            override fun onStopTrackingTouch() {}
+            override fun onStopTrackingTouch() {
+                val selectedItemId = viewModel.selectedItemId.value
+                selectedItemId?.let {
+                    editViewModel.historyHelper.addRecord(FilterRecord(
+                        filterType = it,
+                        filterProgress = lastProgress
+                    ))
+                }
+            }
 
             override fun onProgressChanged(progress: Float, fromUser: Boolean) {
                 if (!fromUser) {
@@ -60,6 +84,7 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
                 val selectedItemId = viewModel.selectedItemId.value
                 if (selectedItemId != null) {
                     getEditActivity()?.renderHelper?.apply {
+                        lastProgress = progress
                         updateCustomFilter(selectedItemId, progress)
                         doRender()
                     }
@@ -75,6 +100,23 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
 
         viewModel.selectedItemId.collectIn(lifecycleScope) {
             onSelectedItemChanged(it)
+        }
+
+        renderScope.launch {
+            // Capturing renderHelper in the closure to ensure rendering is still available after fragment being detached.
+            val renderHelper = getEditActivity()?.renderHelper
+
+            launch {
+                editViewModel.historyHelper.undoEvent.collect {
+                    updateProgress(it.receivedRecord, renderHelper)
+                }
+            }
+
+            launch {
+                editViewModel.historyHelper.redoEvent.collect {
+                    updateProgress(it.receivedRecord, renderHelper)
+                }
+            }
         }
     }
 
@@ -92,6 +134,14 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
                     binding.vSliderGradient.isInvisible = true
                     getEditActivity()?.tabFragmentSliderHeight?.value = 0
                 }
+                if (addRecord) {
+                    editViewModel.historyHelper.addRecord(FilterRecord(
+                        filterType = it.id,
+                        filterProgress = it.progress
+                    ))
+                } else {
+                    addRecord = true
+                }
                 binding.slider.setValue(it.progress)
             }
             getEditActivity()?.renderHelper?.apply {
@@ -101,7 +151,31 @@ class FilterFragment : BaseFragment<FragmentFilterBinding>() {
         }
     }
 
+    private fun updateProgress(record: HistoryRecord?, renderHelper: RenderHelper?) {
+        val binding = binding ?: return
+        addRecord = false
+        if (record is FilterRecord) {
+            viewModel.selectItem(record.filterType)
+            binding.slider.setValue(record.filterProgress)
+            renderHelper?.apply {
+                updateCustomFilter(type = record.filterType, progress = record.filterProgress)
+                doRender()
+            }
+        } else if (editViewModel.historyHelper.isBeforeEarliestRecord(FilterRecord::class.java)) {
+            viewModel.selectItem(null)
+            binding.slider.isInvisible = true
+            renderHelper?.apply {
+                updateCustomFilter(type = FILTER_ORIGINAL, progress = 100f)
+                doRender()
+            }
+        }
+    }
+
     private fun getEditActivity(): EditActivity? {
         return activity as? EditActivity
+    }
+
+    fun recycle() {
+        renderScope.cancel()
     }
 }

@@ -325,6 +325,10 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
             }
 
             TAB_FILTER -> {
+                val existFragment = supportFragmentManager.findFragmentByTag(FilterFragment.TAG)
+                if (existFragment != null) {
+                    (existFragment as? FilterFragment)?.recycle()
+                }
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fcv_tab_fragment, FilterFragment(), FilterFragment.TAG)
                     .commitNowAllowingStateLoss()
