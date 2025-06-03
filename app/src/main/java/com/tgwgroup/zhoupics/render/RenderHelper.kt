@@ -188,6 +188,8 @@ class RenderHelper private constructor(private val activity: AppCompatActivity, 
     fun updateCustomFilter(type: Int, progress: Float) {
         customFilter?.SetProperty(PROPERTY_TYPE, type)
         customFilter?.SetProperty(PROPERTY_INTENSITY, progress / 100f)
+        customFilter?.SetProperty(PROPERTY_TEXEL_WIDTH, outWidth)
+        customFilter?.SetProperty(PROPERTY_TEXEL_HEIGHT, outHeight)
     }
 
     private fun doFaceDetect() {

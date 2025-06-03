@@ -10,6 +10,8 @@ import android.os.Build
 import android.provider.MediaStore
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
+import com.bumptech.glide.load.PreferredColorSpace
+import com.bumptech.glide.load.resource.bitmap.Downsampler
 import com.tgwgroup.baselib.utils.LogUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -37,6 +39,7 @@ suspend fun getBitmap(model: Any, maxPixels: Int = getMaxTotalPixels()): Bitmap?
         .with(appContext)
         .asBitmap()
         .load(model)
+        .set(Downsampler.PREFERRED_COLOR_SPACE, PreferredColorSpace.SRGB)
         .priority(Priority.IMMEDIATE)
         .submit()
         .get()
