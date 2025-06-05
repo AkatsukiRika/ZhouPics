@@ -8,6 +8,7 @@ import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.base.BaseActivity
 import com.tgwgroup.zhoupics.databinding.ActivitySettingsBinding
 import com.tgwgroup.zhoupics.ui.dev.DeveloperActivity
+import com.tgwgroup.zhoupics.ui.downloads.DownloadsActivity
 
 class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
     
@@ -48,6 +49,13 @@ class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
                 icon = R.drawable.ic_language,
                 title = getString(R.string.language),
                 onClick = {}
+            ),
+            SettingsItem(
+                icon = R.drawable.ic_export,
+                title = getString(R.string.downloads),
+                onClick = {
+                    DownloadsActivity.start(this)
+                }
             ),
             SettingsItem(
                 icon = R.drawable.ic_developer,

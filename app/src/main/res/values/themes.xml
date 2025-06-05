@@ -23,4 +23,8 @@
         <item name="android:statusBarColor">@color/theme_50p</item>
         <item name="android:navigationBarColor">@color/dark_bg</item>
     </style>
+
+    <style name="Theme.ZhouPics.DownloadsActivity" parent="Theme.ZhouPics">
+        <item name="colorPrimary">@color/filter_color_brown_light</item>
+    </style>
 </resources>

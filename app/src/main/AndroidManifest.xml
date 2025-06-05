@@ -30,6 +30,10 @@
         <activity android:name=".ui.settings.SettingsActivity"
             android:screenOrientation="portrait" />
 
+        <activity android:name=".ui.downloads.DownloadsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.ZhouPics.DownloadsActivity" />
+
         <activity android:name=".ui.export.ExportActivity"
             android:screenOrientation="portrait" />
 
