@@ -6,4 +6,11 @@
         <attr name="maxValue" format="float" />
         <attr name="defaultProgress" format="float" />
     </declare-styleable>
+
+    <declare-styleable name="DownloadProgressView">
+        <attr name="progress" format="integer" />
+        <attr name="fillColor" format="color" />
+        <attr name="backgroundColor" format="color" />
+        <attr name="pixelSize" format="integer" />
+    </declare-styleable>
 </resources>

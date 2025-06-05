@@ -13,7 +13,7 @@ private const val TAG = "FileDownloadUtils"
 private val client = OkHttpClient()
 
 interface DownloadCallback {
-    fun onProgress(progress: Int)
+    fun onProgress(totalBytesRead: Long)
     fun onSuccess(file: File)
     fun onFailure(e: Exception)
 }
@@ -28,7 +28,6 @@ suspend fun downloadFile(url: String, outputFile: File, callback: DownloadCallba
             }
 
             val body = response.body ?: throw IOException("Response body is null")
-            val contentLength = body.contentLength()
             val inputStream = body.byteStream()
 
             val outputDir = outputFile.parentFile
@@ -40,22 +39,14 @@ suspend fun downloadFile(url: String, outputFile: File, callback: DownloadCallba
             val buffer = ByteArray(4096)    // 4KB buffer
             var totalBytesRead: Long = 0
             var bytesRead: Int
-            var lastProgress = 0
 
             inputStream.use { input ->
                 outputStream.use { output ->
                     while (input.read(buffer).also { bytesRead = it } != -1) {
                         output.write(buffer, 0, bytesRead)
                         totalBytesRead += bytesRead
-
-                        if (contentLength > 0) {
-                            val currentProgress = (totalBytesRead * 100 / contentLength).toInt()
-                            if (currentProgress != lastProgress) {
-                                withContext(Dispatchers.Main) {
-                                    callback.onProgress(currentProgress)
-                                }
-                                lastProgress = currentProgress
-                            }
+                        withContext(Dispatchers.Main) {
+                            callback.onProgress(totalBytesRead)
                         }
                     }
                 }
