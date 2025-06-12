@@ -1,5 +1,12 @@
 package com.tgwgroup.zhoupics.ui.downloads
 
+import android.content.Context
+import com.tgwgroup.zhoupics.constants.HOSTING_BASE_URL
+import com.tgwgroup.zhoupics.constants.getModelDir
+import com.tgwgroup.zhoupics.utils.calculateMD5
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.Locale
 
 data class DownloadsItem(
@@ -7,6 +14,7 @@ data class DownloadsItem(
     val title: String,
     val fileName: String,
     val fileSizeBytes: Long,
+    val fileMD5: String,
     val onClick: (DownloadsItem) -> Unit
 ) {
     var downloadStatus = DownloadStatus.NOT_STARTED
@@ -20,6 +28,16 @@ data class DownloadsItem(
             val mb = kb / 1024f
             "${String.format(Locale.ROOT, "%.2f", mb)} MB"
         }
+    }
+
+    fun getUrl() = "$HOSTING_BASE_URL$fileName"
+
+    fun getOutputFile(context: Context) = File(getModelDir(context), fileName)
+
+    suspend fun hasLocalFile(context: Context): Boolean = withContext(Dispatchers.IO) {
+        val file = getOutputFile(context)
+        val md5 = calculateMD5(file)
+        file.exists() && md5 != null && md5.equals(fileMD5, ignoreCase = true)
     }
 }
 

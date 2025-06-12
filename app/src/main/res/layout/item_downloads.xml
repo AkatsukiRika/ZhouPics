@@ -20,10 +20,24 @@
             android:layout_marginVertical="12dp"
             app:cardCornerRadius="10dp">
 
-            <com.tgwgroup.zhoupics.widgets.DownloadProgressView
-                android:id="@+id/v_download_progress"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent">
+
+                <com.tgwgroup.zhoupics.widgets.DownloadProgressView
+                    android:id="@+id/v_download_progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    app:srcCompat="@drawable/ic_save"
+                    android:tint="@color/white"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="1dp" />
+
+            </FrameLayout>
 
         </com.google.android.material.card.MaterialCardView>
 

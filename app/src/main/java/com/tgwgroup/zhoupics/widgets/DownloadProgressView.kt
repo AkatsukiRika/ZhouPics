@@ -67,7 +67,7 @@ class DownloadProgressView @JvmOverloads constructor(
 
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.DownloadProgressView, defStyleAttr, 0)
         try {
-            progress = typedArray.getInt(R.styleable.DownloadProgressView_progress, 0)
+            progress = typedArray.getFloat(R.styleable.DownloadProgressView_progress, 0f)
             fillColor = typedArray.getColor(R.styleable.DownloadProgressView_fillColor, context.getColor(R.color.filter_color_brown_light))
             bgColor = typedArray.getColor(R.styleable.DownloadProgressView_backgroundColor, Color.TRANSPARENT)
             pixelSize = typedArray.getInt(R.styleable.DownloadProgressView_pixelSize, 4)
@@ -93,7 +93,7 @@ class DownloadProgressView @JvmOverloads constructor(
 
         bitmapCanvas.drawRect(0f, 0f, bmpWidth, bmpHeight, backgroundPaint)
 
-        if (progress == 0) {
+        if (progress == 0f) {
             return
         }
 

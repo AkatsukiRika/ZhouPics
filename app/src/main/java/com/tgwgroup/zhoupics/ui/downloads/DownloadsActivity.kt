@@ -8,12 +8,11 @@ import com.tgwgroup.baselib.utils.LogUtil
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.base.BaseActivity
 import com.tgwgroup.zhoupics.constants.ELIMINATE_MODEL_NAME
-import com.tgwgroup.zhoupics.constants.HOSTING_BASE_URL
-import com.tgwgroup.zhoupics.constants.getModelDir
 import com.tgwgroup.zhoupics.databinding.ActivityDownloadsBinding
 import com.tgwgroup.zhoupics.recyclerview.VerticalSpaceItemDecoration
 import com.tgwgroup.zhoupics.utils.DownloadCallback
 import com.tgwgroup.zhoupics.utils.downloadFile
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.io.File
@@ -51,25 +50,29 @@ class DownloadsActivity : BaseActivity<ActivityDownloadsBinding>() {
             addItemDecoration(VerticalSpaceItemDecoration(verticalSpaceDp = 8))
         }
 
-        val items = listOf(
-            DownloadsItem(
-                index = 0,
-                title = getString(R.string.elimination_model),
-                fileName = ELIMINATE_MODEL_NAME,
-                fileSizeBytes = 28265660L,
-                onClick = ::onClickItem
-            ).apply {
-            }
-        )
-        downloadsAdapter.setItems(items)
+        lifecycleScope.launch(Dispatchers.Main) {
+            val items = listOf(
+                DownloadsItem(
+                    index = 0,
+                    title = getString(R.string.elimination_model),
+                    fileName = ELIMINATE_MODEL_NAME,
+                    fileSizeBytes = 28265660L,
+                    fileMD5 = "62ba6158a0c769af78581d8405815c31",
+                    onClick = ::onClickItem
+                ).apply {
+                    if (hasLocalFile(this@DownloadsActivity)) {
+                        downloadStatus = DownloadStatus.COMPLETED
+                    }
+                }
+            )
+            downloadsAdapter.setItems(items)
+        }
     }
 
     private fun onClickItem(item: DownloadsItem) {
         when (item.downloadStatus) {
             DownloadStatus.NOT_STARTED, DownloadStatus.FAILED -> {
                 val job = lifecycleScope.launch {
-                    val url = "${HOSTING_BASE_URL}${ELIMINATE_MODEL_NAME}"
-                    val outputFile = File(getModelDir(this@DownloadsActivity), ELIMINATE_MODEL_NAME)
                     val callback = object : DownloadCallback {
                         override fun onProgress(totalBytesRead: Long) {
                             LogUtil.i(TAG, "item: $item, totalBytesRead: $totalBytesRead")
@@ -86,7 +89,7 @@ class DownloadsActivity : BaseActivity<ActivityDownloadsBinding>() {
                             setDownloadStatus(item, DownloadStatus.FAILED)
                         }
                     }
-                    downloadFile(url, outputFile, callback)
+                    downloadFile(item.getUrl(), item.getOutputFile(this@DownloadsActivity), callback)
                 }
                 job.start()
                 downloadJobs.add(job)

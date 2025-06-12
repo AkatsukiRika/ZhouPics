@@ -8,7 +8,7 @@
     </declare-styleable>
 
     <declare-styleable name="DownloadProgressView">
-        <attr name="progress" format="integer" />
+        <attr name="progress" format="float" />
         <attr name="fillColor" format="color" />
         <attr name="backgroundColor" format="color" />
         <attr name="pixelSize" format="integer" />
