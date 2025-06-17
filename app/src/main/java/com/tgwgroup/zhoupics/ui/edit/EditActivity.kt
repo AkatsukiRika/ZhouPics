@@ -33,6 +33,7 @@ import com.tgwgroup.zhoupics.history.UpdateImageRecord
 import com.tgwgroup.zhoupics.ui.edit.compare.CompareLoadingActivity
 import com.tgwgroup.zhoupics.ui.edit.compare.CompareModeSelectBottomSheet
 import com.tgwgroup.zhoupics.ui.edit.composition.CompositionFragment
+import com.tgwgroup.zhoupics.ui.edit.elimination.EliminationFragment
 import com.tgwgroup.zhoupics.ui.edit.filter.FilterFragment
 import com.tgwgroup.zhoupics.ui.export.ExportActivity
 import com.tgwgroup.zhoupics.ui.loading.LoadingDialogFragment
@@ -174,6 +175,11 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
         viewModel.onCompositionClicked = {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fcv_room_fragment, CompositionFragment(), CompositionFragment.TAG)
+                .commitNowAllowingStateLoss()
+        }
+        viewModel.onEliminationClicked = {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fcv_room_fragment, EliminationFragment(), EliminationFragment.TAG)
                 .commitNowAllowingStateLoss()
         }
     }

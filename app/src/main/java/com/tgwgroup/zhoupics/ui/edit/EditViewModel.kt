@@ -24,6 +24,8 @@ class EditViewModel : ViewModel() {
 
     var onCompositionClicked: (() -> Unit)? = null
 
+    var onEliminationClicked: (() -> Unit)? = null
+
     init {
         bottomTabItemListMutable.value = listOf(
             BottomTabItem(
@@ -35,9 +37,9 @@ class EditViewModel : ViewModel() {
             ),
             BottomTabItem(
                 id = TAB_ELIMINATE,
-                name = appContext.getString(R.string.eliminate),
+                name = appContext.getString(R.string.elimination),
                 onClick = {
-                    selectBottomTab(TAB_ELIMINATE)
+                    onEliminationClicked?.invoke()
                 }
             ),
             BottomTabItem(
