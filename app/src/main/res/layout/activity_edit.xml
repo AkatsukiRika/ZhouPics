@@ -38,7 +38,7 @@
         android:layout_height="48dp"
         android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/theme_bg"
+        android:background="@color/edit_bg"
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatImageView

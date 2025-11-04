@@ -66,5 +66,9 @@
     <string name="file_name_x">File name: %s</string>
     <string name="file_size_x">File size: %s</string>
     <string name="download">Download</string>
+    <string name="paint">Paint</string>
+    <string name="lariat">Lariat</string>
+    <string name="eraser">Eraser</string>
+    <string name="generate">Generate</string>
     <string name="debug_no_value">\???</string>
 </resources>
