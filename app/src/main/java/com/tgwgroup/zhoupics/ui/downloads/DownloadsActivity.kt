@@ -52,14 +52,7 @@ class DownloadsActivity : BaseActivity<ActivityDownloadsBinding>() {
 
         lifecycleScope.launch(Dispatchers.Main) {
             val items = listOf(
-                DownloadsItem(
-                    index = 0,
-                    title = getString(R.string.elimination_model),
-                    fileName = ELIMINATE_MODEL_NAME,
-                    fileSizeBytes = 28265660L,
-                    fileMD5 = "62ba6158a0c769af78581d8405815c31",
-                    onClick = ::onClickItem
-                ).apply {
+                getEliminateModelItem(::onClickItem).apply {
                     if (hasLocalFile(this@DownloadsActivity)) {
                         downloadStatus = DownloadStatus.COMPLETED
                     }

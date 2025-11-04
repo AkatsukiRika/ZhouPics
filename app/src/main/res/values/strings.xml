@@ -70,5 +70,8 @@
     <string name="lariat">Lariat</string>
     <string name="eraser">Eraser</string>
     <string name="generate">Generate</string>
+    <string name="model_not_ready">Model Not Ready</string>
+    <string name="model_not_ready_tips">Remote AI resource \"%s\" should be downloaded in order to proceed.</string>
+    <string name="download_now">Download Now</string>
     <string name="debug_no_value">\???</string>
 </resources>

@@ -30,6 +30,7 @@ import com.tgwgroup.zhoupics.constants.MODE_FAST
 import com.tgwgroup.zhoupics.constants.MODE_PRECISE
 import com.tgwgroup.zhoupics.history.HistoryRecord
 import com.tgwgroup.zhoupics.history.UpdateImageRecord
+import com.tgwgroup.zhoupics.ui.downloads.getEliminateModelItem
 import com.tgwgroup.zhoupics.ui.edit.compare.CompareLoadingActivity
 import com.tgwgroup.zhoupics.ui.edit.compare.CompareModeSelectBottomSheet
 import com.tgwgroup.zhoupics.ui.edit.composition.CompositionFragment
@@ -46,6 +47,7 @@ import com.tgwgroup.zhoupics.utils.clearCache
 import com.tgwgroup.zhoupics.utils.saveBitmapToGallery
 import com.tgwgroup.zhoupics.utils.toastError
 import com.tgwgroup.zhoupics.utils.toastSuccess
+import com.tgwgroup.zhoupics.widgets.ModelNotReadyDialogFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -178,9 +180,15 @@ class EditActivity : BaseActivity<ActivityEditBinding>() {
                 .commitNowAllowingStateLoss()
         }
         viewModel.onEliminationClicked = {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fcv_room_fragment, EliminationFragment(), EliminationFragment.TAG)
-                .commitNowAllowingStateLoss()
+            lifecycleScope.launch {
+                if (!getEliminateModelItem().hasLocalFile(this@EditActivity)) {
+                    ModelNotReadyDialogFragment.show(supportFragmentManager, modelName = resources.getString(R.string.elimination_model))
+                    return@launch
+                }
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fcv_room_fragment, EliminationFragment(), EliminationFragment.TAG)
+                    .commitNowAllowingStateLoss()
+            }
         }
     }
 

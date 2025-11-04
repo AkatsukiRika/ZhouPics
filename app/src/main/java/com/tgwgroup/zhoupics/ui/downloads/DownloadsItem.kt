@@ -1,8 +1,11 @@
 package com.tgwgroup.zhoupics.ui.downloads
 
 import android.content.Context
+import com.tgwgroup.zhoupics.R
+import com.tgwgroup.zhoupics.constants.ELIMINATE_MODEL_NAME
 import com.tgwgroup.zhoupics.constants.HOSTING_BASE_URL
 import com.tgwgroup.zhoupics.constants.getModelDir
+import com.tgwgroup.zhoupics.utils.appContext
 import com.tgwgroup.zhoupics.utils.calculateMD5
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -39,6 +42,17 @@ data class DownloadsItem(
         val md5 = calculateMD5(file)
         file.exists() && md5 != null && md5.equals(fileMD5, ignoreCase = true)
     }
+}
+
+fun getEliminateModelItem(onClick: (DownloadsItem) -> Unit = {}): DownloadsItem {
+    return DownloadsItem(
+        index = 0,
+        title = appContext.getString(R.string.elimination_model),
+        fileName = ELIMINATE_MODEL_NAME,
+        fileSizeBytes = 28265660L,
+        fileMD5 = "62ba6158a0c769af78581d8405815c31",
+        onClick = onClick
+    )
 }
 
 enum class DownloadStatus {
