@@ -14,10 +14,10 @@
             <option value="$PROJECT_DIR$/baselib" />
             <option value="$PROJECT_DIR$/facecomparelib" />
             <option value="$PROJECT_DIR$/gpupixel/src/android/java/gpupixel" />
+            <option value="$PROJECT_DIR$/inpaintlib" />
             <option value="$PROJECT_DIR$/subscaleview" />
           </set>
         </option>
-        <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

@@ -40,7 +40,10 @@ endif()
 # used in the AndroidManifest.xml file.
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
-        inpaintlib.cpp)
+        inpaintlib.cpp
+        cv/CvUtils.cpp
+        model/InpaintModelProcessor.cpp
+        loader/InpaintLoader.cpp)
 
 add_library(c++_shared SHARED IMPORTED)
 set_target_properties(c++_shared PROPERTIES IMPORTED_LOCATION ${MNN_LIB_DIR}/libc++_shared.so)
