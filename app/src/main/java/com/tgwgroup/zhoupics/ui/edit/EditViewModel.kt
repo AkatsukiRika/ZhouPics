@@ -5,16 +5,17 @@ import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.history.HistoryHelper
 import com.tgwgroup.zhoupics.utils.appContext
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class EditViewModel : ViewModel() {
     private val bottomTabItemListMutable = MutableStateFlow<List<BottomTabItem>>(emptyList())
-    val bottomTabItemList: StateFlow<List<BottomTabItem>> = bottomTabItemListMutable
+    val bottomTabItemList = bottomTabItemListMutable.asStateFlow()
 
     private val selectedBottomTabIdMutable = MutableStateFlow(TAB_ADJUST)
-    val selectedBottomTabId: StateFlow<Int> = selectedBottomTabIdMutable
+    val selectedBottomTabId = selectedBottomTabIdMutable.asStateFlow()
 
-    val inRoom = MutableStateFlow(false)
+    private val inRoomMutable = MutableStateFlow(false)
+    val inRoom = inRoomMutable.asStateFlow()
 
     private var lastBottomTabId: Int = TAB_ADJUST
 
@@ -83,5 +84,9 @@ class EditViewModel : ViewModel() {
         }
         lastBottomTabId = selectedBottomTabIdMutable.value
         selectedBottomTabIdMutable.value = id
+    }
+
+    fun updateInRoom(value: Boolean) {
+        inRoomMutable.value = value
     }
 }

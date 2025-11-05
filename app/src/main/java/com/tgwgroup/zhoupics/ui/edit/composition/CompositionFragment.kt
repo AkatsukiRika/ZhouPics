@@ -39,7 +39,7 @@ class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
 
     override fun initView() {
         super.initView()
-        editViewModel.inRoom.value = true
+        editViewModel.updateInRoom(true)
         initRecyclerView()
         initTriggers()
         initCollectors()
@@ -141,7 +141,7 @@ class CompositionFragment : BaseFragment<FragmentCompositionBinding>() {
     }
 
     private fun finishFragment() {
-        editViewModel.inRoom.value = false
+        editViewModel.updateInRoom(false)
         activity?.supportFragmentManager?.beginTransaction()
             ?.remove(this)
             ?.commitNowAllowingStateLoss()

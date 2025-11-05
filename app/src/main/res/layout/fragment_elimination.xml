@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/edit_bg"
@@ -84,7 +85,9 @@
                 android:layout_height="32dp"
                 android:layout_gravity="center"
                 android:padding="4dp"
-                app:srcCompat="@drawable/ic_paint" />
+                app:srcCompat="@drawable/ic_paint"
+                android:tint="@color/color_stateful_theme_white"
+                android:duplicateParentState="true" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_paint"
@@ -93,8 +96,9 @@
                 android:layout_gravity="center"
                 style="@style/FontRegular"
                 android:text="@string/paint"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:textColor="@color/color_stateful_theme_white"
+                android:textSize="12sp"
+                android:duplicateParentState="true" />
 
             <Space
                 android:layout_width="match_parent"
@@ -115,7 +119,9 @@
                 android:layout_height="32dp"
                 android:layout_gravity="center"
                 android:padding="4dp"
-                app:srcCompat="@drawable/ic_lariat" />
+                app:srcCompat="@drawable/ic_lariat"
+                android:tint="@color/color_stateful_theme_white"
+                android:duplicateParentState="true" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_lariat"
@@ -124,8 +130,9 @@
                 android:layout_gravity="center"
                 style="@style/FontRegular"
                 android:text="@string/lariat"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:textColor="@color/color_stateful_theme_white"
+                android:textSize="12sp"
+                android:duplicateParentState="true" />
 
             <Space
                 android:layout_width="match_parent"
@@ -146,7 +153,9 @@
                 android:layout_height="32dp"
                 android:layout_gravity="center"
                 android:padding="4dp"
-                app:srcCompat="@drawable/ic_eraser" />
+                app:srcCompat="@drawable/ic_eraser"
+                android:tint="@color/color_stateful_theme_white"
+                android:duplicateParentState="true" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_eraser"
@@ -155,8 +164,9 @@
                 android:layout_gravity="center"
                 style="@style/FontRegular"
                 android:text="@string/eraser"
-                android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:textColor="@color/color_stateful_theme_white"
+                android:textSize="12sp"
+                android:duplicateParentState="true" />
 
             <Space
                 android:layout_width="match_parent"
@@ -209,5 +219,35 @@
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/ll_function" />
+
+    <com.tgwgroup.zhoupics.widgets.SliderBubble
+        android:id="@+id/slider_bubble"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintBottom_toTopOf="@id/slider"
+        app:layout_constraintStart_toStartOf="@id/slider"
+        android:translationY="12dp" />
+
+    <View
+        android:id="@+id/v_slider_gradient"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/slider_height"
+        app:layout_constraintTop_toTopOf="@id/slider"
+        android:background="@drawable/bg_slider_gradient"
+        android:visibility="invisible"
+        tools:visibility="visible" />
+
+    <com.tgwgroup.zhoupics.widgets.BidirectionalSlider
+        android:id="@+id/slider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/slider_height"
+        app:layout_constraintBottom_toTopOf="@id/ll_function"
+        android:layout_marginHorizontal="32dp"
+        app:bidirectional="true"
+        app:minValue="-100"
+        app:maxValue="100"
+        app:defaultProgress="0"
+        android:visibility="invisible"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
