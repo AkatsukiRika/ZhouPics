@@ -24,3 +24,9 @@ fun Matrix.getParams(): MatrixParams {
 
     return MatrixParams(scaleX, scaleY, rotation, translateX, translateY)
 }
+
+fun Matrix.getScaleX(): Float {
+    val values = FloatArray(9)
+    getValues(values)
+    return values[Matrix.MSCALE_X]
+}

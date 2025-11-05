@@ -1,10 +1,12 @@
 package com.tgwgroup.zhoupics.ui.edit.elimination
 
+import android.graphics.Matrix
 import androidx.core.view.isInvisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.davemorrissey.labs.subscaleview.ImageSource
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.tgwgroup.zhoupics.base.BaseFragment
 import com.tgwgroup.zhoupics.databinding.FragmentEliminationBinding
 import com.tgwgroup.zhoupics.ui.edit.EditActivity
@@ -16,6 +18,10 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
     private val editViewModel by activityViewModels<EditViewModel>()
 
     private val viewModel by viewModels<EliminationViewModel>()
+
+    private var isInit = false
+
+    private val currentImageMatrix = Matrix()
 
     companion object {
         const val TAG = "EliminationFragment"
@@ -34,12 +40,39 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
         binding.slider.setValueRange(1f, 100f)
         binding.slider.setBidirectional(false)
 
+        initPaintView()
         initTriggers()
         initCollectors()
         initListeners()
 
         getEditActivity()?.currentBitmap?.let {
             binding.ivElimination.setImage(ImageSource.bitmap(it))
+        }
+        binding.ivElimination.setOnStateChangedListener(object : SubsamplingScaleImageView.DefaultOnStateChangedListener() {
+            override fun onMatrixChanged(matrix: Matrix?) {
+                super.onMatrixChanged(matrix)
+                matrix?.let {
+                    binding.vEliminatePaint.setImageMatrix(matrix, isInit)
+                    currentImageMatrix.set(matrix)
+                }
+            }
+        })
+    }
+
+    private fun initPaintView() {
+        val binding = binding ?: return
+        val currentBitmap = getEditActivity()?.currentBitmap ?: return
+        binding.vEliminatePaint.apply {
+            setMagnifier(binding.vEliminateZoom)
+            setOuterView(binding.ivElimination, currentBitmap)
+            setDisableTouch(false)
+            isInit = true
+            setImageMatrix(currentImageMatrix, isInit)
+            setCallback(object : EliminatePaintView.Callback {
+                override fun onActionUpOrCancel() {}
+
+                override fun onTouchEvent(touchX: Float, touchY: Float) {}
+            })
         }
     }
 
@@ -68,19 +101,49 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
             binding.llPaint.isSelected = mode == EliminationViewModel.Mode.PAINT
             binding.llLariat.isSelected = mode == EliminationViewModel.Mode.LARIAT
             binding.llEraser.isSelected = mode == EliminationViewModel.Mode.ERASER
-            if (mode == EliminationViewModel.Mode.LARIAT) {
-                binding.slider.post {
-                    hideSlider()
-                }
-            } else {
-                binding.slider.post {
-                    showSlider()
-                    if (mode == EliminationViewModel.Mode.PAINT) {
+            when (mode) {
+                EliminationViewModel.Mode.PAINT -> {
+                    binding.slider.post {
+                        showSlider()
                         binding.slider.setValue(viewModel.paintSize.value)
-                    } else if (mode == EliminationViewModel.Mode.ERASER) {
-                        binding.slider.setValue(viewModel.eraserSize.value)
+                    }
+                    binding.vEliminatePaint.apply {
+                        endRestore()
+                        showIndicator(true)
+                        setBrushSize(viewModel.paintSize.value, false)
+                        setErase(false)
                     }
                 }
+
+                EliminationViewModel.Mode.LARIAT -> {
+                    binding.slider.post {
+                        hideSlider()
+                    }
+                    binding.vEliminatePaint.apply {
+                        endRestore()
+                        showIndicator(true)
+                        setDashedLine()
+                        setErase(false)
+                    }
+                }
+
+                EliminationViewModel.Mode.ERASER -> {
+                    binding.slider.post {
+                        showSlider()
+                        binding.slider.setValue(viewModel.eraserSize.value)
+                    }
+                    binding.vEliminatePaint.setErase(true)
+                }
+            }
+        }
+        viewModel.paintSize.collectIn(lifecycleScope) {
+            if (viewModel.currentMode.value == EliminationViewModel.Mode.PAINT) {
+                binding.vEliminatePaint.setBrushSize(it / 100f)
+            }
+        }
+        viewModel.eraserSize.collectIn(lifecycleScope) {
+            if (viewModel.currentMode.value == EliminationViewModel.Mode.ERASER) {
+                binding.vEliminatePaint.setBrushSize(it / 100f)
             }
         }
     }

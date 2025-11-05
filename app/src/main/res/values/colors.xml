@@ -11,6 +11,7 @@
     <color name="green">#FF00FF00</color>
     <color name="red">#FFFF0000</color>
     <color name="theme">#FFF97583</color>
+    <color name="eliminate_paint_color">#80FF6666</color>
     <color name="theme_50p">#80F97583</color>
     <color name="theme_20p">#33F97583</color>
     <color name="theme_opposite">#FF9ECBFF</color>

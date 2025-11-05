@@ -220,6 +220,27 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/ll_function" />
 
+    <com.tgwgroup.zhoupics.ui.edit.elimination.EliminatePaintView
+        android:id="@+id/v_eliminate_paint"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="@id/iv_elimination"
+        app:layout_constraintBottom_toBottomOf="@id/iv_elimination"
+        app:layout_constraintStart_toStartOf="@id/iv_elimination"
+        app:layout_constraintEnd_toEndOf="@id/iv_elimination" />
+    
+    <com.tgwgroup.zhoupics.ui.edit.elimination.EliminateZoomView
+        android:id="@+id/v_eliminate_zoom"
+        android:layout_width="@dimen/zoom_area_width"
+        android:layout_height="@dimen/zoom_area_height"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_eliminate_zoom_view"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible" />
+
     <com.tgwgroup.zhoupics.widgets.SliderBubble
         android:id="@+id/slider_bubble"
         android:layout_width="48dp"
