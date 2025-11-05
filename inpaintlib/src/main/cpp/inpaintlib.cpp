@@ -7,7 +7,7 @@
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_tgwgroup_inpaintlib_NativeLib_runInpaint(JNIEnv *env, jobject thiz, jobject image_bitmap, jobject mask_bitmap, jstring model_file) {
+Java_com_tgwgroup_inpaintlib_InpaintLib_runInpaint(JNIEnv *env, jobject thiz, jobject image_bitmap, jobject mask_bitmap, jstring model_file) {
   if (model_file == nullptr) {
     LOGE("model_file is null");
     return nullptr;

@@ -40,6 +40,7 @@ dependencies {
     implementation project(':subscaleview')
     implementation project(':baselib')
     implementation project(':facecomparelib')
+    implementation project(':inpaintlib')
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
     implementation libs.material

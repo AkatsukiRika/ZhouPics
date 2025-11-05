@@ -12,9 +12,11 @@ import com.tgwgroup.zhoupics.base.BaseFragment
 import com.tgwgroup.zhoupics.databinding.FragmentEliminationBinding
 import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.ui.edit.EditViewModel
+import com.tgwgroup.zhoupics.ui.loading.LoadingDialogFragment
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.widgets.BidirectionalSlider
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
@@ -101,6 +103,13 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
         binding.llEraser.setOnClickListener {
             viewModel.updateCurrentMode(EliminationViewModel.Mode.ERASER)
         }
+        binding.llGenerate.setOnClickListener {
+            val image = getEditActivity()?.currentBitmap
+            val mask = binding.vEliminatePaint.getDrawingAreaMask()
+            if (image != null && mask != null) {
+                viewModel.runInpaint(image, mask)
+            }
+        }
     }
 
     private fun initCollectors() {
@@ -160,6 +169,18 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
         }
         viewModel.canGenerate.collectIn(lifecycleScope) {
             binding.llGenerate.isEnabled = it
+        }
+        viewModel.inpaintStatus.collectIn(lifecycleScope) {
+            when (it) {
+                EliminationViewModel.Status.LOADING -> {
+                    LoadingDialogFragment.show(childFragmentManager)
+                }
+
+                else -> {
+                    delay(500)
+                    LoadingDialogFragment.dismiss(childFragmentManager)
+                }
+            }
         }
     }
 
