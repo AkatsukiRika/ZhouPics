@@ -2,14 +2,13 @@ package com.tgwgroup.zhoupics.ui.edit.elimination
 
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.tgwgroup.inpaintlib.InpaintLib
 import com.tgwgroup.zhoupics.ui.downloads.getEliminateModelItem
 import com.tgwgroup.zhoupics.utils.appContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class EliminationViewModel : ViewModel() {
     enum class Mode {
@@ -51,15 +50,13 @@ class EliminationViewModel : ViewModel() {
         canGenerateMutable.value = canGenerate
     }
 
-    fun runInpaint(image: Bitmap, mask: Bitmap) {
-        viewModelScope.launch(Dispatchers.IO) {
-            inpaintStatusMutable.emit(Status.LOADING)
-            val result = InpaintLib.runInpaint(image, mask, getEliminateModelItem().getOutputFile(appContext).absolutePath)
-            if (result != null) {
-                inpaintStatusMutable.emit(Status.SUCCESS)
-            } else {
-                inpaintStatusMutable.emit(Status.ERROR)
-            }
+    suspend fun runInpaint(image: Bitmap, mask: Bitmap) = withContext(Dispatchers.IO) {
+        inpaintStatusMutable.emit(Status.LOADING)
+        val result = InpaintLib.runInpaint(image, mask, getEliminateModelItem().getOutputFile(appContext).absolutePath)
+        if (result != null) {
+            inpaintStatusMutable.emit(Status.SUCCESS)
+        } else {
+            inpaintStatusMutable.emit(Status.ERROR)
         }
     }
 }

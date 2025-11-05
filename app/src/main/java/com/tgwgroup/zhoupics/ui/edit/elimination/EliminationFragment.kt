@@ -18,6 +18,7 @@ import com.tgwgroup.zhoupics.widgets.BidirectionalSlider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
     private val editViewModel by activityViewModels<EditViewModel>()
@@ -104,10 +105,14 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
             viewModel.updateCurrentMode(EliminationViewModel.Mode.ERASER)
         }
         binding.llGenerate.setOnClickListener {
-            val image = getEditActivity()?.currentBitmap
-            val mask = binding.vEliminatePaint.getDrawingAreaMask()
-            if (image != null && mask != null) {
-                viewModel.runInpaint(image, mask)
+            lifecycleScope.launch(Dispatchers.IO) {
+                showLoading()
+                val image = getEditActivity()?.currentBitmap
+                val mask = binding.vEliminatePaint.getDrawingAreaMask()
+                if (image != null && mask != null) {
+                    viewModel.runInpaint(image, mask)
+                }
+                dismissLoading()
             }
         }
     }
@@ -170,18 +175,15 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
         viewModel.canGenerate.collectIn(lifecycleScope) {
             binding.llGenerate.isEnabled = it
         }
-        viewModel.inpaintStatus.collectIn(lifecycleScope) {
-            when (it) {
-                EliminationViewModel.Status.LOADING -> {
-                    LoadingDialogFragment.show(childFragmentManager)
-                }
+    }
 
-                else -> {
-                    delay(500)
-                    LoadingDialogFragment.dismiss(childFragmentManager)
-                }
-            }
-        }
+    private suspend fun showLoading() = withContext(Dispatchers.Main) {
+        LoadingDialogFragment.show(childFragmentManager)
+    }
+
+    private suspend fun dismissLoading() = withContext(Dispatchers.Main) {
+        delay(500)
+        LoadingDialogFragment.dismiss(childFragmentManager)
     }
 
     private fun initListeners() {
