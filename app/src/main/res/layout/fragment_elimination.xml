@@ -187,7 +187,8 @@
                 android:layout_height="32dp"
                 android:layout_gravity="center"
                 android:padding="4dp"
-                app:srcCompat="@drawable/ic_generate" />
+                app:srcCompat="@drawable/ic_generate_stateful"
+                android:duplicateParentState="true" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_generate"
@@ -196,7 +197,8 @@
                 android:layout_gravity="center"
                 style="@style/FontRegular"
                 android:text="@string/generate"
-                android:textColor="@color/white"
+                android:duplicateParentState="true"
+                android:textColor="@color/color_stateful_white_white20p"
                 android:textSize="12sp" />
 
             <Space

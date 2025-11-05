@@ -7,12 +7,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+import com.tgwgroup.baselib.utils.isFullyTransparent
 import com.tgwgroup.zhoupics.base.BaseFragment
 import com.tgwgroup.zhoupics.databinding.FragmentEliminationBinding
 import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.ui.edit.EditViewModel
 import com.tgwgroup.zhoupics.utils.collectIn
 import com.tgwgroup.zhoupics.widgets.BidirectionalSlider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
     private val editViewModel by activityViewModels<EditViewModel>()
@@ -69,7 +72,12 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
             isInit = true
             setImageMatrix(currentImageMatrix, isInit)
             setCallback(object : EliminatePaintView.Callback {
-                override fun onActionUpOrCancel() {}
+                override fun onActionUpOrCancel() {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val isFullyTransparent = binding.vEliminatePaint.getDrawingAreaBitmap()?.isFullyTransparent()
+                        viewModel.updateCanGenerate(isFullyTransparent == false)
+                    }
+                }
 
                 override fun onTouchEvent(touchX: Float, touchY: Float) {}
             })
@@ -110,7 +118,7 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
                     binding.vEliminatePaint.apply {
                         endRestore()
                         showIndicator(true)
-                        setBrushSize(viewModel.paintSize.value, false)
+                        setBrushSize(viewModel.paintSize.value / 100f, false)
                         setErase(false)
                     }
                 }
@@ -132,7 +140,11 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
                         showSlider()
                         binding.slider.setValue(viewModel.eraserSize.value)
                     }
-                    binding.vEliminatePaint.setErase(true)
+                    binding.vEliminatePaint.apply {
+                        endRestore()
+                        setBrushSize(viewModel.eraserSize.value / 100f, false)
+                        setErase(true)
+                    }
                 }
             }
         }
@@ -145,6 +157,9 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
             if (viewModel.currentMode.value == EliminationViewModel.Mode.ERASER) {
                 binding.vEliminatePaint.setBrushSize(it / 100f)
             }
+        }
+        viewModel.canGenerate.collectIn(lifecycleScope) {
+            binding.llGenerate.isEnabled = it
         }
     }
 

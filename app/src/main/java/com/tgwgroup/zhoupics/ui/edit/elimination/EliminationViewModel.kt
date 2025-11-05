@@ -18,6 +18,9 @@ class EliminationViewModel : ViewModel() {
     private val eraserSizeMutable = MutableStateFlow(50f)
     val eraserSize = eraserSizeMutable.asStateFlow()
 
+    private val canGenerateMutable = MutableStateFlow(false)
+    val canGenerate = canGenerateMutable.asStateFlow()
+
     fun updateCurrentMode(mode: Mode) {
         currentModeMutable.value = mode
     }
@@ -28,5 +31,9 @@ class EliminationViewModel : ViewModel() {
 
     fun updateEraserSize(size: Float) {
         eraserSizeMutable.value = size
+    }
+
+    fun updateCanGenerate(canGenerate: Boolean) {
+        canGenerateMutable.value = canGenerate
     }
 }
