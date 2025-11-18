@@ -36,9 +36,17 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/iv_back"
-        app:layout_constraintBottom_toTopOf="@id/tv_version"
+        app:layout_constraintBottom_toTopOf="@id/fcv_promotion"
         android:layout_marginVertical="16dp"
         tools:listitem="@layout/item_settings" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fcv_promotion"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        app:layout_constraintBottom_toTopOf="@id/tv_version"
+        android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="16dp" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_version"

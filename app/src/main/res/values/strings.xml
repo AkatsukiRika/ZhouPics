@@ -77,4 +77,10 @@
     <string name="system_default">System Default</string>
     <string name="confirm">Confirm</string>
     <string name="debug_no_value" translatable="false">\???</string>
+    <string name="promotion_text_1">\"ZhouPics\" is a fully open-source image manipulation tool for Android. It\'s created by: </string>
+    <string name="github_name" translatable="false">\@AkatsukiRika</string>
+    <string name="github_link" translatable="false"><a>https://github.com/AkatsukiRika</a></string>
+    <string name="promotion_text_2">And you can visit the developer\'s personal website via the link below.</string>
+    <string name="personal_website_name" translatable="false">JuanMing Web</string>
+    <string name="personal_website_link" translatable="false"><a>https://jm-frontend-two.vercel.app</a></string>
 </resources>

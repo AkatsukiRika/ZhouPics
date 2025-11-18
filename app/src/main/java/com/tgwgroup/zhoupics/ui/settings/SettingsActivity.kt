@@ -9,6 +9,7 @@ import com.tgwgroup.zhoupics.base.BaseActivity
 import com.tgwgroup.zhoupics.databinding.ActivitySettingsBinding
 import com.tgwgroup.zhoupics.ui.dev.DeveloperActivity
 import com.tgwgroup.zhoupics.ui.downloads.DownloadsActivity
+import com.tgwgroup.zhoupics.ui.promotion.PromotionFragment
 import com.tgwgroup.zhoupics.ui.settings.language.LanguageSelectBottomSheet
 
 class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
@@ -39,6 +40,7 @@ class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
             e.printStackTrace()
         }
         initRecyclerView()
+        initPromotion()
     }
     
     private fun initRecyclerView() {
@@ -69,5 +71,11 @@ class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
             )
         )
         settingsAdapter.setItems(items)
+    }
+
+    private fun initPromotion() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fcv_promotion, PromotionFragment(), PromotionFragment.TAG)
+            .commitNowAllowingStateLoss()
     }
 }
