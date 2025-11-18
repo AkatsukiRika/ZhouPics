@@ -9,6 +9,7 @@ import com.tgwgroup.zhoupics.base.BaseActivity
 import com.tgwgroup.zhoupics.databinding.ActivitySettingsBinding
 import com.tgwgroup.zhoupics.ui.dev.DeveloperActivity
 import com.tgwgroup.zhoupics.ui.downloads.DownloadsActivity
+import com.tgwgroup.zhoupics.ui.settings.language.LanguageSelectBottomSheet
 
 class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
     
@@ -48,7 +49,9 @@ class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
             SettingsItem(
                 icon = R.drawable.ic_language,
                 title = getString(R.string.language),
-                onClick = {}
+                onClick = {
+                    LanguageSelectBottomSheet.show(supportFragmentManager)
+                }
             ),
             SettingsItem(
                 icon = R.drawable.ic_export,
