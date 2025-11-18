@@ -6,17 +6,15 @@ import com.tgwgroup.inpaintlib.InpaintLib
 import com.tgwgroup.zhoupics.ui.downloads.getEliminateModelItem
 import com.tgwgroup.zhoupics.utils.appContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 
 class EliminationViewModel : ViewModel() {
     enum class Mode {
         PAINT, LARIAT, ERASER
-    }
-
-    enum class Status {
-        IDLE, LOADING, SUCCESS, ERROR
     }
 
     private val currentModeMutable = MutableStateFlow(Mode.PAINT)
@@ -31,8 +29,8 @@ class EliminationViewModel : ViewModel() {
     private val canGenerateMutable = MutableStateFlow(false)
     val canGenerate = canGenerateMutable.asStateFlow()
 
-    private val inpaintStatusMutable = MutableStateFlow(Status.IDLE)
-    val inpaintStatus = inpaintStatusMutable.asStateFlow()
+    private val inpaintResultEventMutable = MutableSharedFlow<InpaintResultEvent>()
+    val inpaintResultEvent = inpaintResultEventMutable.asSharedFlow()
 
     fun updateCurrentMode(mode: Mode) {
         currentModeMutable.value = mode
@@ -50,13 +48,17 @@ class EliminationViewModel : ViewModel() {
         canGenerateMutable.value = canGenerate
     }
 
-    suspend fun runInpaint(image: Bitmap, mask: Bitmap) = withContext(Dispatchers.IO) {
-        inpaintStatusMutable.emit(Status.LOADING)
+    suspend fun runInpaint(image: Bitmap, mask: Bitmap) = withContext(Dispatchers.Default) {
         val result = InpaintLib.runInpaint(image, mask, getEliminateModelItem().getOutputFile(appContext).absolutePath)
         if (result != null) {
-            inpaintStatusMutable.emit(Status.SUCCESS)
+            inpaintResultEventMutable.emit(InpaintResultEvent.Success(result))
         } else {
-            inpaintStatusMutable.emit(Status.ERROR)
+            inpaintResultEventMutable.emit(InpaintResultEvent.Error)
         }
     }
+}
+
+sealed class InpaintResultEvent {
+    data class Success(val bitmap: Bitmap) : InpaintResultEvent()
+    data object Error : InpaintResultEvent()
 }

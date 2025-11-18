@@ -1,5 +1,6 @@
 package com.tgwgroup.zhoupics.ui.edit.elimination
 
+import android.graphics.Bitmap
 import android.graphics.Matrix
 import androidx.core.view.isInvisible
 import androidx.fragment.app.activityViewModels
@@ -8,12 +9,14 @@ import androidx.lifecycle.lifecycleScope
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.tgwgroup.baselib.utils.isFullyTransparent
+import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.base.BaseFragment
 import com.tgwgroup.zhoupics.databinding.FragmentEliminationBinding
 import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.ui.edit.EditViewModel
 import com.tgwgroup.zhoupics.ui.loading.LoadingDialogFragment
 import com.tgwgroup.zhoupics.utils.collectIn
+import com.tgwgroup.zhoupics.utils.toastError
 import com.tgwgroup.zhoupics.widgets.BidirectionalSlider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -28,6 +31,10 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
     private var isInit = false
 
     private val currentImageMatrix = Matrix()
+
+    private var initialBitmap: Bitmap? = null
+
+    private var currentBitmap: Bitmap? = null
 
     companion object {
         const val TAG = "EliminationFragment"
@@ -51,7 +58,7 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
         initCollectors()
         initListeners()
 
-        getEditActivity()?.currentBitmap?.let {
+        initialBitmap?.let {
             binding.ivElimination.setImage(ImageSource.bitmap(it))
         }
         binding.ivElimination.setOnStateChangedListener(object : SubsamplingScaleImageView.DefaultOnStateChangedListener() {
@@ -67,16 +74,17 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
 
     private fun initPaintView() {
         val binding = binding ?: return
-        val currentBitmap = getEditActivity()?.currentBitmap ?: return
+        currentBitmap = getEditActivity()?.currentBitmap?.copy(Bitmap.Config.ARGB_8888, false)
+        initialBitmap = currentBitmap
         binding.vEliminatePaint.apply {
             setMagnifier(binding.vEliminateZoom)
             setOuterView(binding.ivElimination, currentBitmap)
             setDisableTouch(false)
             isInit = true
-            setImageMatrix(currentImageMatrix, isInit)
+            setImageMatrix(currentImageMatrix, true)
             setCallback(object : EliminatePaintView.Callback {
                 override fun onActionUpOrCancel() {
-                    lifecycleScope.launch(Dispatchers.IO) {
+                    lifecycleScope.launch(Dispatchers.Default) {
                         val isFullyTransparent = binding.vEliminatePaint.getDrawingAreaBitmap()?.isFullyTransparent()
                         viewModel.updateCanGenerate(isFullyTransparent == false)
                     }
@@ -105,12 +113,13 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
             viewModel.updateCurrentMode(EliminationViewModel.Mode.ERASER)
         }
         binding.llGenerate.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch(Dispatchers.Default) {
                 showLoading()
-                val image = getEditActivity()?.currentBitmap
                 val mask = binding.vEliminatePaint.getDrawingAreaMask()
-                if (image != null && mask != null) {
-                    viewModel.runInpaint(image, mask)
+                if (mask != null) {
+                    currentBitmap?.let {
+                        viewModel.runInpaint(it, mask)
+                    }
                 }
                 dismissLoading()
             }
@@ -175,6 +184,30 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
         viewModel.canGenerate.collectIn(lifecycleScope) {
             binding.llGenerate.isEnabled = it
         }
+        viewModel.inpaintResultEvent.collectIn(lifecycleScope) {
+            if (it is InpaintResultEvent.Success) {
+                onInpaintSuccess(it.bitmap)
+            } else {
+                onInpaintError()
+            }
+        }
+    }
+
+    private fun onInpaintSuccess(result: Bitmap) {
+        val binding = binding ?: return
+        binding.vEliminatePaint.clearDrawing()
+        binding.vEliminatePaint.setOuterView(binding.ivElimination, result)
+        binding.ivElimination.setImage(ImageSource.bitmap(result))
+        currentBitmap = result
+        viewModel.updateCanGenerate(false)
+    }
+
+    private fun onInpaintError() {
+        val binding = binding ?: return
+        val resources = context?.resources ?: return
+        binding.vEliminatePaint.clearDrawing()
+        viewModel.updateCanGenerate(false)
+        toastError(resources.getString(R.string.inpaint_error))
     }
 
     private suspend fun showLoading() = withContext(Dispatchers.Main) {
