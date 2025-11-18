@@ -8,6 +8,7 @@ import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.PreferredColorSpace
@@ -50,6 +51,11 @@ suspend fun getBitmap(model: Any, maxPixels: Int = getMaxTotalPixels()): Bitmap?
         return@withContext originalBitmap
     }
     return@withContext scaleByTotalPixels(originalBitmap, maxPixels)
+}
+
+fun ImageView.loadImage(model: Any) {
+    val request = Glide.with(context).load(model)
+    request.into(this)
 }
 
 fun scaleByTotalPixels(bitmap: Bitmap, maxPixels: Int): Bitmap {
