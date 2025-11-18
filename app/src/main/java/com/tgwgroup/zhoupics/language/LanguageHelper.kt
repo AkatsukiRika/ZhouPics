@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import com.tgwgroup.zhoupics.utils.appContext
 import androidx.core.content.edit
+import com.tgwgroup.zhoupics.ui.settings.language.LANG_SYSTEM
 import java.util.Locale
 
 /**
@@ -26,6 +27,9 @@ object LanguageHelper {
 
     fun applyLanguage(context: Context): Context {
         val lang = getSavedLanguage(context) ?: return context
+        if (lang == LANG_SYSTEM) {
+            return context
+        }
         val locale = Locale.forLanguageTag(lang)
 
         Locale.setDefault(locale)

@@ -10,8 +10,10 @@ data class LanguageItem(
     var selected = false
 }
 
+const val LANG_SYSTEM = "system"
+
 fun getSupportLanguageList() = listOf(
-    LanguageItem("system", appContext.resources.getString(R.string.system_default)).apply {
+    LanguageItem(LANG_SYSTEM, appContext.resources.getString(R.string.system_default)).apply {
         selected = true
     },
     LanguageItem("en", "English"),
