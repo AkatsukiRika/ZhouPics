@@ -14,7 +14,7 @@ object LanguageHelper {
     private const val KEY_LANGUAGE = "selected_language"
 
     fun saveLanguage(language: String) {
-        appContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit {
+        appContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit(commit = true) {
             putString(KEY_LANGUAGE, language)
         }
     }

@@ -7,6 +7,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tgwgroup.zhoupics.base.BaseBottomSheet
 import com.tgwgroup.zhoupics.databinding.LayoutLanguageSelectBinding
+import com.tgwgroup.zhoupics.language.LanguageHelper
+import com.tgwgroup.zhoupics.language.changeLanguage
 
 class LanguageSelectBottomSheet : BaseBottomSheet<LayoutLanguageSelectBinding>() {
     companion object {
@@ -35,6 +37,13 @@ class LanguageSelectBottomSheet : BaseBottomSheet<LayoutLanguageSelectBinding>()
         super.initView()
         val context = context ?: return
         val binding = binding ?: return
+
+        LanguageHelper.getSavedLanguage(context)?.let { savedLanguage ->
+            languageList.forEach {
+                it.selected = it.name == savedLanguage
+            }
+        }
+
         binding.rvLanguage.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = languageAdapter
@@ -47,6 +56,13 @@ class LanguageSelectBottomSheet : BaseBottomSheet<LayoutLanguageSelectBinding>()
                 }
                 notifyItemRangeChanged(0, languageList.size, 0)
             }
+        }
+        binding.tvDownloadNow.setOnClickListener {
+            val selectedLanguage = languageList.firstOrNull { it.selected }
+            selectedLanguage?.let {
+                changeLanguage(it.name)
+            }
+            dismissAllowingStateLoss()
         }
     }
 

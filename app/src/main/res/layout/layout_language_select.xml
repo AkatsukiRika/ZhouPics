@@ -37,7 +37,7 @@
         android:layout_marginHorizontal="32dp"
         android:background="@drawable/shape_bg_r1000"
         android:backgroundTint="@color/theme_opposite"
-        android:foreground="@drawable/ripple_rounded_r1000"
+        android:foreground="@drawable/dark_ripple_rounded_r1000"
         style="@style/FontBold"
         android:gravity="center"
         android:text="@string/confirm"

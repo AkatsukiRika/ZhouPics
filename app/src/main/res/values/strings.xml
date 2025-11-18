@@ -76,5 +76,5 @@
     <string name="inpaint_error">AI inpaint error!</string>
     <string name="system_default">System Default</string>
     <string name="confirm">Confirm</string>
-    <string name="debug_no_value">\???</string>
+    <string name="debug_no_value" translatable="false">\???</string>
 </resources>

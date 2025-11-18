@@ -21,7 +21,6 @@ abstract class BaseActivity<T : ViewBinding> : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ActivityCollector.register(this)
         // 强制设置深色主题，忽略系统设置
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         // 禁止用户切换主题
@@ -33,11 +32,6 @@ abstract class BaseActivity<T : ViewBinding> : AppCompatActivity() {
         binding.root.applyStatusBarPaddings()
         setContentView(binding.root)
         initView()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        ActivityCollector.unregister(this)
     }
 
     abstract fun onBindingCreate(): T

@@ -1,17 +1,24 @@
 package com.tgwgroup.zhoupics.language
 
-import android.content.Context
-import com.tgwgroup.zhoupics.base.ActivityCollector
+import android.content.Intent
+import android.os.Process.killProcess
+import android.os.Process.myPid
 import com.tgwgroup.zhoupics.utils.appContext
 
-fun changeLanguage(context: Context, language: String) {
+fun changeLanguage(language: String) {
     LanguageHelper.saveLanguage(language)
+    restartApp()
+}
 
-    runCatching {
-        LanguageHelper.applyLanguage(appContext)
-    }.onFailure {
-        it.printStackTrace()
+fun restartApp() {
+    val intent = appContext.packageManager
+        .getLaunchIntentForPackage(appContext.packageName)?.apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+    if (intent != null) {
+        appContext.startActivity(intent)
     }
-
-    ActivityCollector.recreateAll()
+    // 杀掉当前进程，让语言彻底刷新
+    killProcess(myPid())
 }
