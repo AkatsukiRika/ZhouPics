@@ -21,6 +21,11 @@
         android:text="@string/model_not_ready"
         android:textColor="@color/black"
         android:textSize="20sp"
+        android:maxLines="1"
+        android:autoSizeMaxTextSize="20sp"
+        android:autoSizeMinTextSize="1sp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeStepGranularity="1sp"
         android:layout_marginHorizontal="16dp" />
 
     <androidx.appcompat.widget.AppCompatTextView

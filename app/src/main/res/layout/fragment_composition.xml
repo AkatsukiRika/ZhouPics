@@ -114,6 +114,7 @@
             app:iconGravity="top"
             android:background="@android:color/transparent"
             android:textColor="@color/white"
+            android:textSize="12sp"
             style="@style/FontMedium"
             app:iconTint="@color/white"
             app:iconSize="24sp" />
@@ -127,6 +128,7 @@
             app:iconGravity="top"
             android:background="@android:color/transparent"
             android:textColor="@color/white"
+            android:textSize="12sp"
             style="@style/FontMedium"
             app:iconTint="@color/white"
             app:iconSize="24sp" />
@@ -140,6 +142,7 @@
             app:iconGravity="top"
             android:background="@android:color/transparent"
             android:textColor="@color/white"
+            android:textSize="12sp"
             style="@style/FontMedium"
             app:iconTint="@color/white"
             app:iconSize="24sp" />
@@ -153,6 +156,7 @@
             app:iconGravity="top"
             android:background="@android:color/transparent"
             android:textColor="@color/white"
+            android:textSize="12sp"
             style="@style/FontMedium"
             app:iconTint="@color/white"
             app:iconSize="24sp" />
