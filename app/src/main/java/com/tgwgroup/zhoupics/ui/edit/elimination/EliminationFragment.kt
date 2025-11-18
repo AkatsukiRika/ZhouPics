@@ -12,10 +12,13 @@ import com.tgwgroup.baselib.utils.isFullyTransparent
 import com.tgwgroup.zhoupics.R
 import com.tgwgroup.zhoupics.base.BaseFragment
 import com.tgwgroup.zhoupics.databinding.FragmentEliminationBinding
+import com.tgwgroup.zhoupics.history.UpdateImageRecord
 import com.tgwgroup.zhoupics.ui.edit.EditActivity
 import com.tgwgroup.zhoupics.ui.edit.EditViewModel
 import com.tgwgroup.zhoupics.ui.loading.LoadingDialogFragment
+import com.tgwgroup.zhoupics.utils.PREFIX_ELIMINATION_RESULT
 import com.tgwgroup.zhoupics.utils.collectIn
+import com.tgwgroup.zhoupics.utils.saveBitmap
 import com.tgwgroup.zhoupics.utils.toastError
 import com.tgwgroup.zhoupics.widgets.BidirectionalSlider
 import kotlinx.coroutines.Dispatchers
@@ -101,7 +104,7 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
             finishFragment()
         }
         binding.ivConfirm.setOnClickListener {
-            finishFragment()
+            saveResult()
         }
         binding.llPaint.setOnClickListener {
             viewModel.updateCurrentMode(EliminationViewModel.Mode.PAINT)
@@ -208,6 +211,33 @@ class EliminationFragment : BaseFragment<FragmentEliminationBinding>() {
         binding.vEliminatePaint.clearDrawing()
         viewModel.updateCanGenerate(false)
         toastError(resources.getString(R.string.inpaint_error))
+    }
+
+    private fun saveResult() {
+        if (currentBitmap == initialBitmap) {
+            return
+        }
+        lifecycleScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
+                LoadingDialogFragment.show(childFragmentManager)
+            }
+
+            currentBitmap?.let {
+                saveBitmap(it, PREFIX_ELIMINATION_RESULT)?.let { uri ->
+                    editViewModel.historyHelper.addRecord(UpdateImageRecord(uri.toString()))
+
+                    withContext(Dispatchers.Main) {
+                        getEditActivity()?.updateImage(uri, it)
+                    }
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                delay(500)
+                LoadingDialogFragment.dismiss(childFragmentManager)
+                finishFragment()
+            }
+        }
     }
 
     private suspend fun showLoading() = withContext(Dispatchers.Main) {

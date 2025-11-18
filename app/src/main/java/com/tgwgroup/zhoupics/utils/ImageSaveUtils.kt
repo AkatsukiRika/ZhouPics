@@ -8,6 +8,8 @@ import java.io.File
 
 const val PREFIX_CROP_RESULT = "crop_result"
 
+const val PREFIX_ELIMINATION_RESULT = "elimination_result"
+
 val cacheDir = File(appContext.filesDir, "cache")
 
 suspend fun clearCache() = withContext(Dispatchers.IO) {
