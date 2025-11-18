@@ -22,6 +22,8 @@ class LanguageSelectBottomSheet : BaseBottomSheet<LayoutLanguageSelectBinding>()
 
     private val languageAdapter = LanguageAdapter()
 
+    private val languageList = getSupportLanguageList()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState != null) {
@@ -36,7 +38,15 @@ class LanguageSelectBottomSheet : BaseBottomSheet<LayoutLanguageSelectBinding>()
         binding.rvLanguage.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = languageAdapter
-            languageAdapter.setItems(getSupportLanguageList())
+        }
+        languageAdapter.apply {
+            setItems(languageList)
+            onSelect = { item ->
+                languageList.forEach {
+                    it.selected = it.name == item.name
+                }
+                notifyItemRangeChanged(0, languageList.size, 0)
+            }
         }
     }
 

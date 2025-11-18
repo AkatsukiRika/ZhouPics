@@ -11,6 +11,8 @@ import com.tgwgroup.zhoupics.utils.appContext
 class LanguageAdapter : RecyclerView.Adapter<LanguageAdapter.ViewHolder>() {
     private val items: MutableList<LanguageItem> = mutableListOf()
 
+    var onSelect: ((LanguageItem) -> Unit)? = null
+
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(newItems: List<LanguageItem>) {
         items.clear()
@@ -40,7 +42,9 @@ class LanguageAdapter : RecyclerView.Adapter<LanguageAdapter.ViewHolder>() {
             } else {
                 binding.root.backgroundTintList = appContext.getColorStateList(R.color.transparent)
             }
-            binding.root.setOnClickListener {}
+            binding.root.setOnClickListener {
+                onSelect?.invoke(item)
+            }
         }
     }
 }
