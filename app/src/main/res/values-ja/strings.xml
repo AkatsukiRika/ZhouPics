@@ -80,4 +80,5 @@
     <string name="promotion_text_1">「ZhouPics」は、Android向けの完全オープンソース画像処理ツールです。作成者：</string>
     <string name="promotion_text_2">以下のリンクから開発者の個人ウェブサイトにアクセスできます。</string>
     <string name="promotion_text_3">また、AndroidとiOSの両方に対応した仕事・生活管理アプリ「ZhouTools」もぜひお試しください！</string>
+    <string name="unable_to_open_link">リンクを開けません</string>
 </resources>

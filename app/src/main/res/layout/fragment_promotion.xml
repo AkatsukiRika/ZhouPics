@@ -23,10 +23,12 @@
             app:lineHeight="22sp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_card_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_bg_r20"
             android:backgroundTint="@color/theme_opposite"
+            android:foreground="@drawable/dark_ripple_rounded_r20"
             android:layout_marginTop="16dp">
 
             <com.google.android.material.card.MaterialCardView
@@ -98,10 +100,12 @@
             android:layout_marginTop="16dp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_card_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_bg_r20"
             android:backgroundTint="@color/theme_opposite"
+            android:foreground="@drawable/dark_ripple_rounded_r20"
             android:layout_marginTop="16dp">
 
             <com.google.android.material.card.MaterialCardView
@@ -173,10 +177,12 @@
             android:layout_marginTop="16dp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_card_3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_bg_r20"
             android:backgroundTint="@color/theme_opposite"
+            android:foreground="@drawable/dark_ripple_rounded_r20"
             android:layout_marginTop="16dp">
 
             <com.google.android.material.card.MaterialCardView
