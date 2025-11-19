@@ -77,5 +77,7 @@
     <string name="inpaint_error">AI 修復錯誤！</string>
     <string name="system_default">系統預設</string>
     <string name="confirm">確認</string>
-    <string name="debug_no_value">\???</string>
+    <string name="promotion_text_1">「ZhouPics」是一款完全開源的 Android 影像處理工具。它的作者是：</string>
+    <string name="promotion_text_2">您可以透過下方的連結造訪開發者的個人網站。</string>
+    <string name="promotion_text_3">此外，歡迎試用「ZhouTools」—— 一款同時支援 Android 和 iOS 的工作與生活管理應用程式！</string>
 </resources>
