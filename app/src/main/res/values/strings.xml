@@ -81,8 +81,8 @@
     <string name="github_name" translatable="false">\@AkatsukiRika</string>
     <string name="github_link" translatable="false">https://github.com/AkatsukiRika</string>
     <string name="promotion_text_2">You can visit the developer\'s personal website via the link below.</string>
-    <string name="personal_website_name" translatable="false">JuanMing Web</string>
-    <string name="personal_website_link" translatable="false">https://jm-frontend-two.vercel.app</string>
+    <string name="personal_website_name" translatable="false">TangPing Web</string>
+    <string name="personal_website_link" translatable="false">https://www.tang-ping.top</string>
     <string name="promotion_text_3">Also feel free to try out \"ZhouTools\" - A work &amp; life management app supporting both Android and iOS!</string>
     <string name="zhoutools_name" translatable="false">ZhouTools</string>
     <string name="zhoutools_link" translatable="false">https://github.com/AkatsukiRika/ZhouTools</string>
